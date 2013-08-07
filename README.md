@@ -1,4 +1,4 @@
-silverstripe-apiwesome
+APIwesome
 ======================
 
-A SilverStripe module which will automatically create customisable JSON and XML feeds for your custom data objects.
+A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data objects.
