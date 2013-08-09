@@ -1,19 +1,19 @@
 <?php
 
 /**
- *	APIwesome specific configuration settings.
- *	Don't change these!
+ *	APIwesome specific configuration settings. Don't change these!
+ *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
-Object::add_extension('APIwesomeAdmin', 'APIwesomeAdminButtonExtension');
-Object::add_extension('DataObject', 'DataObjectPreviewExtension');
+DataObjectOutputConfiguration::apply_required_extensions();
 
 /**
  *
- *	EXAMPLE: Custom data object JSON/XML exclusions.
+ *	EXAMPLE: JSON/XML custom data object exclusions.
+ *
  *	@param array(string)
  *
- *	DataObjectConfiguration::set_custom_exclusions(array(
+ *	DataObjectOutputConfiguration::set_custom_exclusions(array(
  *		'MyFirstDataObjectName',
  *		'MySecondDataObjectName'
  *	));

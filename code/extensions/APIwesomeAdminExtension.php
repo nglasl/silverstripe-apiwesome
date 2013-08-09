@@ -6,15 +6,15 @@
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
-class APIwesomeAdminButtonExtension extends Extension {
+class APIwesomeAdminExtension extends Extension {
 
 	/**
-	 *	Update the model admin interface to remove the add functionality.
+	 *	Update the model admin interface to remove the add button.
 	 */
 
 	public function updateEditForm(&$form) {
 
-		$configuration = $form->fields->dataFieldByName('DataObjectConfiguration')->config;
+		$configuration = $form->fields->dataFieldByName('DataObjectOutputConfiguration')->config;
 		$configuration->removeComponent($configuration->getComponentByType('GridFieldAddNewButton'));
 	}
 
