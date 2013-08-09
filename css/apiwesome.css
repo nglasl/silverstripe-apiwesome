@@ -1,0 +1,20 @@
+/**
+ *	APIwesome specific styling.
+ *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ */
+
+p.cms.notification {
+	background: #FFA84C;
+	background: -moz-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFA84C), color-stop(100%, #FF7B0D));
+	background: -webkit-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
+	background: -o-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
+	background: -ms-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
+	background: linear-gradient(to bottom, #FFA84C 0%, #FF7B0D 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#FFA84C', endColorstr = '#FF7B0D', GradientType = 0);
+	padding: 5px;
+	border: 1px solid #FF7400;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}

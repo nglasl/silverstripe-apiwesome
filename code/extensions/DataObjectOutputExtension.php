@@ -10,7 +10,16 @@ class DataObjectOutputExtension extends DataExtension {
 	// Append an additional visibility field to each data object.
 
 	public static $db = array(
-		'APIwesomeVisibility' => 'Text'
+		'APIwesomeVisibility' => 'TEXT'
 	);
+
+	/**
+	 *	Update the CMS interface fields, since the visibility must not be changed.
+	 */
+
+	public function updateCMSFields(FieldList $fields) {
+
+		$fields->removeByName('APIwesomeVisibility');
+	}
 
 }

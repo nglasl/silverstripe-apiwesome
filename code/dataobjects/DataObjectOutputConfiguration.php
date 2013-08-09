@@ -39,8 +39,6 @@ class DataObjectOutputConfiguration extends DataObject {
 		'ModelAdminTest_Player',
 		'DataObjectOutputConfiguration'
 	);
-
-	private $objects;
 	
 	// The list of custom data objects that we wish to ignore.
 
@@ -158,17 +156,40 @@ class DataObjectOutputConfiguration extends DataObject {
 	public function getCMSFields() {
 
 		$fields = parent::getCMSFields();
+		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 
 		// The data object that is assigned to this configuration must not be changed.
 
 		$fields->removeByName('IsFor');
 
-		// add a default value for the visibility column
-		// grab the visibility column for this data object
-		// if null, make a checkbox for each column and set it to not visible
-		// otherwise, use the number of values to set the number of columns listed, so {0,0,0,1,0} would make the fourth column visible, and the rest not visible
-		// on save, write a certain format back to the column such as {0,0,0,1,0} matching the number of columns minus ID and ClassName
+		// Retrieve the corresponding data object, if one exists.
 
+		$objects = DataObject::get($this->IsFor)->sort('APIwesomeVisibility DESC');
+		if($objects && $objects instanceof DataList && $objects->first()) {
+			$object = $objects->first();
+
+			// Retrieve the attributes for this data object.
+
+			$columns = DataObject::database_fields($this->IsFor);
+			array_shift($columns);
+			$visibility = $object->APIwesomeVisibility;
+
+			// Construct the check box fields for JSON/XML visibility customisation.
+
+			$output = array();
+			foreach($columns as $name => $type) {
+				$output[] = preg_replace('/[A-Z]+[^A-Z]/', ' $0', $name);
+			}
+			$fields->addFieldToTab('Root.Main', CheckboxSetField::create('APIwesomeVisibility', 'Visible?', $output));
+		}
+		else {
+
+			// Notify the user that a data object of this type should first be created.
+
+			$fields->removeByName('CallbackFunction');
+			$name = preg_replace('/[A-Z]+[^A-Z]/', ' $0', $this->IsFor);
+			$fields->addFieldToTab('Root.Main', LiteralField::create('ConfigurationNotification', "<p class='cms notification'><strong>No {$name}s Found</strong></p>"));
+		}
 		return $fields;
 	}
 
