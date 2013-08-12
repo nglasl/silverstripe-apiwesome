@@ -7,7 +7,7 @@
 
 class DataObjectOutputExtension extends DataExtension {
 
-	// Append an additional visibility field to each data object.
+	// Append an additional visibility field to each data object, which will allow the capability of extending APIwesome even further.
 
 	public static $db = array(
 		'APIwesomeVisibility' => 'TEXT'

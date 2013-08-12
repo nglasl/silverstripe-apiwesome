@@ -22,3 +22,17 @@ DataObjectOutputConfiguration::apply_required_extensions();
  *	));
  *
  */
+
+/**
+ *
+ *	EXAMPLE: JSON/XML custom data object inclusions.
+ *	NOTE: This will disable the automatic JSON/XML configuration of all data objects by default.
+ *
+ *	@param array(string)
+ *
+ *	DataObjectOutputConfiguration::set_custom_inclusions(array(
+ *		'MyFirstDataObjectName',
+ *		'MySecondDataObjectName'
+ *	));
+ *
+ */
