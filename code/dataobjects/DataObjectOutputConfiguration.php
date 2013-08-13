@@ -79,6 +79,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 	/**
 	 *	Set the custom data object JSON/XML inclusions.
+	 *
 	 *	NOTE: This will disable the automatic JSON/XML configuration of all data objects by default.
 	 *
 	 *	@param array(string)
