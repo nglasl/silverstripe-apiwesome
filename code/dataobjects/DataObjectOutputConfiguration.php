@@ -266,7 +266,7 @@ class DataObjectOutputConfiguration extends DataObject {
 			$iteration = 0;
 			foreach($columns as $name => $type) {
 
-				// Take the visibility database column into account.
+				// Take the visibility attribute into account.
 
 				if($name !== 'APIwesomeVisibility') {
 					$printName = ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $name));
