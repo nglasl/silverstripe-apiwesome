@@ -23,11 +23,18 @@ class APIwesome extends Controller {
 	 *
 	 */
 
-	public function retrieve() {
+	public function retrieve($objectName = null, $type = null) {
 
-		// Make sure the request URL contains the two required parameters.
+		// Make sure this JSON/XML request is valid.
 
 		$parameters = $this->getRequest()->allParams();
+		if(!isset($parameters['ID']) && !isset($parameters['OtherID'])) {
+			$parameters['ID'] = ($objectName && is_string($objectName)) ? $objectName : null;
+			$parameters['OtherID'] = ($type && is_string($type)) ? $type : null;
+		}
+
+		// Make sure the request contains the two required parameters.
+
 		if($parameters['ID'] && $parameters['OtherID']) {
 
 			// Validate and return these data objects.
@@ -38,10 +45,10 @@ class APIwesome extends Controller {
 			// Redirect this request URL towards the appropriate JSON/XML retrieval of data objects.
 
 			if($objects && ($type === 'JSON')) {
-				return $this->retrieveJSON($objects);
+				return $this->retrieveJSON($objects, true);
 			}
 			else if($objects && ($type === 'XML')) {
-				return $this->retrieveXML($objects);
+				return $this->retrieveXML($objects, true);
 			}
 		}
 
@@ -107,7 +114,16 @@ class APIwesome extends Controller {
 					$query = new SQLQuery("ClassName, ID, $select", array($class));
 					$query = $query->execute();
 					$objects = array();
-					foreach($query as $object) {
+					foreach($query as $temporary) {
+
+						// Remove null attributes.
+
+						$object = array();
+						foreach($temporary as $attribute => $value) {
+							if($value) {
+								$object[$attribute] = $value;
+							}
+						}
 						$objects[] = $object;
 					}
 
@@ -124,19 +140,29 @@ class APIwesome extends Controller {
 	}
 
 	/**
-	 *	Compose the appropriate JSON for the corresponding data objects.
+	 *	Compose the appropriate JSON for the corresponding array of data objects.
+	 *	Make sure to convert your data list using toNestedArray.
 	 *
 	 *	@param array
 	 *	@return JSON
 	 */
 
-	private function retrieveJSON($objects) {
+	public function retrieveJSON($objects, $addHeader = false) {
 
 		// Convert the input array to JSON.
-
+		
 		$JSON = array();
-		foreach($objects as $object) {
-			$JSON[] = array($object['ClassName'] => array_slice($object, 1));
+		foreach($objects as $temporary) {
+
+			// Remove attributes that are not required.
+
+			$object = array();
+			foreach($temporary as $attribute => $value) {
+				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility')) {
+					$object[$attribute] = $value;
+				}
+			}
+			$JSON[] = array($temporary['ClassName'] => $object);
 		}
 		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
 
@@ -147,42 +173,45 @@ class APIwesome extends Controller {
 
 		// Set the response header, and return the JSON.
 
-		$configuration->CallbackFunction ? $this->getResponse()->addHeader('Content-Type', 'application/javascript') : $this->getResponse()->addHeader('Content-Type', 'application/json');
+		if($addHeader) {
+			$configuration->CallbackFunction ? Controller::curr()->getResponse()->addHeader('Content-Type', 'application/javascript') : Controller::curr()->getResponse()->addHeader('Content-Type', 'application/json');
+		}
 		return $JSON;
 	}
 
 	/**
-	 *	Compose the appropriate XML for the corresponding data objects.
+	 *	Compose the appropriate XML for the corresponding array of data objects.
+	 *	Make sure to convert your data list using toNestedArray.
 	 *
 	 *	@param array
 	 *	@return XML
 	 */
 
-	private function retrieveXML($objects) {
+	public function retrieveXML($objects, $addHeader = false) {
 
 		// Convert the input array to XML.
 
 		$XML = new SimpleXMLElement('<DataObjectList/>');
-		foreach($objects as $key => $object) {
+		foreach($objects as $object) {
 
-			// Add the data objects in the correct format.
+			// Add the data objects in the correct format, using the data object name as a parent element.
 
-			$objectXML = null;
+			$objectXML = $XML->addChild($object['ClassName']);
 			foreach($object as $attribute => $value) {
 
-				// Use the data object name as a root element.
+				// Remove attributes that are not required.
 
-				if($attribute === 'ClassName') {
-					$objectXML = $XML->addChild($value);
-					continue;
+				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility')) {
+					$objectXML->addChild($attribute, $value);
 				}
-				$objectXML->addChild($attribute, $value);
 			}
 		}
 
 		// Set the response header, and return the XML.
 
-		$this->getResponse()->addHeader('Content-Type', 'application/xml');
+		if($addHeader) {
+			Controller::curr()->getResponse()->addHeader('Content-Type', 'application/xml');
+		}
 		return $XML->asXML();
 	}
 
