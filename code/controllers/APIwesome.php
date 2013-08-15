@@ -104,9 +104,9 @@ class APIwesome extends Controller {
 
 					// Retrieve the list of corresponding data objects, including any visibility customisation.
 
-					$query = new SQLQuery($select, array($class));
+					$query = new SQLQuery("ClassName, ID, $select", array($class));
 					$query = $query->execute();
-					$objects = array($class);
+					$objects = array();
 					foreach($query as $object) {
 						$objects[] = $object;
 					}
@@ -134,9 +134,21 @@ class APIwesome extends Controller {
 
 		// Convert the input array to JSON.
 
-		$json = Convert::array2json($objects);
-		$this->getResponse()->addHeader('Content-Type', 'application/javascript');
-		return $json;
+		$JSON = array();
+		foreach($objects as $object) {
+			$JSON[] = array($object['ClassName'] => array_slice($object, 1));
+		}
+		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
+
+		// Apply the callback function from configuration.
+
+		$configuration = DataObjectOutputConfiguration::get()->filter(array('IsFor' => $objects[0]['ClassName']))->first();
+		$JSON = $configuration->CallbackFunction ? str_replace(' ', '_', $configuration->CallbackFunction) . "($JSON);" : $JSON;
+
+		// Set the response header, and return the JSON.
+
+		$configuration->CallbackFunction ? $this->getResponse()->addHeader('Content-Type', 'application/javascript') : $this->getResponse()->addHeader('Content-Type', 'application/json');
+		return $JSON;
 	}
 
 	/**
@@ -150,14 +162,28 @@ class APIwesome extends Controller {
 
 		// Convert the input array to XML.
 
-		$xml = new SimpleXMLElement("<{$objects[0]}/>");
-		foreach(array_slice($objects, 1) as $key => $object) {
+		$XML = new SimpleXMLElement('<DataObjectList/>');
+		foreach($objects as $key => $object) {
+
+			// Add the data objects in the correct format.
+
+			$objectXML = null;
 			foreach($object as $attribute => $value) {
-				$xml->addChild($attribute, $value);
+
+				// Use the data object name as a root element.
+
+				if($attribute === 'ClassName') {
+					$objectXML = $XML->addChild($value);
+					continue;
+				}
+				$objectXML->addChild($attribute, $value);
 			}
 		}
+
+		// Set the response header, and return the XML.
+
 		$this->getResponse()->addHeader('Content-Type', 'application/xml');
-		return $xml->asXML();
+		return $XML->asXML();
 	}
 
 }
