@@ -16,7 +16,7 @@ DataObjectOutputConfiguration::apply_required_extensions();
  *
  *	@param array(string)
  *
- *	DataObjectOutputConfiguration::set_custom_exclusions(array(
+ *	DataObjectOutputConfiguration::add_custom_exclusions(array(
  *		'MyFirstDataObjectName',
  *		'MySecondDataObjectName'
  *	));
@@ -25,14 +25,11 @@ DataObjectOutputConfiguration::apply_required_extensions();
 
 /**
  *
- *	EXAMPLE: JSON/XML custom data object inclusions.
- *	NOTE: This will disable the automatic JSON/XML configuration of all data objects by default.
+ *	EXAMPLE: Replace JSON/XML custom data object exclusions with inclusions, changing all data object visibility to hidden except for those defined.
+ *	NOTE: This will change the exclusions array definition for you, so you only need to update the data object names listed. This will require a project build.
  *
- *	@param array(string)
+ *	@param boolean
  *
- *	DataObjectOutputConfiguration::set_custom_inclusions(array(
- *		'MyFirstDataObjectName',
- *		'MySecondDataObjectName'
- *	));
+ *	DataObjectOutputConfiguration::exclusions_to_inclusions(true);
  *
  */

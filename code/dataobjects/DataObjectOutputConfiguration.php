@@ -54,41 +54,75 @@ class DataObjectOutputConfiguration extends DataObject {
 		'DataObjectOutputConfiguration'
 	);
 	
-	// The list of custom data objects that we wish to ignore.
+	// The list of custom data objects that we wish to ignore from everything.
 
 	private static $custom_exclusions = array(
 	);
 	
-	// The list of custom data objects that we wish to use.
+	// The list of custom data objects that we wish to use from nothing.
 
 	private static $custom_inclusions = array(
 	);
 
 	/**
-	 *	Set the custom data object JSON/XML exclusions.
+	 *	Replace JSON/XML custom data object exclusions with inclusions, changing all data object visibility to hidden except for those defined.
+	 *	NOTE: This will change the exclusions array definition for you, so you only need to update the data object names listed. This will require a project build.
 	 *
 	 *	@param array(string)
 	 */
 
-	public static function set_custom_exclusions($custom_exclusions) {
+	public static function exclusions_to_inclusions($exclusions_to_inclusions) {
 
-		if(is_array($custom_exclusions)) {
-			self::$custom_exclusions = $custom_exclusions;
+		// Search the contents of the base project configuration definitions.
+
+		$files = array(BASE_PATH . '/mysite/local.conf.php', BASE_PATH . '/mysite/_config.php');
+		foreach($files as $file) {
+			$config = file_get_contents($file);
+
+			// Make sure this project configuration has actually been set.
+
+			if($exclusions_to_inclusions) {
+
+					// Convert the exclusions array to an inclusions array.
+
+					$config = str_replace('DataObjectOutputConfiguration::exclusions_to_inclusions(true);', 'DataObjectOutputConfiguration::exclusions_to_inclusions(false);', $config);
+					$config = str_replace('DataObjectOutputConfiguration::add_custom_exclusions', 'DataObjectOutputConfiguration::add_custom_inclusions', $config);
+					file_put_contents($file, $config);
+			}
+
+			// If a definition for both exclusions and inclusions are found, convert them all to inclusions.
+
+			else if(strpos($config, 'DataObjectOutputConfiguration::add_custom_exclusions') && strpos($config, 'DataObjectOutputConfiguration::add_custom_inclusions')) {
+					$config = str_replace('DataObjectOutputConfiguration::add_custom_exclusions', 'DataObjectOutputConfiguration::add_custom_inclusions', $config);
+					file_put_contents($file, $config);
+			}
 		}
 	}
 
 	/**
-	 *	Set the custom data object JSON/XML inclusions.
-	 *
-	 *	NOTE: This will disable the automatic JSON/XML configuration of all data objects by default.
+	 *	Add the custom data object JSON/XML exclusions from everything.
 	 *
 	 *	@param array(string)
 	 */
 
-	public static function set_custom_inclusions($custom_inclusions) {
+	public static function add_custom_exclusions($custom_exclusions) {
+
+		if(is_array($custom_exclusions)) {
+			self::$custom_exclusions = array_unique(array_merge(self::$custom_exclusions, $custom_exclusions));
+		}
+	}
+
+	/**
+	 *	Add the custom data object JSON/XML inclusions from nothing.
+	 *	NOTE: Changes all data object visibility to hidden except for those defined, effectively taking precedence over the custom exclusions.
+	 *
+	 *	@param array(string)
+	 */
+
+	public static function add_custom_inclusions($custom_inclusions) {
 
 		if(is_array($custom_inclusions)) {
-			self::$custom_inclusions = $custom_inclusions;
+			self::$custom_inclusions = array_unique(array_merge(self::$custom_inclusions, $custom_inclusions));
 		}
 	}
 
@@ -102,7 +136,7 @@ class DataObjectOutputConfiguration extends DataObject {
 		// Retrieve the list of objects that extend the base data object, along with any inclusions/exclusions that have been defined.
 
 		$objects = ClassInfo::subclassesFor('DataObject');
-		$inclusions = array_unique(self::$custom_inclusions);
+		$inclusions = self::$custom_inclusions;
 		$exclusions = array_unique(array_merge(self::$exclusions, self::$custom_exclusions));
 
 		// Apply the required APIwesome extensions to each object considered valid.
@@ -111,12 +145,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// If there are custom inclusions, then disable the automatic JSON/XML configuration of all data objects.
 
-			if(count($inclusions) > 0) {
-				if(is_subclass_of($object, 'DataObject') && in_array($object, $inclusions)) {
-					Object::add_extension($object, 'DataObjectOutputExtension');
-				}
-			}
-			else if(is_subclass_of($object, 'DataObject') && !in_array($object, $exclusions)) {
+			if(((count($inclusions) > 0) && is_subclass_of($object, 'DataObject') && in_array($object, $inclusions)) || ((count($inclusions) === 0) && is_subclass_of($object, 'DataObject') && !in_array($object, $exclusions))) {
 				Object::add_extension($object, 'DataObjectOutputExtension');
 			}
 		}
@@ -146,85 +175,31 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			if(!class_exists($table)) {
 				$existing = DataObjectOutputConfiguration::get()->filter(array('IsFor' => $table));
-
-				// Remove these existing configurations.
-
-				if($existing && $existing instanceof DataList && $existing->first()) {
-					$existing->first()->delete();
-					DB::alteration_message($table . ' JSON/XML Configuration', 'obsolete');
-				}
+				$this->deleteConfiguration($table, $existing);
 			}
 		}
 
 		// Retrieve the list of valid data objects, along with any inclusions/exclusions that have been defined.
 
 		$objects = ClassInfo::subclassesFor('DataObject');
-		$inclusions = array_unique(self::$custom_inclusions);
+
+		// If there are custom inclusions, then disable the automatic JSON/XML configuration of all data objects.
+
+		$inclusions = self::$custom_inclusions;
 		$exclusions = array_unique(array_merge(self::$exclusions, self::$custom_exclusions));
 		foreach($objects as $object) {
 			$existing = DataObjectOutputConfiguration::get()->filter(array('IsFor' => $object));
 
-			// If there are custom inclusions, then disable the automatic JSON/XML configuration of all data objects.
+			// If a configuration is found for something no longer included, otherwise if a configuration is found for new custom exclusions.
 
-			if(count($inclusions) > 0) {
-
-				// If a configuration is found for something no longer included.
-
-				if(is_subclass_of($object, 'DataObject') && !in_array($object, $inclusions)) {
-
-					// Remove these existing configurations.
-
-					if($existing && $existing instanceof DataList && $existing->first()) {
-						$existing->first()->delete();
-						DB::alteration_message($object . ' JSON/XML Configuration', 'deleted');
-					}
-				}
-
-				// If we find a new data object has been included.
-
-				else if(is_subclass_of($object, 'DataObject') && in_array($object, $inclusions)) {
-
-					// Create a new configuration for this data object.
-
-					if(is_null($existing) || ($existing instanceof DataList && is_null($existing->first()))) {
-						$configuration = DataObjectOutputConfiguration::create();
-
-						// Assign the data object against this configuration, to make sure only one instance will exist per data object.
-
-						$configuration->IsFor = $object;
-						$configuration->write();
-						DB::alteration_message($object . ' JSON/XML Configuration', 'created');
-					}
-				}
+			if(((count($inclusions) > 0) && is_subclass_of($object, 'DataObject') && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && is_subclass_of($object, 'DataObject') && in_array($object, $exclusions))) {
+				$this->deleteConfiguration($object, $existing);
 			}
 
-			// If a configuration is found for new custom exclusions.
+			// Else, if we find a new data object has been included, otherwise if we find a new data object that isn't excluded.
 
-			else if(is_subclass_of($object, 'DataObject') && in_array($object, $exclusions)) {
-
-				// Remove these existing configurations.
-
-				if($existing && $existing instanceof DataList && $existing->first()) {
-					$existing->first()->delete();
-					DB::alteration_message($object . ' JSON/XML Configuration', 'deleted');
-				}
-			}
-
-			// If we find a new data object that isn't excluded.
-
-			else if(is_subclass_of($object, 'DataObject') && !in_array($object, $exclusions)) {
-
-				// Create a new configuration for this data object.
-
-				if(is_null($existing) || ($existing instanceof DataList && is_null($existing->first()))) {
-					$configuration = DataObjectOutputConfiguration::create();
-
-					// Assign the data object against this configuration, to make sure only one instance will exist per data object.
-
-					$configuration->IsFor = $object;
-					$configuration->write();
-					DB::alteration_message($object . ' JSON/XML Configuration', 'created');
-				}
+			else if(((count($inclusions) > 0) && is_subclass_of($object, 'DataObject') && in_array($object, $inclusions)) || ((count($inclusions) === 0) && is_subclass_of($object, 'DataObject') && !in_array($object, $exclusions))) {
+				$this->addConfiguration($object, $existing);
 			}
 		}
 	}
@@ -334,6 +309,39 @@ class DataObjectOutputConfiguration extends DataObject {
 		// Add spaces between words, such that the result is readable.
 
 		return ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $this->IsFor));
+	}
+
+	/**
+	 *	Remove an existing data object configuration on project build.
+	 */
+
+	private function deleteConfiguration($object, $existing) {
+
+		// Remove these existing configurations.
+
+		if($existing && $existing instanceof DataList && $existing->first()) {
+			$existing->first()->delete();
+			DB::alteration_message($object . ' JSON/XML Configuration', 'deleted');
+		}
+	}
+
+	/**
+	 *	Add a new data object configuration on project build.
+	 */
+
+	private function addConfiguration($object, $existing) {
+
+		// Create a new configuration for this data object.
+
+		if(is_null($existing) || ($existing instanceof DataList && is_null($existing->first()))) {
+			$configuration = DataObjectOutputConfiguration::create();
+
+			// Assign the data object against this configuration, to make sure only one instance will exist per data object.
+
+			$configuration->IsFor = $object;
+			$configuration->write();
+			DB::alteration_message($object . ' JSON/XML Configuration', 'created');
+		}
 	}
 
 }
