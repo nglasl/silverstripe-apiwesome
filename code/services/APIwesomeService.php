@@ -82,7 +82,7 @@ class APIwesomeService {
 
 		// Apply the callback function from configuration.
 
-		$configuration = DataObjectOutputConfiguration::get()->filter(array('IsFor' => $objects[0]['ClassName']))->first();
+		$configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($objects[0]['ClassName']) . "'");
 		$JSON = $configuration->CallbackFunction ? str_replace(' ', '_', $configuration->CallbackFunction) . "($JSON);" : $JSON;
 
 		// Set the response header, and return the JSON.
@@ -149,10 +149,9 @@ class APIwesomeService {
 		// Make sure at least one data object and configuration exist, otherwise this request is considered invalid.
 
 		if(in_array($class, ClassInfo::subclassesFor('DataObject'))) {
-			$objects = DataObject::get($class)->sort('APIwesomeVisibility DESC');
-			$configuration = DataObjectOutputConfiguration::get()->filter(array('IsFor' => $class));
-			if(($objects && $configuration) && ($objects instanceof DataList && $configuration instanceof DataList) && ($objects->first() && $configuration->first())) {
-				$object = $objects->first();
+			$object = DataObject::get_one($class, '', true, 'APIwesomeVisibility DESC');
+			$configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'");
+			if($object && $configuration) {
 
 				// Retrieve the attributes for this data object.
 

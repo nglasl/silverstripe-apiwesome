@@ -65,64 +65,20 @@ class DataObjectOutputConfiguration extends DataObject {
 	);
 
 	/**
-	 *	Replace JSON/XML custom data object exclusions with inclusions, changing all data object visibility to hidden except for those defined.
-	 *	NOTE: This will change the exclusions array definition for you, so you only need to update the data object names listed. This will require a project build.
-	 *
-	 *	@param array(string)
-	 */
-
-	public static function exclusions_to_inclusions($exclusions_to_inclusions) {
-
-		// Search the contents of the base project configuration definitions.
-
-		$files = array(BASE_PATH . '/mysite/local.conf.php', BASE_PATH . '/mysite/_config.php');
-		foreach($files as $file) {
-			$config = file_get_contents($file);
-
-			// Make sure this project configuration has actually been set.
-
-			if($exclusions_to_inclusions) {
-
-					// Convert the exclusions array to an inclusions array.
-
-					$config = str_replace('DataObjectOutputConfiguration::exclusions_to_inclusions(true);', 'DataObjectOutputConfiguration::exclusions_to_inclusions(false);', $config);
-					$config = str_replace('DataObjectOutputConfiguration::add_custom_exclusions', 'DataObjectOutputConfiguration::add_custom_inclusions', $config);
-					file_put_contents($file, $config);
-			}
-
-			// If a definition for both exclusions and inclusions are found, convert them all to inclusions.
-
-			else if(strpos($config, 'DataObjectOutputConfiguration::add_custom_exclusions') && strpos($config, 'DataObjectOutputConfiguration::add_custom_inclusions')) {
-					$config = str_replace('DataObjectOutputConfiguration::add_custom_exclusions', 'DataObjectOutputConfiguration::add_custom_inclusions', $config);
-					file_put_contents($file, $config);
-			}
-		}
-	}
-
-	/**
-	 *	Add the custom data object JSON/XML exclusions from everything.
-	 *
-	 *	@param array(string)
-	 */
-
-	public static function add_custom_exclusions($custom_exclusions) {
-
-		if(is_array($custom_exclusions)) {
-			self::$custom_exclusions = array_unique(array_merge(self::$custom_exclusions, $custom_exclusions));
-		}
-	}
-
-	/**
-	 *	Add the custom data object JSON/XML inclusions from nothing.
+	 *	Add the custom data object JSON/XML exclusions from everything, or the custom data object JSON/XML inclusions from nothing.
 	 *	NOTE: Changes all data object visibility to hidden except for those defined, effectively taking precedence over the custom exclusions.
 	 *
+	 *	@param string
 	 *	@param array(string)
 	 */
 
-	public static function add_custom_inclusions($custom_inclusions) {
+	public static function customise_data_objects($filter, $objects) {
 
-		if(is_array($custom_inclusions)) {
-			self::$custom_inclusions = array_unique(array_merge(self::$custom_inclusions, $custom_inclusions));
+		if(is_array($objects) && (strtolower($filter) === 'exclude')) {
+			self::$custom_exclusions = array_unique(array_merge(self::$custom_exclusions, $objects));
+		}
+		else if(is_array($objects) && (strtolower($filter) === 'include')) {
+			self::$custom_inclusions = array_unique(array_merge(self::$custom_inclusions, $objects));
 		}
 	}
 
@@ -174,7 +130,7 @@ class DataObjectOutputConfiguration extends DataObject {
 			// If a configuration is found for a data object class that no longer exists.
 
 			if(!class_exists($table)) {
-				$existing = DataObjectOutputConfiguration::get()->filter(array('IsFor' => $table));
+				$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($table) . "'");
 				$this->deleteConfiguration($table, $existing);
 			}
 		}
@@ -188,7 +144,7 @@ class DataObjectOutputConfiguration extends DataObject {
 		$inclusions = self::$custom_inclusions;
 		$exclusions = array_unique(array_merge(self::$exclusions, self::$custom_exclusions));
 		foreach($objects as $object) {
-			$existing = DataObjectOutputConfiguration::get()->filter(array('IsFor' => $object));
+			$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($object) . "'");
 
 			// If a configuration is found for something no longer included, otherwise if a configuration is found for new custom exclusions.
 
@@ -219,9 +175,8 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		// Retrieve the corresponding data object, if one exists.
 
-		$objects = DataObject::get($this->IsFor)->sort('APIwesomeVisibility DESC');
-		if($objects && $objects instanceof DataList && $objects->first()) {
-			$object = $objects->first();
+		$object = DataObject::get_one($this->IsFor, '', true, 'APIwesomeVisibility DESC');
+		if($object) {
 
 			// Retrieve the attributes for this data object.
 
@@ -262,7 +217,7 @@ class DataObjectOutputConfiguration extends DataObject {
 			$name = $this->printIsFor();
 			$fields->addFieldToTab('Root.Main', LiteralField::create(
 				'ConfigurationNotification',
-				"<p class='cms notification'><strong>No {$name}s Found</strong></p>"
+				"<p class='apiwesome notification'><strong>No {$name}s Found</strong></p>"
 			));
 		}
 		return $fields;
@@ -319,8 +274,8 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		// Remove these existing configurations.
 
-		if($existing && $existing instanceof DataList && $existing->first()) {
-			$existing->first()->delete();
+		if($existing) {
+			$existing->delete();
 			DB::alteration_message($object . ' JSON/XML Configuration', 'deleted');
 		}
 	}
@@ -333,7 +288,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		// Create a new configuration for this data object.
 
-		if(is_null($existing) || ($existing instanceof DataList && is_null($existing->first()))) {
+		if(!$existing) {
 			$configuration = DataObjectOutputConfiguration::create();
 
 			// Assign the data object against this configuration, to make sure only one instance will exist per data object.

@@ -3,7 +3,7 @@
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
-p.cms.notification {
+p.apiwesome.notification {
 	background: #FFA84C;
 	background: -moz-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFA84C), color-stop(100%, #FF7B0D));
@@ -17,4 +17,16 @@ p.cms.notification {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
+}
+
+a.apiwesome.preview.json, a.apiwesome.preview.xml {
+	min-width: 150px;
+}
+
+a.apiwesome.preview.json {
+	margin-bottom: 3px;
+}
+
+a.apiwesome.preview.xml {
+	margin-top: 3px;
 }
