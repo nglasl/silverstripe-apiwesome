@@ -200,6 +200,10 @@ class DataObjectOutputConfiguration extends DataObject {
 
 				if($name !== 'APIwesomeVisibility') {
 					$printName = ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $name));
+
+					// Update the attribute name if a relationship is found.
+
+					$printName = (substr($printName, strlen($printName) - 2) === 'ID') ? substr($printName, 0, -2) : $printName;
 					$fields->addFieldToTab('Root.Main', CheckboxField::create(
 						"{$name}Visibility",
 						"Display <strong>{$printName}</strong>?",

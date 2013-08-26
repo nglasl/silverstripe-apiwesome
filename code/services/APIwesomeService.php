@@ -68,15 +68,9 @@ class APIwesomeService {
 		$JSON = array();
 		foreach($objects as $temporary) {
 
-			// Remove attributes that are not required.
+			// Remove attributes that are not required, while recursively retrieving data object relationships.
 
-			$object = array();
-			foreach($temporary as $attribute => $value) {
-				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility')) {
-					$object[$attribute] = $value;
-				}
-			}
-			$JSON[] = array($temporary['ClassName'] => $object);
+			$JSON[] = array($temporary['ClassName'] => $this->retrieveRelationships($temporary));
 		}
 		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
 
@@ -103,6 +97,12 @@ class APIwesomeService {
 
 	public function retrieveXML($objects, $addHeader = false) {
 
+		$output = array();
+		foreach($objects as $temporary) {
+			$output[] = array('ClassName' => $temporary['ClassName'], 'Object' => $this->retrieveRelationships($temporary));
+		}
+		$objects = $output;
+
 		// Convert the input array to XML.
 
 		$XML = new SimpleXMLElement('<DataObjectList/>');
@@ -111,14 +111,7 @@ class APIwesomeService {
 			// Add the data objects in the correct format, using the data object name as a parent element.
 
 			$objectXML = $XML->addChild($object['ClassName']);
-			foreach($object as $attribute => $value) {
-
-				// Remove attributes that are not required.
-
-				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility')) {
-					$objectXML->addChild($attribute, $value);
-				}
-			}
+			$this->recursiveXML($objectXML, $object['Object']);
 		}
 
 		// Set the response header, and return the XML.
@@ -136,7 +129,7 @@ class APIwesomeService {
 	 *	@return DataList
 	 */
 
-	private function validate($class) {
+	public function validate($class) {
 
 		// Convert the data object name expected format to that required by the database query.
 
@@ -208,6 +201,74 @@ class APIwesomeService {
 		// The data object was not valid.
 
 		return null;
+	}
+
+	/**
+	 *	Recursively retrieve the relationships for a given data object map, and construct the JSON/XML output.
+	 */
+
+	private function retrieveRelationships(&$temporary, $cache = array()) {
+
+		$object = array();
+
+		// Add this class and ID to the cache, such that we don't recurse infinitely.
+
+		if(!in_array("{$temporary['ClassName']} {$temporary['ID']}", $cache)) {
+			$cache[] = "{$temporary['ClassName']} {$temporary['ID']}";
+			foreach($temporary as $attribute => $value) {
+				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility') && ($attribute !== 'RecordClassName')) {
+
+					// Update the attribute name if a relationship is found.
+
+					$relationship = ((strlen($attribute) > 2) && (substr($attribute, strlen($attribute) - 2) === 'ID')) ? substr($attribute, 0, -2) : null;
+
+					if($relationship) {
+						$relationObject = DataObject::get_by_id($temporary['ClassName'], $temporary['ID'])->$relationship();
+						$map = $relationObject->toMap();
+
+						// Make sure there isn't another level of recursion available.
+
+						$object[$relationship] = array($relationObject->ClassName => $this->retrieveRelationships($map, $cache));
+					}
+					else {
+						$object[$attribute] = $value;
+					}
+				}
+			}
+		}
+		else {
+
+			// If we have already returned this data object with the same ID.
+
+			$object['ID'] = $temporary['ID'];
+		}
+
+		// Return the attributes from this level of recursion.
+
+		return $object;
+	}
+
+	/**
+	 *	Recursively construct the XML children, given a data object with multiple relationship levels. The convert array to JSON will do this for us.
+	 */
+
+	private function recursiveXML(&$objectXML, $object) {
+		foreach($object as $attribute => $value) {
+
+			// Remove attributes that are not required.
+
+			if($attribute !== 'APIwesomeVisibility') {
+				if(is_array($value)) {
+					foreach($value as $name => $variable) {
+						$relationshipXML = $objectXML->addChild($name);
+						$this->recursiveXML($relationshipXML, $variable);
+					}
+				}
+				else {
+					$objectXML->addChild($attribute, $value);
+				}
+			}
+		}
 	}
 
 }

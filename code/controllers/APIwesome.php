@@ -11,6 +11,12 @@ class APIwesome extends Controller {
 		'retrieve'
 	);
 
+	public static $dependencies = array(
+		'service' => '%$APIwesomeService',
+	);
+
+	public $service;
+
 	/**
 	 *	Hitting the controller directly is an invalid URL.
 	 */
@@ -34,7 +40,7 @@ class APIwesome extends Controller {
 
 	public function retrieve() {
 
-		return singleton('APIwesomeService')->retrieve();
+		return $this->service->retrieve();
 	}
 
 	/**
