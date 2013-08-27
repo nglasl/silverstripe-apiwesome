@@ -109,6 +109,7 @@ class DataObjectOutputConfiguration extends DataObject {
 		// Apply any remaining APIwesome extensions required.
 
 		Object::add_extension('APIwesomeAdmin', 'APIwesomeAdminExtension');
+		Object::add_extension('ModelAdmin', 'ModelAdminPreviewExtension');
 	}
 
 	/**

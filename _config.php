@@ -1,7 +1,7 @@
 <?php
 
 /**
- *	APIwesome specific configuration settings. Don't change these!
+ *	APIwesome specific configuration settings.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
@@ -12,20 +12,22 @@ DataObjectOutputConfiguration::apply_required_extensions();
 
 /**
  *
- *	EXAMPLE: JSON/XML custom data object exclusions/inclusions.
- *	NOTE: Inclusions will take precedence over exclusions, which will change all data object visibility to hidden except for those defined.
+ *	EXAMPLE: JSON/XML data object exclusions/inclusions.
+ *	NOTE: All data objects are included by default, unless inclusions have been defined.
  *
  *	@param string
  *	@param array(string)
  *
  *	DataObjectOutputConfiguration::customise_data_objects('exclude', array(
  *		'MyFirstDataObjectName',
- *		'MySecondDataObjectName'
+ *		'MySecondDataObjectName',
+ *		'MyThirdDataObjectName'
  *	));
  *
  *	DataObjectOutputConfiguration::customise_data_objects('include', array(
  *		'MyFirstDataObjectName',
- *		'MySecondDataObjectName'
+ *		'MySecondDataObjectName',
+ *		'MyThirdDataObjectName'
  *	));
  *
  */

@@ -33,18 +33,26 @@ class APIwesomeService {
 
 		if($parameters['ID'] && $parameters['OtherID']) {
 
+			// Convert the data object name expected format to that required by the database query.
+
+			$input = explode('-', $parameters['ID']);
+			$class = '';
+			foreach($input as $partial) {
+				$class .= ucfirst(strtolower($partial));
+			}
+
 			// Validate and return these data objects.
 
-			$objects = $this->validate($parameters['ID']);
+			$objects = $this->validate($class);
 			$type = strtoupper($parameters['OtherID']);
 
 			// Redirect this request URL towards the appropriate JSON/XML retrieval of data objects.
 
 			if($objects && ($type === 'JSON')) {
-				return $this->retrieveJSON($objects, true);
+				return $this->retrieveJSON($objects, true, true);
 			}
 			else if($objects && ($type === 'XML')) {
-				return $this->retrieveXML($objects, true);
+				return $this->retrieveXML($objects, true, true);
 			}
 		}
 
@@ -61,7 +69,7 @@ class APIwesomeService {
 	 *	@return JSON
 	 */
 
-	public function retrieveJSON($objects, $addHeader = false) {
+	public function retrieveJSON($objects, $visibility = false, $addHeader = false) {
 
 		// Convert the input array to JSON.
 		
@@ -70,7 +78,7 @@ class APIwesomeService {
 
 			// Remove attributes that are not required, while recursively retrieving data object relationships.
 
-			$JSON[] = array($temporary['ClassName'] => $this->retrieveRelationships($temporary));
+			$JSON[] = array($temporary['ClassName'] => $this->retrieveRelationships($temporary, $visibility));
 		}
 		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
 
@@ -95,11 +103,11 @@ class APIwesomeService {
 	 *	@return XML
 	 */
 
-	public function retrieveXML($objects, $addHeader = false) {
+	public function retrieveXML($objects, $visibility = false, $addHeader = false) {
 
 		$output = array();
 		foreach($objects as $temporary) {
-			$output[] = array('ClassName' => $temporary['ClassName'], 'Object' => $this->retrieveRelationships($temporary));
+			$output[] = array('ClassName' => $temporary['ClassName'], 'Object' => $this->retrieveRelationships($temporary, $visibility));
 		}
 		$objects = $output;
 
@@ -130,14 +138,6 @@ class APIwesomeService {
 	 */
 
 	public function validate($class) {
-
-		// Convert the data object name expected format to that required by the database query.
-
-		$input = explode('-', $class);
-		$class = '';
-		foreach($input as $partial) {
-			$class .= ucfirst(strtolower($partial));
-		}
 
 		// Make sure at least one data object and configuration exist, otherwise this request is considered invalid.
 
@@ -207,13 +207,13 @@ class APIwesomeService {
 	 *	Recursively retrieve the relationships for a given data object map, and construct the JSON/XML output.
 	 */
 
-	private function retrieveRelationships(&$temporary, $cache = array()) {
+	private function retrieveRelationships(&$temporary, $visibility = false, $cache = array()) {
 
 		$object = array();
 
 		// Add this class and ID to the cache, such that we don't recurse infinitely.
 
-		if(!in_array("{$temporary['ClassName']} {$temporary['ID']}", $cache)) {
+		if(isset($temporary['ClassName']) && isset($temporary['ID']) && !in_array("{$temporary['ClassName']} {$temporary['ID']}", $cache)) {
 			$cache[] = "{$temporary['ClassName']} {$temporary['ID']}";
 			foreach($temporary as $attribute => $value) {
 				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility') && ($attribute !== 'RecordClassName')) {
@@ -224,11 +224,31 @@ class APIwesomeService {
 
 					if($relationship) {
 						$relationObject = DataObject::get_by_id($temporary['ClassName'], $temporary['ID'])->$relationship();
+						$relationVisibility = $relationObject->APIwesomeVisibility ? explode(',', $relationObject->APIwesomeVisibility) : null;
 						$map = $relationObject->toMap();
+						$select = $map;
+
+						// Construct the output, including any visibility customisation.
+
+						if($visibility) {
+							$select = array('ClassName' => $relationObject->ClassName, 'ID' => $relationObject->ID);
+							$iteration = 0;
+							foreach($map as $name => $output) {
+
+								// Take the visibility attribute into account.
+
+								if(($name !== 'ClassName') && ($name !== 'APIwesomeVisibility')) {
+									if(is_array($relationVisibility) && isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
+										$select[$name] = $output;
+									}
+									$iteration++;
+								}
+							}
+						}
 
 						// Make sure there isn't another level of recursion available.
 
-						$object[$relationship] = array($relationObject->ClassName => $this->retrieveRelationships($map, $cache));
+						$object[$relationship] = array($relationObject->ClassName => $this->retrieveRelationships($select, $visibility, $cache));
 					}
 					else {
 						$object[$attribute] = $value;
@@ -236,7 +256,7 @@ class APIwesomeService {
 				}
 			}
 		}
-		else {
+		else if(isset($temporary['ID'])) {
 
 			// If we have already returned this data object with the same ID.
 
@@ -253,6 +273,7 @@ class APIwesomeService {
 	 */
 
 	private function recursiveXML(&$objectXML, $object) {
+
 		foreach($object as $attribute => $value) {
 
 			// Remove attributes that are not required.

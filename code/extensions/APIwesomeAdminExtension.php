@@ -14,7 +14,7 @@ class APIwesomeAdminExtension extends Extension {
 
 	public function updateEditForm(&$form) {
 
-		$configuration = $form->fields->dataFieldByName('DataObjectOutputConfiguration')->config;
+		$configuration = $form->fields->items[0]->config;
 		$configuration->removeComponent($configuration->getComponentByType('GridFieldAddNewButton'));
 	}
 

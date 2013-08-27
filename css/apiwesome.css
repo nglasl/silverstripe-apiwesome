@@ -5,13 +5,12 @@
 
 p.apiwesome.notification {
 	background: #FFA84C;
-	background: -moz-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
+	background: -o-linear-gradient(top, #FFA84C, #FF7B0D);
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr = '#FFA84C', endColorStr = '#FF7B0D');
+	background: -ms-linear-gradient(top, #FFA84C, #FF7B0D);
+	background: -moz-linear-gradient(top, #FFA84C, #FF7B0D);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFA84C), color-stop(100%, #FF7B0D));
-	background: -webkit-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
-	background: -o-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
-	background: -ms-linear-gradient(top, #FFA84C 0%, #FF7B0D 100%);
-	background: linear-gradient(to bottom, #FFA84C 0%, #FF7B0D 100%);
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#FFA84C', endColorstr = '#FF7B0D', GradientType = 0);
+	background: -webkit-linear-gradient(top, #FFA84C, #FF7B0D);
 	padding: 5px;
 	border: 1px solid #FF7400;
 	-moz-border-radius: 5px;
@@ -24,9 +23,5 @@ a.apiwesome.preview.json, a.apiwesome.preview.xml {
 }
 
 a.apiwesome.preview.json {
-	margin-bottom: 3px;
-}
-
-a.apiwesome.preview.xml {
-	margin-top: 3px;
+	margin: 6px 0;
 }
