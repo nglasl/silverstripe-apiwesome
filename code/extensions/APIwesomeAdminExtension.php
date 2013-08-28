@@ -1,8 +1,7 @@
 <?php
 
 /**
- *	An extension to remove the add button from the APIwesomeAdmin interface.
- *	These data object JSON/XML configurations are automatically created on project build.
+ *	APIwesome extension which removes the manual add functionality of the APIwesomeAdmin CMS interface.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 

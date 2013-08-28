@@ -1,7 +1,7 @@
 <?php
 
 /**
- *	The CMS data object configuration so an individual JSON/XML data object output may be customised.
+ *	APIwesome CMS JSON/XML output configuration of an individual data object type.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
@@ -12,6 +12,12 @@ class DataObjectOutputConfiguration extends DataObject {
 		'CallbackFunction' => 'VARCHAR(255)'
 	);
 
+	public static $default_sort = 'IsFor';
+
+	public static $searchable_fields = array(
+		'IsFor'
+	);
+
 	public static $summary_fields = array(
 		'printIsFor'
 	);
@@ -19,12 +25,6 @@ class DataObjectOutputConfiguration extends DataObject {
 	public static $field_labels = array(
 		'printIsFor' => 'Is For'
 	);
-
-	public static $searchable_fields = array(
-		'IsFor'
-	);
-
-	public static $default_sort = 'IsFor';
 
 	// The list of default data objects that we wish to ignore, including this configuration class.
 
@@ -65,24 +65,6 @@ class DataObjectOutputConfiguration extends DataObject {
 	);
 
 	/**
-	 *	Add the custom data object JSON/XML exclusions from everything, or the custom data object JSON/XML inclusions from nothing.
-	 *	NOTE: Changes all data object visibility to hidden except for those defined, effectively taking precedence over the custom exclusions.
-	 *
-	 *	@param string
-	 *	@param array(string)
-	 */
-
-	public static function customise_data_objects($filter, $objects) {
-
-		if(is_array($objects) && (strtolower($filter) === 'exclude')) {
-			self::$custom_exclusions = array_unique(array_merge(self::$custom_exclusions, $objects));
-		}
-		else if(is_array($objects) && (strtolower($filter) === 'include')) {
-			self::$custom_inclusions = array_unique(array_merge(self::$custom_inclusions, $objects));
-		}
-	}
-
-	/**
 	 *	Apply all required object extensions, which is executed on project build.
 	 *	This will take into account any inclusions/exclusions that have been defined.
 	 */
@@ -110,6 +92,24 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		Object::add_extension('APIwesomeAdmin', 'APIwesomeAdminExtension');
 		Object::add_extension('ModelAdmin', 'ModelAdminPreviewExtension');
+	}
+
+	/**
+	 *	Add the custom data object JSON/XML exclusions from everything, or the custom data object JSON/XML inclusions from nothing.
+	 *	NOTE: Changes all data object visibility to hidden except for those defined, effectively taking precedence over the custom exclusions.
+	 *
+	 *	@param string
+	 *	@param array(string)
+	 */
+
+	public static function customise_data_objects($filter, $objects) {
+
+		if(is_array($objects) && (strtolower($filter) === 'exclude')) {
+			self::$custom_exclusions = array_unique(array_merge(self::$custom_exclusions, $objects));
+		}
+		else if(is_array($objects) && (strtolower($filter) === 'include')) {
+			self::$custom_inclusions = array_unique(array_merge(self::$custom_inclusions, $objects));
+		}
 	}
 
 	/**
@@ -159,6 +159,19 @@ class DataObjectOutputConfiguration extends DataObject {
 				$this->addConfiguration($object, $existing);
 			}
 		}
+	}
+
+	/**
+	 *	Print the data object name associated to this configuration.
+	 *
+	 *	@return string
+	 */
+
+	public function printIsFor() {
+
+		// Add spaces between words, such that the result is readable.
+
+		return ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $this->IsFor));
 	}
 
 	/**
@@ -247,7 +260,7 @@ class DataObjectOutputConfiguration extends DataObject {
 		}
 		$visibility = rtrim($visibility, ',');
 
-		// Save this visibility customisation.
+		// Save this visibility customisation, though this may be really slow. Maybe save this only against a specific one (which will always be returned somehow).
 
 		$objects = DataObject::get($this->IsFor);
 		if($objects && $objects instanceof DataList) {
@@ -255,33 +268,6 @@ class DataObjectOutputConfiguration extends DataObject {
 				$object->APIwesomeVisibility = $visibility;
 				$object->write();
 			}
-		}
-	}
-
-	/**
-	 *	Print the data object name associated to this configuration.
-	 *
-	 *	@return string
-	 */
-
-	public function printIsFor() {
-
-		// Add spaces between words, such that the result is readable.
-
-		return ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $this->IsFor));
-	}
-
-	/**
-	 *	Remove an existing data object configuration on project build.
-	 */
-
-	private function deleteConfiguration($object, $existing) {
-
-		// Remove these existing configurations.
-
-		if($existing) {
-			$existing->delete();
-			DB::alteration_message($object . ' JSON/XML Configuration', 'deleted');
 		}
 	}
 
@@ -301,6 +287,20 @@ class DataObjectOutputConfiguration extends DataObject {
 			$configuration->IsFor = $object;
 			$configuration->write();
 			DB::alteration_message($object . ' JSON/XML Configuration', 'created');
+		}
+	}
+
+	/**
+	 *	Remove an existing data object configuration on project build.
+	 */
+
+	private function deleteConfiguration($object, $existing) {
+
+		// Remove these existing configurations.
+
+		if($existing) {
+			$existing->delete();
+			DB::alteration_message($object . ' JSON/XML Configuration', 'deleted');
 		}
 	}
 

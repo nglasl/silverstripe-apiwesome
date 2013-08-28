@@ -1,7 +1,7 @@
 <?php
 
 /**
- *	The heart of the module's functionality, which handles the request URL and outputs the appropriate JSON/XML of data objects.
+ *	Handles the current request and outputs the appropriate JSON/XML.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
@@ -43,13 +43,13 @@ class APIwesomeService {
 
 			// Validate and return these data objects.
 
-			$objects = $this->validate($class);
+			$objects = $this->retrieveValidated($class);
 			$type = strtoupper($parameters['OtherID']);
 
 			// Redirect this request URL towards the appropriate JSON/XML retrieval of data objects.
 
 			if($objects && ($type === 'JSON')) {
-				return $this->retrieveJSON($objects, true, true);
+				return $this->retrieveJSON($objects, true, true, true);
 			}
 			else if($objects && ($type === 'XML')) {
 				return $this->retrieveXML($objects, true, true);
@@ -62,82 +62,13 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Compose the appropriate JSON for the corresponding array of data objects.
-	 *	Make sure to convert your data list using toNestedArray.
-	 *
-	 *	@param array
-	 *	@return JSON
-	 */
-
-	public function retrieveJSON($objects, $visibility = false, $addHeader = false) {
-
-		// Convert the input array to JSON.
-		
-		$JSON = array();
-		foreach($objects as $temporary) {
-
-			// Remove attributes that are not required, while recursively retrieving data object relationships.
-
-			$JSON[] = array($temporary['ClassName'] => $this->retrieveRelationships($temporary, $visibility));
-		}
-		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
-
-		// Apply the callback function from configuration.
-
-		$configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($objects[0]['ClassName']) . "'");
-		$JSON = $configuration->CallbackFunction ? str_replace(' ', '_', $configuration->CallbackFunction) . "($JSON);" : $JSON;
-
-		// Set the response header, and return the JSON.
-
-		if($addHeader) {
-			$configuration->CallbackFunction ? Controller::curr()->getResponse()->addHeader('Content-Type', 'application/javascript') : Controller::curr()->getResponse()->addHeader('Content-Type', 'application/json');
-		}
-		return $JSON;
-	}
-
-	/**
-	 *	Compose the appropriate XML for the corresponding array of data objects.
-	 *	Make sure to convert your data list using toNestedArray.
-	 *
-	 *	@param array
-	 *	@return XML
-	 */
-
-	public function retrieveXML($objects, $visibility = false, $addHeader = false) {
-
-		$output = array();
-		foreach($objects as $temporary) {
-			$output[] = array('ClassName' => $temporary['ClassName'], 'Object' => $this->retrieveRelationships($temporary, $visibility));
-		}
-		$objects = $output;
-
-		// Convert the input array to XML.
-
-		$XML = new SimpleXMLElement('<DataObjectList/>');
-		foreach($objects as $object) {
-
-			// Add the data objects in the correct format, using the data object name as a parent element.
-
-			$objectXML = $XML->addChild($object['ClassName']);
-			$this->recursiveXML($objectXML, $object['Object']);
-		}
-
-		// Set the response header, and return the XML.
-
-		if($addHeader) {
-			Controller::curr()->getResponse()->addHeader('Content-Type', 'application/xml');
-		}
-		return $XML->asXML();
-	}
-
-	/**
 	 *	Validate and return the corresponding data objects with an associated configuration, only including visible attributes.
 	 *
 	 *	@param string
 	 *	@return DataList
 	 */
 
-	public function validate($class) {
+	public function retrieveValidated($class) {
 
 		// Make sure at least one data object and configuration exist, otherwise this request is considered invalid.
 
@@ -204,16 +135,52 @@ class APIwesomeService {
 	}
 
 	/**
+	 *	Compose the appropriate JSON for the corresponding array of data objects.
+	 *	Make sure to convert your data list using toNestedArray.
+	 *
+	 *	@param array
+	 *	@return JSON
+	 */
+
+	public function retrieveJSON($objects, $visibility = false, $addHeader = false, $callback = false) {
+
+		// Convert the input array to JSON.
+		
+		$JSON = array();
+		foreach($objects as $temporary) {
+
+			// Remove attributes that are not required, while recursively retrieving data object relationships.
+
+			$JSON[] = array($temporary['ClassName'] => $this->recursiveRelationships($temporary, $visibility));
+		}
+		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
+
+		// Apply the callback function from configuration.
+
+		if($callback) {
+			$configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($objects[0]['ClassName']) . "'");
+			$JSON = $configuration->CallbackFunction ? str_replace(' ', '_', $configuration->CallbackFunction) . "($JSON);" : $JSON;
+		}
+
+		// Set the response header, and return the JSON.
+
+		if($addHeader) {
+			($callback && $configuration->CallbackFunction) ? Controller::curr()->getResponse()->addHeader('Content-Type', 'application/javascript') : Controller::curr()->getResponse()->addHeader('Content-Type', 'application/json');
+		}
+		return $JSON;
+	}
+
+	/**
 	 *	Recursively retrieve the relationships for a given data object map, and construct the JSON/XML output.
 	 */
 
-	private function retrieveRelationships(&$temporary, $visibility = false, $cache = array()) {
+	private function recursiveRelationships(&$temporary, $visibility = false, $cache = array()) {
 
 		$object = array();
 
 		// Add this class and ID to the cache, such that we don't recurse infinitely.
 
-		if(isset($temporary['ClassName']) && isset($temporary['ID']) && !in_array("{$temporary['ClassName']} {$temporary['ID']}", $cache)) {
+		if(!in_array("{$temporary['ClassName']} {$temporary['ID']}", $cache)) {
 			$cache[] = "{$temporary['ClassName']} {$temporary['ID']}";
 			foreach($temporary as $attribute => $value) {
 				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility') && ($attribute !== 'RecordClassName')) {
@@ -248,7 +215,7 @@ class APIwesomeService {
 
 						// Make sure there isn't another level of recursion available.
 
-						$object[$relationship] = array($relationObject->ClassName => $this->retrieveRelationships($select, $visibility, $cache));
+						$object[$relationship] = array($relationObject->ClassName => $this->recursiveRelationships($select, $visibility, $cache));
 					}
 					else {
 						$object[$attribute] = $value;
@@ -256,7 +223,7 @@ class APIwesomeService {
 				}
 			}
 		}
-		else if(isset($temporary['ID'])) {
+		else {
 
 			// If we have already returned this data object with the same ID.
 
@@ -266,6 +233,41 @@ class APIwesomeService {
 		// Return the attributes from this level of recursion.
 
 		return $object;
+	}
+
+	/**
+	 *	Compose the appropriate XML for the corresponding array of data objects.
+	 *	Make sure to convert your data list using toNestedArray.
+	 *
+	 *	@param array
+	 *	@return XML
+	 */
+
+	public function retrieveXML($objects, $visibility = false, $addHeader = false) {
+
+		$output = array();
+		foreach($objects as $temporary) {
+			$output[] = array('ClassName' => $temporary['ClassName'], 'Object' => $this->recursiveRelationships($temporary, $visibility));
+		}
+		$objects = $output;
+
+		// Convert the input array to XML.
+
+		$XML = new SimpleXMLElement('<DataObjectList/>');
+		foreach($objects as $object) {
+
+			// Add the data objects in the correct format, using the data object name as a parent element.
+
+			$objectXML = $XML->addChild($object['ClassName']);
+			$this->recursiveXML($objectXML, $object['Object']);
+		}
+
+		// Set the response header, and return the XML.
+
+		if($addHeader) {
+			Controller::curr()->getResponse()->addHeader('Content-Type', 'application/xml');
+		}
+		return $XML->asXML();
 	}
 
 	/**

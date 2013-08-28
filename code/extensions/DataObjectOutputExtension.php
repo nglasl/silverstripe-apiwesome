@@ -1,7 +1,7 @@
 <?php
 
 /**
- *	An extension to allow each data object JSON/XML preview capability, including some additional visibility fields for output customisation.
+ *	APIwesome extension which allows JSON/XML visibility customisation of an individual data object's attributes.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 

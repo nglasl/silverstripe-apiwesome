@@ -1,21 +1,21 @@
 <?php
 
 /**
- *	Passes control over to the APIwesomeService on valid request URL.
+ *	Passes the current request over to the APIwesomeService.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
 class APIwesome extends Controller {
 
-	public static $allowed_actions = array(
-		'retrieve'
-	);
+	public $service;
 
 	public static $dependencies = array(
 		'service' => '%$APIwesomeService',
 	);
 
-	public $service;
+	public static $allowed_actions = array(
+		'retrieve'
+	);
 
 	/**
 	 *	Hitting the controller directly is an invalid URL.
@@ -24,23 +24,6 @@ class APIwesome extends Controller {
 	public function index() {
 
 		return $this->httpError(404);
-	}
-
-	/**
-	 *
-	 *	Retrieve the appropriate JSON/XML of the specified data object either by function call or request URL, including any user customisation.
-	 *
-	 *	@param string
-	 *	@param string
-	 *
-	 *	EXAMPLE JSON:	{WEBSITE}/apiwesome/retrieve/my-first-data-object-name/json
-	 *	EXAMPLE XML:	{WEBSITE}/apiwesome/retrieve/my-second-data-object-name/xml
-	 *
-	 */
-
-	public function retrieve() {
-
-		return $this->service->retrieve();
 	}
 
 	/**
@@ -60,6 +43,23 @@ class APIwesome extends Controller {
 		else {
 			throw new SS_HTTPResponse_Exception($response);
 		}
+	}
+
+	/**
+	 *
+	 *	Retrieve the appropriate JSON/XML of the specified data object either by function call or request URL, including any user customisation.
+	 *
+	 *	@param string
+	 *	@param string
+	 *
+	 *	EXAMPLE JSON:	{WEBSITE}/apiwesome/retrieve/my-first-data-object-name/json
+	 *	EXAMPLE XML:	{WEBSITE}/apiwesome/retrieve/my-second-data-object-name/xml
+	 *
+	 */
+
+	public function retrieve() {
+
+		return $this->service->retrieve();
 	}
 
 }

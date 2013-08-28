@@ -1,7 +1,7 @@
 <?php
 
 /**
- *	An button that will appear for a data object's model admin to allow JSON/XML preview functionality.
+ *	APIwesome button which will provide JSON/XML preview capability for the ModelAdminPreviewExtension.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 

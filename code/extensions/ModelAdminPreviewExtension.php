@@ -1,7 +1,7 @@
 <?php
 
 /**
- *	An extension to allow JSON/XML preview capability from inside the model admin interface.
+ *	APIwesome extension which allows JSON/XML preview capability for an individual data object type through the CMS interface.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
@@ -14,7 +14,7 @@ class ModelAdminPreviewExtension extends Extension {
 	public function updateEditForm(&$form) {
 
 		if($form->fields->items[0]->name !== 'DataObjectOutputConfiguration') {
-			$objects = singleton('APIwesomeService')->validate($form->fields->items[0]->name);
+			$objects = singleton('APIwesomeService')->retrieveValidated($form->fields->items[0]->name);
 			if($objects) {
 				$configuration = $form->fields->items[0]->config;
 				Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
