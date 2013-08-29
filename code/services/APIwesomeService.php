@@ -10,29 +10,21 @@ class APIwesomeService {
 	/**
 	 *	Retrieve the appropriate JSON/XML output of a specified data object type.
 	 *
-	 *	@parameter <data-object-name> string
+	 *	@parameter string
 	 *	@parameter string
 	 *	@return JSON/XML
 	 */
 
 	public function retrieve($object, $output) {
 
-		// Convert the data object name input to the class name.
-
-		$object = explode('-', $object);
-		$output = strtoupper($output);
-		$class = '';
-		foreach($object as $partial) {
-			$class .= ucfirst(strtolower($partial));
-		}
-
 		// Grab all visible data objects of the specified type.
 
-		$objects = $this->retrieveValidated($class);
+		$objects = $this->retrieveValidated($object);
 
 		// Return the appropriate JSON/XML output of these data objects.
 
 		if($objects) {
+			$output = strtoupper($output);
 			if($output === 'JSON') {
 				return $this->retrieveJSON($objects, true, true, true);
 			}

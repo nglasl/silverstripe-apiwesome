@@ -65,7 +65,15 @@ class APIwesome extends Controller {
 		// Pass the current request parameters over to the APIwesomeService if valid.
 
 		if($parameters['ID'] && $parameters['OtherID']) {
-			return $this->service->retrieve($parameters['ID'], $parameters['OtherID']);
+
+			// Convert the data object name input to the class name.
+
+			$object = explode('-', $parameters['ID']);
+			$class = '';
+			foreach($object as $partial) {
+				$class .= ucfirst(strtolower($partial));
+			}
+			return $this->service->retrieve($class, $parameters['OtherID']);
 		}
 		else {
 			return $this->httpError(404);
