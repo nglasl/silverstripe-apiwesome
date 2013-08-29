@@ -53,14 +53,23 @@ class APIwesome extends Controller {
 	 *	@URLparameter string
 	 *	@return JSON/XML
 	 *
-	 *	EXAMPLE JSON:	<WEBSITE>/apiwesome/retrieve/my-first-data-object-name/json
-	 *	EXAMPLE XML:	<WEBSITE>/apiwesome/retrieve/my-second-data-object-name/xml
+	 *	EXAMPLE JSON:	<WEBSITE>/apiwesome/retrieve/<data-object-name>/json
+	 *	EXAMPLE XML:	<WEBSITE>/apiwesome/retrieve/<data-object-name>/xml
 	 *
 	 */
 
 	public function retrieve() {
 
-		return $this->service->retrieve();
+		$parameters = $this->getRequest()->allParams();
+
+		// Pass the current request parameters over to the APIwesomeService if valid.
+
+		if($parameters['ID'] && $parameters['OtherID']) {
+			return $this->service->retrieve($parameters['ID'], $parameters['OtherID']);
+		}
+		else {
+			return $this->httpError(404);
+		}
 	}
 
 }

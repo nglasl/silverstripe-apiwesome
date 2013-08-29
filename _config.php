@@ -19,15 +19,15 @@ DataObjectOutputConfiguration::apply_required_extensions();
  *	@parameter array(string)
  *
  *	DataObjectOutputConfiguration::customise_data_objects('exclude', array(
- *		'<DATA_OBJECT_NAME>',
- *		'<DATA_OBJECT_NAME>',
- *		'<DATA_OBJECT_NAME>'
+ *		'<DataObjectName>',
+ *		'<DataObjectName>',
+ *		'<DataObjectName>'
  *	));
  *
  *	DataObjectOutputConfiguration::customise_data_objects('include', array(
- *		'<DATA_OBJECT_NAME>',
- *		'<DATA_OBJECT_NAME>',
- *		'<DATA_OBJECT_NAME>'
+ *		'<DataObjectName>',
+ *		'<DataObjectName>',
+ *		'<DataObjectName>'
  *	));
  *
  */

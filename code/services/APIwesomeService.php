@@ -10,55 +10,44 @@ class APIwesomeService {
 	/**
 	 *	Retrieve the appropriate JSON/XML output of a specified data object type.
 	 *
-	 *	@parameter string
+	 *	@parameter <data-object-name> string
 	 *	@parameter string
 	 *	@return JSON/XML
 	 */
 
-	public function retrieve($objectName = null, $type = null) {
+	public function retrieve($object, $output) {
 
-		// Make sure this JSON/XML request is valid.
+		// Convert the data object name input to the class name.
 
-		$parameters = Controller::curr()->getRequest()->allParams();
-		if(!isset($parameters['ID']) && !isset($parameters['OtherID'])) {
-			$parameters['ID'] = ($objectName && is_string($objectName)) ? $objectName : null;
-			$parameters['OtherID'] = ($type && is_string($type)) ? $type : null;
+		$object = explode('-', $object);
+		$output = strtoupper($output);
+		$class = '';
+		foreach($object as $partial) {
+			$class .= ucfirst(strtolower($partial));
 		}
 
-		// Make sure the request contains the two required parameters.
+		// Grab all visible data objects of the specified type.
 
-		if($parameters['ID'] && $parameters['OtherID']) {
+		$objects = $this->retrieveValidated($class);
 
-			// Convert the data object name expected format to that required by the database query.
+		// Return the appropriate JSON/XML output of these data objects.
 
-			$input = explode('-', $parameters['ID']);
-			$class = '';
-			foreach($input as $partial) {
-				$class .= ucfirst(strtolower($partial));
-			}
-
-			// Validate and return these data objects.
-
-			$objects = $this->retrieveValidated($class);
-			$type = strtoupper($parameters['OtherID']);
-
-			// Redirect this request URL towards the appropriate JSON/XML retrieval of data objects.
-
-			if($objects && ($type === 'JSON')) {
+		if($objects) {
+			if($output === 'JSON') {
 				return $this->retrieveJSON($objects, true, true, true);
 			}
-			else if($objects && ($type === 'XML')) {
+			else if($output === 'XML') {
 				return $this->retrieveXML($objects, true, true);
 			}
 		}
 
-		// The request URL was not valid.
+		// The current request was not valid.
 
 		return Controller::curr()->httpError(404);
 	}
 
 	/**
-	 *	Validate and return the visible attributes of the specified data object type.
+	 *	Return all visible data objects of the specified type if valid.
 	 *
 	 *	@parameter string
 	 *	@return array
