@@ -8,13 +8,16 @@
 class APIwesomeAdminExtension extends Extension {
 
 	/**
-	 *	Update the model admin interface to remove the add button.
+	 *	Remove the CMS add button.
 	 */
 
 	public function updateEditForm(&$form) {
 
-		$configuration = $form->fields->items[0]->config;
-		$configuration->removeComponent($configuration->getComponentByType('GridFieldAddNewButton'));
+		$gridfield = $form->fields->items[0];
+		if(isset($gridfield)) {
+			$configuration = $gridfield->config;
+			$configuration->removeComponent($configuration->getComponentByType('GridFieldAddNewButton'));
+		}
 	}
 
 }

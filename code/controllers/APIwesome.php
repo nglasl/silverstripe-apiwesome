@@ -18,7 +18,7 @@ class APIwesome extends Controller {
 	);
 
 	/**
-	 *	Hitting the controller directly is an invalid URL.
+	 *	Reject a direct APIwesome request.
 	 */
 
 	public function index() {
@@ -27,17 +27,17 @@ class APIwesome extends Controller {
 	}
 
 	/**
-	 *	Return the appropriate error page on invalid URL.
+	 *	Display an error page on invalid request.
 	 *
-	 *	@param integer
-	 *	@return string
+	 *	@parameter integer
+	 *	@parameter string
 	 */
 
 	public function httpError($code, $message = null) {
 
-		// Retrieve the error page for the given status code.
+		// Display the error page for the given status code.
 
-		if($this->getRequest()->isMedia() || !$response = ErrorPage::response_for($code)) {
+		if($this->getRequest()->isMedia() || !($response = ErrorPage::response_for($code))) {
 			return parent::httpError($code, $message);
 		}
 		else {
@@ -47,13 +47,14 @@ class APIwesome extends Controller {
 
 	/**
 	 *
-	 *	Retrieve the appropriate JSON/XML of the specified data object either by function call or request URL, including any user customisation.
+	 *	Retrieve the appropriate JSON/XML output of a specified data object type.
 	 *
-	 *	@param string
-	 *	@param string
+	 *	@URLparameter string
+	 *	@URLparameter string
+	 *	@return JSON/XML
 	 *
-	 *	EXAMPLE JSON:	{WEBSITE}/apiwesome/retrieve/my-first-data-object-name/json
-	 *	EXAMPLE XML:	{WEBSITE}/apiwesome/retrieve/my-second-data-object-name/xml
+	 *	EXAMPLE JSON:	<WEBSITE>/apiwesome/retrieve/my-first-data-object-name/json
+	 *	EXAMPLE XML:	<WEBSITE>/apiwesome/retrieve/my-second-data-object-name/xml
 	 *
 	 */
 

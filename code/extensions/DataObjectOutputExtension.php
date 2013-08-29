@@ -7,14 +7,16 @@
 
 class DataObjectOutputExtension extends DataExtension {
 
-	// Append an additional visibility field to each data object, which will allow the capability of extending APIwesome even further.
+	/*
+	 *	Append an additional JSON/XML output visibility field to each data object.
+	 */
 
 	public static $db = array(
 		'APIwesomeVisibility' => 'TEXT'
 	);
 
 	/**
-	 *	Update the CMS interface fields, since the visibility must not be changed.
+	 *	Hide the CMS JSON/XML output visibility.
 	 */
 
 	public function updateCMSFields(FieldList $fields) {

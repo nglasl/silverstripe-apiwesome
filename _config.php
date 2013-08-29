@@ -15,19 +15,19 @@ DataObjectOutputConfiguration::apply_required_extensions();
  *	EXAMPLE: JSON/XML data object exclusions/inclusions.
  *	NOTE: All data objects are included by default, unless inclusions have been defined.
  *
- *	@param string
- *	@param array(string)
+ *	@parameter string
+ *	@parameter array(string)
  *
  *	DataObjectOutputConfiguration::customise_data_objects('exclude', array(
- *		'MyFirstDataObjectName',
- *		'MySecondDataObjectName',
- *		'MyThirdDataObjectName'
+ *		'<DATA_OBJECT_NAME>',
+ *		'<DATA_OBJECT_NAME>',
+ *		'<DATA_OBJECT_NAME>'
  *	));
  *
  *	DataObjectOutputConfiguration::customise_data_objects('include', array(
- *		'MyFirstDataObjectName',
- *		'MySecondDataObjectName',
- *		'MyThirdDataObjectName'
+ *		'<DATA_OBJECT_NAME>',
+ *		'<DATA_OBJECT_NAME>',
+ *		'<DATA_OBJECT_NAME>'
  *	));
  *
  */

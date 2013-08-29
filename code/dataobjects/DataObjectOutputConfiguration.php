@@ -15,7 +15,8 @@ class DataObjectOutputConfiguration extends DataObject {
 	public static $default_sort = 'IsFor';
 
 	public static $searchable_fields = array(
-		'IsFor'
+		'IsFor',
+		'CallbackFunction'
 	);
 
 	public static $summary_fields = array(
@@ -26,7 +27,9 @@ class DataObjectOutputConfiguration extends DataObject {
 		'printIsFor' => 'Is For'
 	);
 
-	// The list of default data objects that we wish to ignore, including this configuration class.
+	/*
+	 *	The default data objects to exclude.
+	 */
 
 	private static $exclusions = array(
 		'DataObject',
@@ -54,81 +57,85 @@ class DataObjectOutputConfiguration extends DataObject {
 		'DataObjectOutputConfiguration'
 	);
 	
-	// The list of custom data objects that we wish to ignore from everything.
+	/*
+	 *	The custom data objects to exclude, defined under project configuration.
+	 */
 
 	private static $custom_exclusions = array(
 	);
 	
-	// The list of custom data objects that we wish to use from nothing.
+	/*
+	 *	The custom data objects to include, defined under project configuration.
+	 */
 
 	private static $custom_inclusions = array(
 	);
 
 	/**
-	 *	Apply all required object extensions, which is executed on project build.
-	 *	This will take into account any inclusions/exclusions that have been defined.
+	 *	Apply all APIwesome required extensions.
 	 */
 
 	public static function apply_required_extensions() {
 
-		// Retrieve the list of objects that extend the base data object, along with any inclusions/exclusions that have been defined.
+		// Grab the list of all data object types, along with any inclusions/exclusions defined.
 
 		$objects = ClassInfo::subclassesFor('DataObject');
 		$inclusions = self::$custom_inclusions;
 		$exclusions = array_unique(array_merge(self::$exclusions, self::$custom_exclusions));
 
-		// Apply the required APIwesome extensions to each object considered valid.
+		// Apply extensions to each valid data object found.
 
 		foreach($objects as $object) {
 
-			// If there are custom inclusions, then disable the automatic JSON/XML configuration of all data objects.
+			// Apply the extension to each data object not excluded, unless inclusions have been defined.
 
-			if(((count($inclusions) > 0) && is_subclass_of($object, 'DataObject') && in_array($object, $inclusions)) || ((count($inclusions) === 0) && is_subclass_of($object, 'DataObject') && !in_array($object, $exclusions))) {
+			if(is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
 				Object::add_extension($object, 'DataObjectOutputExtension');
 			}
 		}
 
-		// Apply any remaining APIwesome extensions required.
+		// Apply the remaining required extensions.
 
 		Object::add_extension('APIwesomeAdmin', 'APIwesomeAdminExtension');
 		Object::add_extension('ModelAdmin', 'ModelAdminPreviewExtension');
 	}
 
 	/**
-	 *	Add the custom data object JSON/XML exclusions from everything, or the custom data object JSON/XML inclusions from nothing.
-	 *	NOTE: Changes all data object visibility to hidden except for those defined, effectively taking precedence over the custom exclusions.
+	 *	Set JSON/XML data object exclusions/inclusions.
+	 *	NOTE: All data objects are included by default, unless inclusions have been defined.
 	 *
-	 *	@param string
-	 *	@param array(string)
+	 *	@parameter string
+	 *	@parameter array(string)
 	 */
 
-	public static function customise_data_objects($filter, $objects) {
+	public static function customise_data_objects($type, $objects) {
 
-		if(is_array($objects) && (strtolower($filter) === 'exclude')) {
+		// Merge the exclusions/inclusions in case of multiple definitions.
+
+		if(is_array($objects) && (strtolower($type) === 'exclude')) {
 			self::$custom_exclusions = array_unique(array_merge(self::$custom_exclusions, $objects));
 		}
-		else if(is_array($objects) && (strtolower($filter) === 'include')) {
+		else if(is_array($objects) && (strtolower($type) === 'include')) {
 			self::$custom_inclusions = array_unique(array_merge(self::$custom_inclusions, $objects));
 		}
 	}
 
 	/**
-	 *	The process to automatically construct configurations for existing data objects, which is executed on project build.
-	 *	This will take into account any inclusions/exclusions that have been defined.
+	 *	The process to automatically construct data object output configurations, executed on project build.
 	 */
 
 	public function requireDefaultRecords() {
 
 		parent::requireDefaultRecords();
 
-		// Retrieve the list of data objects that have been completely removed, most likely from previous modules.
+		// Grab the list of data objects that have been completely removed.
 
 		$database = $GLOBALS['databaseConfig']['database'];
 		$tables = DB::query('SHOW TABLES FROM ' . Convert::raw2sql($database));
 		foreach($tables as $table) {
 			$table = $table['Tables_in_' . $database];
 
-			// If a configuration is found for a data object class that no longer exists.
+			// Delete existing output configurations for these data objects.
 
 			if(!class_exists($table)) {
 				$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($table) . "'");
@@ -136,88 +143,90 @@ class DataObjectOutputConfiguration extends DataObject {
 			}
 		}
 
-		// Retrieve the list of valid data objects, along with any inclusions/exclusions that have been defined.
+		// Grab the list of all data object types, along with any inclusions/exclusions defined.
 
 		$objects = ClassInfo::subclassesFor('DataObject');
-
-		// If there are custom inclusions, then disable the automatic JSON/XML configuration of all data objects.
-
 		$inclusions = self::$custom_inclusions;
 		$exclusions = array_unique(array_merge(self::$exclusions, self::$custom_exclusions));
+
+		// Check existing output configurations for these data objects.
+
 		foreach($objects as $object) {
 			$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($object) . "'");
 
-			// If a configuration is found for something no longer included, otherwise if a configuration is found for new custom exclusions.
+			// Delete existing output configurations for data objects excluded.
 
-			if(((count($inclusions) > 0) && is_subclass_of($object, 'DataObject') && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && is_subclass_of($object, 'DataObject') && in_array($object, $exclusions))) {
+			if(is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
 				$this->deleteConfiguration($object, $existing);
 			}
 
-			// Else, if we find a new data object has been included, otherwise if we find a new data object that isn't excluded.
+			// Add an output configuration for new data objects.
 
-			else if(((count($inclusions) > 0) && is_subclass_of($object, 'DataObject') && in_array($object, $inclusions)) || ((count($inclusions) === 0) && is_subclass_of($object, 'DataObject') && !in_array($object, $exclusions))) {
-				$this->addConfiguration($object, $existing);
+			else if($existing && is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
+				$this->addConfiguration($object);
 			}
 		}
 	}
 
 	/**
-	 *	Print the data object name associated to this configuration.
+	 *	Print the data object name associated with this configuration.
 	 *
 	 *	@return string
 	 */
 
 	public function printIsFor() {
 
-		// Add spaces between words, such that the result is readable.
+		// Add spaces between words.
 
 		return ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $this->IsFor));
 	}
 
 	/**
-	 *	Update the CMS interface to allow customisation of JSON/XML output for individual data objects.
+	 *	Display CMS JSON/XML output visibility configuration.
 	 */
 
 	public function getCMSFields() {
 
 		$fields = parent::getCMSFields();
-		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 
-		// The data object that is assigned to this configuration must not be changed.
+		// Hide the data object name associated with this configuration.
 
 		$fields->removeByName('IsFor');
 
-		// Retrieve the corresponding data object, if one exists.
+		// Grab a single data object.
 
 		$object = DataObject::get_one($this->IsFor, '', true, 'APIwesomeVisibility DESC');
 		if($object) {
 
-			// Retrieve the attributes for this data object.
+			// Grab the appropriate attributes for this data object.
 
 			$columns = DataObject::database_fields($this->IsFor);
 			array_shift($columns);
 			$visibility = $object->APIwesomeVisibility ? explode(',', $object->APIwesomeVisibility) : null;
 
-			// Add the check box field title.
+			// Display a check box field title.
 
 			$fields->addFieldToTab('Root.Main', LiteralField::create(
 				'VisibilityTitle',
 				'<strong>Visibility</strong>'
 			));
 
-			// Construct the check box fields for JSON/XML visibility customisation.
+			// Display the check box fields for JSON/XML output visibility.
 
 			$iteration = 0;
 			foreach($columns as $name => $type) {
 
-				// Take the visibility attribute into account.
+				// Ignore the visibility attribute.
 
 				if($name !== 'APIwesomeVisibility') {
+
+					// Print the attribute name, including any relationships.
+
 					$printName = ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $name));
-
-					// Update the attribute name if a relationship is found.
-
 					$printName = (substr($printName, strlen($printName) - 2) === 'ID') ? substr($printName, 0, -2) : $printName;
+
+					// Set an already existing attribute visibility.
+
 					$fields->addFieldToTab('Root.Main', CheckboxField::create(
 						"{$name}Visibility",
 						"Display <strong>{$printName}</strong>?",
@@ -229,8 +238,9 @@ class DataObjectOutputConfiguration extends DataObject {
 		}
 		else {
 
-			// Notify the user that a data object of this type should first be created.
+			// Display a notification that a data object should first be created.
 
+			Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 			$fields->removeByName('CallbackFunction');
 			$name = $this->printIsFor();
 			$fields->addFieldToTab('Root.Main', LiteralField::create(
@@ -242,14 +252,14 @@ class DataObjectOutputConfiguration extends DataObject {
 	}
 
 	/**
-	 *	Save the JSON/XML visibility customisation for each data object of this type.
+	 *	Save the JSON/XML output visibility customisation for each associated data object.
 	 */
 
 	public function onAfterWrite() {
 
 		parent::onAfterWrite();
 
-		// Create a single variable to store the visibility customisation values.
+		// Append the visibility customisation to a string.
 
 		$visibility = '';
 		foreach($this->record as $name => $value) {
@@ -260,7 +270,7 @@ class DataObjectOutputConfiguration extends DataObject {
 		}
 		$visibility = rtrim($visibility, ',');
 
-		// Save this visibility customisation, though this may be really slow. Maybe save this only against a specific one (which will always be returned somehow).
+		// Write this visibility customisation string.
 
 		$objects = DataObject::get($this->IsFor);
 		if($objects && $objects instanceof DataList) {
@@ -272,32 +282,27 @@ class DataObjectOutputConfiguration extends DataObject {
 	}
 
 	/**
-	 *	Add a new data object configuration on project build.
+	 *	Add an output configuration for a new data object.
 	 */
 
-	private function addConfiguration($object, $existing) {
+	private function addConfiguration($object) {
 
-		// Create a new configuration for this data object.
+		// Create a new output configuration.
 
-		if(!$existing) {
-			$configuration = DataObjectOutputConfiguration::create();
+		$configuration = DataObjectOutputConfiguration::create();
 
-			// Assign the data object against this configuration, to make sure only one instance will exist per data object.
+		// Assign the data object against this configuration.
 
-			$configuration->IsFor = $object;
-			$configuration->write();
-			DB::alteration_message($object . ' JSON/XML Configuration', 'created');
-		}
+		$configuration->IsFor = $object;
+		$configuration->write();
+		DB::alteration_message($object . ' JSON/XML Configuration', 'created');
 	}
 
 	/**
-	 *	Remove an existing data object configuration on project build.
+	 *	Delete an existing output configuration for a data object now excluded.
 	 */
 
 	private function deleteConfiguration($object, $existing) {
-
-		// Remove these existing configurations.
-
 		if($existing) {
 			$existing->delete();
 			DB::alteration_message($object . ' JSON/XML Configuration', 'deleted');

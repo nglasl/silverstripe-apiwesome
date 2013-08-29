@@ -8,16 +8,20 @@
 class ModelAdminPreviewExtension extends Extension {
 
 	/**
-	 *	Update the model admin interface to add these buttons.
+	 *	Add the CMS JSON/XML preview buttons.
 	 */
 
 	public function updateEditForm(&$form) {
 
-		if($form->fields->items[0]->name !== 'DataObjectOutputConfiguration') {
-			$objects = singleton('APIwesomeService')->retrieveValidated($form->fields->items[0]->name);
+		$gridfield = $form->fields->items[0];
+		if(isset($gridfield) && ($gridfield->name !== 'DataObjectOutputConfiguration')) {
+
+			// Make sure the appropriate JSON/XML exists for this data object type.
+
+			$objects = singleton('APIwesomeService')->retrieveValidated($gridfield->name);
 			if($objects) {
-				$configuration = $form->fields->items[0]->config;
 				Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
+				$configuration = $gridfield->config;
 				$configuration->addComponent(new APIwesomePreviewButton());
 			}
 		}

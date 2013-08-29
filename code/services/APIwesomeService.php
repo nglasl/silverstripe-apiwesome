@@ -8,15 +8,11 @@
 class APIwesomeService {
 
 	/**
+	 *	Retrieve the appropriate JSON/XML output of a specified data object type.
 	 *
-	 *	Retrieve the appropriate JSON/XML of the specified data object either by function call or request URL, including any user customisation.
-	 *
-	 *	@param string
-	 *	@param string
-	 *
-	 *	EXAMPLE JSON:	{WEBSITE}/apiwesome/retrieve/my-first-data-object-name/json
-	 *	EXAMPLE XML:	{WEBSITE}/apiwesome/retrieve/my-second-data-object-name/xml
-	 *
+	 *	@parameter string
+	 *	@parameter string
+	 *	@return JSON/XML
 	 */
 
 	public function retrieve($objectName = null, $type = null) {
@@ -62,10 +58,10 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Validate and return the corresponding data objects with an associated configuration, only including visible attributes.
+	 *	Validate and return the visible attributes of the specified data object type.
 	 *
-	 *	@param string
-	 *	@return DataList
+	 *	@parameter string
+	 *	@return array
 	 */
 
 	public function retrieveValidated($class) {
@@ -135,10 +131,13 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Compose the appropriate JSON for the corresponding array of data objects.
-	 *	Make sure to convert your data list using toNestedArray.
+	 *	Compose the appropriate JSON output for the corresponding array of data objects.
+	 *	NOTE: DataList->toNestedArray();
 	 *
-	 *	@param array
+	 *	@parameter array
+	 *	@parameter boolean
+	 *	@parameter boolean
+	 *	@parameter boolean
 	 *	@return JSON
 	 */
 
@@ -171,7 +170,7 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Recursively retrieve the relationships for a given data object map, and construct the JSON/XML output.
+	 *	Recursively return the relationships for a given data object map.
 	 */
 
 	private function recursiveRelationships(&$temporary, $visibility = false, $cache = array()) {
@@ -236,10 +235,12 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Compose the appropriate XML for the corresponding array of data objects.
-	 *	Make sure to convert your data list using toNestedArray.
+	 *	Compose the appropriate XML output for the corresponding array of data objects.
+	 *	NOTE: DataList->toNestedArray();
 	 *
-	 *	@param array
+	 *	@parameter array
+	 *	@parameter boolean
+	 *	@parameter boolean
 	 *	@return XML
 	 */
 
@@ -271,7 +272,7 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Recursively construct the XML children, given a data object with multiple relationship levels. The convert array to JSON will do this for us.
+	 *	Recursively compose the XML children elements for a given data object map.
 	 */
 
 	private function recursiveXML(&$objectXML, $object) {
