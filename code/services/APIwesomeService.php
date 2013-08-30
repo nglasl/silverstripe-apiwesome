@@ -109,28 +109,37 @@ class APIwesomeService {
 
 	public function retrieveJSON($objects, $attributeVisibility = false, $contentHeader = false, $callback = false) {
 
-		// Convert the input array to JSON.
+		// Convert the corresponding array of data objects to JSON.
 		
 		$JSON = array();
 		foreach($objects as $object) {
 
-			// Remove attributes that are not required, while recursively retrieving data object relationships.
+			// Compose the appropriate output for all relationships.
 
 			$JSON[] = array($object['ClassName'] => $this->recursiveRelationships($object, $attributeVisibility));
 		}
 		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
 
-		// Apply the callback function from configuration.
+		// Apply a defined javascript callback function.
 
-		if($callback) {
-			$configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($objects[0]['ClassName']) . "'");
-			$JSON = $configuration->CallbackFunction ? str_replace(' ', '_', $configuration->CallbackFunction) . "($JSON);" : $JSON;
+		$header = false;
+		if($callback && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($objects[0]['ClassName']) . "'"))) {
+			if($configuration->CallbackFunction) {
+				$JSON = str_replace(' ', '_', $configuration->CallbackFunction) . "($JSON);";
+
+				// Apply a javascript content response header.
+
+				if($contentHeader) {
+					Controller::curr()->getResponse()->addHeader('Content-Type', 'application/javascript');
+					$header = true;
+				}
+			}
 		}
 
-		// Set the response header, and return the JSON.
+		// Apply a content response header and return the composed JSON.
 
-		if($contentHeader) {
-			($callback && $configuration->CallbackFunction) ? Controller::curr()->getResponse()->addHeader('Content-Type', 'application/javascript') : Controller::curr()->getResponse()->addHeader('Content-Type', 'application/json');
+		if($contentHeader && !$header) {
+			Controller::curr()->getResponse()->addHeader('Content-Type', 'application/json');
 		}
 		return $JSON;
 	}
@@ -212,24 +221,18 @@ class APIwesomeService {
 
 	public function retrieveXML($objects, $attributeVisibility = false, $contentHeader = false) {
 
-		$output = array();
-		foreach($objects as $object) {
-			$output[] = array('ClassName' => $object['ClassName'], 'Object' => $this->recursiveRelationships($object, $attributeVisibility));
-		}
-		$objects = $output;
-
-		// Convert the input array to XML.
+		// Convert the corresponding array of data objects to XML.
 
 		$XML = new SimpleXMLElement('<DataObjectList/>');
 		foreach($objects as $object) {
 
-			// Add the data objects in the correct format, using the data object name as a parent element.
+			// Compose the appropriate output for all relationships.
 
 			$objectXML = $XML->addChild($object['ClassName']);
-			$this->recursiveXML($objectXML, $object['Object']);
+			$this->recursiveXML($objectXML, $this->recursiveRelationships($object, $attributeVisibility));
 		}
 
-		// Set the response header, and return the XML.
+		// Apply a content response header and return the composed XML.
 
 		if($contentHeader) {
 			Controller::curr()->getResponse()->addHeader('Content-Type', 'application/xml');
