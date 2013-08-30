@@ -68,9 +68,9 @@ class APIwesome extends Controller {
 
 			// Convert the data object name input to the class name.
 
-			$object = explode('-', $parameters['ID']);
+			$name = explode('-', $parameters['ID']);
 			$class = '';
-			foreach($object as $partial) {
+			foreach($name as $partial) {
 				$class .= ucfirst(strtolower($partial));
 			}
 			return $this->service->retrieve($class, $parameters['OtherID']);

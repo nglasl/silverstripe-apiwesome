@@ -15,11 +15,11 @@ class APIwesomeService {
 	 *	@return JSON/XML
 	 */
 
-	public function retrieve($object, $output) {
+	public function retrieve($class, $output) {
 
 		// Grab all visible data objects of the specified type.
 
-		$objects = $this->retrieveValidated($object);
+		$objects = $this->retrieveValidated($class);
 
 		// Return the appropriate JSON/XML output of these data objects.
 
@@ -39,7 +39,7 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Return all visible data objects of the specified type if valid.
+	 *	Return all data object visible attributes of the specified type.
 	 *
 	 *	@parameter string
 	 *	@return array
@@ -47,66 +47,51 @@ class APIwesomeService {
 
 	public function retrieveValidated($class) {
 
-		// Make sure at least one data object and configuration exist, otherwise this request is considered invalid.
+		// Make sure this data object type has visibility customisation.
 
-		if(in_array($class, ClassInfo::subclassesFor('DataObject'))) {
-			$object = DataObject::get_one($class, '', true, 'APIwesomeVisibility DESC');
-			$configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'");
-			if($object && $configuration) {
+		if(in_array($class, ClassInfo::subclassesFor('DataObject')) && DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'") && ($object = DataObject::get_one($class, '', true, 'APIwesomeVisibility DESC'))) {
+			$visibility = $object->APIwesomeVisibility ? explode(',', $object->APIwesomeVisibility) : null;
+			if($visibility && in_array('1', $visibility)) {
 
-				// Retrieve the attributes for this data object.
+				// Grab the appropriate attributes for this data object.
 
 				$columns = DataObject::database_fields($class);
 				array_shift($columns);
-				$visibility = $object->APIwesomeVisibility ? explode(',', $object->APIwesomeVisibility) : null;
 
-				// Construct the select statement, including any visibility customisation.
+				// Apply any visibility customisation.
 
 				$select = '';
 				$iteration = 0;
-				foreach($columns as $name => $type) {
-
-					// Take the visibility attribute into account.
-
-					if($name !== 'APIwesomeVisibility') {
-						if(is_array($visibility) && isset($visibility[$iteration]) && $visibility[$iteration]) {
-							$select .= $name . ', ';
+				foreach($columns as $attribute => $type) {
+					if($attribute !== 'APIwesomeVisibility') {
+						if(isset($visibility[$iteration]) && $visibility[$iteration]) {
+							$select .= $attribute . ', ';
 						}
 						$iteration++;
 					}
 				}
-				$select = rtrim($select, ', ');
 
-				// Make sure we have a valid select statement.
+				// Grab all data object visible attributes.
 
-				if($select) {
+				$query = new SQLQuery("ClassName, {$select}ID", array($class));
+				$objects = array();
+				foreach($query->execute() as $temporary) {
 
-					// Retrieve the list of corresponding data objects, including any visibility customisation.
+					// Return an array of data object maps.
 
-					$query = new SQLQuery("ClassName, $select, ID", array($class));
-					$query = $query->execute();
-					$objects = array();
-					foreach($query as $temporary) {
-
-						// Remove null attributes.
-
-						$object = array();
-						foreach($temporary as $attribute => $value) {
-							if($value) {
-								$object[$attribute] = $value;
-							}
+					$object = array();
+					foreach($temporary as $attribute => $value) {
+						if($value) {
+							$object[$attribute] = $value;
 						}
-						$objects[] = $object;
 					}
-
-					// Return our list of validated data objects.
-
-					return $objects;
+					$objects[] = $object;
 				}
+				return $objects;
 			}
 		}
 
-		// The data object was not valid.
+		// The specified data object type had no visibility customisation.
 
 		return null;
 	}
@@ -122,16 +107,16 @@ class APIwesomeService {
 	 *	@return JSON
 	 */
 
-	public function retrieveJSON($objects, $visibility = false, $addHeader = false, $callback = false) {
+	public function retrieveJSON($objects, $attributeVisibility = false, $contentHeader = false, $callback = false) {
 
 		// Convert the input array to JSON.
 		
 		$JSON = array();
-		foreach($objects as $temporary) {
+		foreach($objects as $object) {
 
 			// Remove attributes that are not required, while recursively retrieving data object relationships.
 
-			$JSON[] = array($temporary['ClassName'] => $this->recursiveRelationships($temporary, $visibility));
+			$JSON[] = array($object['ClassName'] => $this->recursiveRelationships($object, $attributeVisibility));
 		}
 		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
 
@@ -144,7 +129,7 @@ class APIwesomeService {
 
 		// Set the response header, and return the JSON.
 
-		if($addHeader) {
+		if($contentHeader) {
 			($callback && $configuration->CallbackFunction) ? Controller::curr()->getResponse()->addHeader('Content-Type', 'application/javascript') : Controller::curr()->getResponse()->addHeader('Content-Type', 'application/json');
 		}
 		return $JSON;
@@ -154,15 +139,15 @@ class APIwesomeService {
 	 *	Recursively return the relationships for a given data object map.
 	 */
 
-	private function recursiveRelationships(&$temporary, $visibility = false, $cache = array()) {
+	private function recursiveRelationships(&$object, $attributeVisibility = false, $cache = array()) {
 
-		$object = array();
+		$output = array();
 
 		// Add this class and ID to the cache, such that we don't recurse infinitely.
 
-		if(!in_array("{$temporary['ClassName']} {$temporary['ID']}", $cache)) {
-			$cache[] = "{$temporary['ClassName']} {$temporary['ID']}";
-			foreach($temporary as $attribute => $value) {
+		if(!in_array("{$object['ClassName']} {$object['ID']}", $cache)) {
+			$cache[] = "{$object['ClassName']} {$object['ID']}";
+			foreach($object as $attribute => $value) {
 				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility') && ($attribute !== 'RecordClassName')) {
 
 					// Update the attribute name if a relationship is found.
@@ -170,23 +155,23 @@ class APIwesomeService {
 					$relationship = ((strlen($attribute) > 2) && (substr($attribute, strlen($attribute) - 2) === 'ID')) ? substr($attribute, 0, -2) : null;
 
 					if($relationship) {
-						$relationObject = DataObject::get_by_id($temporary['ClassName'], $temporary['ID'])->$relationship();
+						$relationObject = DataObject::get_by_id($object['ClassName'], $object['ID'])->$relationship();
 						$relationVisibility = $relationObject->APIwesomeVisibility ? explode(',', $relationObject->APIwesomeVisibility) : null;
 						$map = $relationObject->toMap();
 						$select = $map;
 
 						// Construct the output, including any visibility customisation.
 
-						if($visibility) {
+						if($attributeVisibility) {
 							$select = array('ClassName' => $relationObject->ClassName, 'ID' => $relationObject->ID);
 							$iteration = 0;
-							foreach($map as $name => $output) {
+							foreach($map as $name => $content) {
 
 								// Take the visibility attribute into account.
 
 								if(($name !== 'ClassName') && ($name !== 'APIwesomeVisibility')) {
 									if(is_array($relationVisibility) && isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
-										$select[$name] = $output;
+										$select[$name] = $content;
 									}
 									$iteration++;
 								}
@@ -195,10 +180,10 @@ class APIwesomeService {
 
 						// Make sure there isn't another level of recursion available.
 
-						$object[$relationship] = array($relationObject->ClassName => $this->recursiveRelationships($select, $visibility, $cache));
+						$output[$relationship] = array($relationObject->ClassName => $this->recursiveRelationships($select, $attributeVisibility, $cache));
 					}
 					else {
-						$object[$attribute] = $value;
+						$output[$attribute] = $value;
 					}
 				}
 			}
@@ -207,12 +192,12 @@ class APIwesomeService {
 
 			// If we have already returned this data object with the same ID.
 
-			$object['ID'] = $temporary['ID'];
+			$output['ID'] = $object['ID'];
 		}
 
 		// Return the attributes from this level of recursion.
 
-		return $object;
+		return $output;
 	}
 
 	/**
@@ -225,11 +210,11 @@ class APIwesomeService {
 	 *	@return XML
 	 */
 
-	public function retrieveXML($objects, $visibility = false, $addHeader = false) {
+	public function retrieveXML($objects, $attributeVisibility = false, $contentHeader = false) {
 
 		$output = array();
-		foreach($objects as $temporary) {
-			$output[] = array('ClassName' => $temporary['ClassName'], 'Object' => $this->recursiveRelationships($temporary, $visibility));
+		foreach($objects as $object) {
+			$output[] = array('ClassName' => $object['ClassName'], 'Object' => $this->recursiveRelationships($object, $attributeVisibility));
 		}
 		$objects = $output;
 
@@ -246,7 +231,7 @@ class APIwesomeService {
 
 		// Set the response header, and return the XML.
 
-		if($addHeader) {
+		if($contentHeader) {
 			Controller::curr()->getResponse()->addHeader('Content-Type', 'application/xml');
 		}
 		return $XML->asXML();
@@ -256,7 +241,7 @@ class APIwesomeService {
 	 *	Recursively compose the XML children elements for a given data object map.
 	 */
 
-	private function recursiveXML(&$objectXML, $object) {
+	private function recursiveXML(&$parentXML, $object) {
 
 		foreach($object as $attribute => $value) {
 
@@ -265,12 +250,12 @@ class APIwesomeService {
 			if($attribute !== 'APIwesomeVisibility') {
 				if(is_array($value)) {
 					foreach($value as $name => $variable) {
-						$relationshipXML = $objectXML->addChild($name);
+						$relationshipXML = $parentXML->addChild($name);
 						$this->recursiveXML($relationshipXML, $variable);
 					}
 				}
 				else {
-					$objectXML->addChild($attribute, $value);
+					$parentXML->addChild($attribute, $value);
 				}
 			}
 		}
