@@ -104,8 +104,8 @@ class DataObjectOutputConfiguration extends DataObject {
 	 *	Set JSON/XML data object exclusions/inclusions.
 	 *	NOTE: All data objects are included by default, unless inclusions have been defined.
 	 *
-	 *	@parameter string
-	 *	@parameter array(string)
+	 *	@parameter <{FILTER_TYPE}> string
+	 *	@parameter <{DATA_OBJECT_NAMES}> array(string)
 	 */
 
 	public static function customise_data_objects($type, $objects) {

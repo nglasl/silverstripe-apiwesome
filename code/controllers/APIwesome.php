@@ -29,8 +29,8 @@ class APIwesome extends Controller {
 	/**
 	 *	Display an error page on invalid request.
 	 *
-	 *	@parameter integer
-	 *	@parameter string
+	 *	@parameter <{ERROR_CODE}> integer
+	 *	@parameter <{ERROR_MESSAGE}> string
 	 */
 
 	public function httpError($code, $message = null) {
@@ -49,12 +49,12 @@ class APIwesome extends Controller {
 	 *
 	 *	Retrieve the appropriate JSON/XML output of a specified data object type.
 	 *
-	 *	@URLparameter string
-	 *	@URLparameter string
+	 *	@URLparameter <{DATA_OBJECT_NAME}> string
+	 *	@URLparameter <{OUTPUT_TYPE}> string
 	 *	@return JSON/XML
 	 *
-	 *	EXAMPLE JSON:	<WEBSITE>/apiwesome/retrieve/<data-object-name>/json
-	 *	EXAMPLE XML:	<WEBSITE>/apiwesome/retrieve/<data-object-name>/xml
+	 *	EXAMPLE JSON:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/json
+	 *	EXAMPLE XML:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml
 	 *
 	 */
 

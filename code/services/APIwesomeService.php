@@ -10,8 +10,8 @@ class APIwesomeService {
 	/**
 	 *	Retrieve the appropriate JSON/XML output of a specified data object type.
 	 *
-	 *	@parameter string
-	 *	@parameter string
+	 *	@parameter <{DATA_OBJECT_NAME}> string
+	 *	@parameter <{OUTPUT_TYPE}> string
 	 *	@return JSON/XML
 	 */
 
@@ -41,7 +41,7 @@ class APIwesomeService {
 	/**
 	 *	Return all data object visible attributes of the specified type.
 	 *
-	 *	@parameter string
+	 *	@parameter <{DATA_OBJECT_NAME}> string
 	 *	@return array
 	 */
 
@@ -100,10 +100,10 @@ class APIwesomeService {
 	 *	Compose the appropriate JSON output for the corresponding array of data objects.
 	 *	NOTE: DataList->toNestedArray();
 	 *
-	 *	@parameter array
-	 *	@parameter boolean
-	 *	@parameter boolean
-	 *	@parameter boolean
+	 *	@parameter <{DATA_OBJECTS}> array
+	 *	@parameter <{USE_ATTRIBUTE_VISIBILITY}> boolean
+	 *	@parameter <{SET_CONTENT_HEADER}> boolean
+	 *	@parameter <{WRAP_JAVASCRIPT_CALLBACK}> boolean
 	 *	@return JSON
 	 */
 
@@ -152,42 +152,52 @@ class APIwesomeService {
 
 		$output = array();
 
-		// Add this class and ID to the cache, such that we don't recurse infinitely.
+		// Cache relationship data objects to prevent infinite recursion.
 
 		if(!in_array("{$object['ClassName']} {$object['ID']}", $cache)) {
 			$cache[] = "{$object['ClassName']} {$object['ID']}";
 			foreach($object as $attribute => $value) {
 				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility') && ($attribute !== 'RecordClassName')) {
 
-					// Update the attribute name if a relationship is found.
+					// Grab the name of a relationship.
 
-					$relationship = ((strlen($attribute) > 2) && (substr($attribute, strlen($attribute) - 2) === 'ID')) ? substr($attribute, 0, -2) : null;
-
+					$relationship = ((substr($attribute, strlen($attribute) - 2) === 'ID') && (strlen($attribute) > 2)) ? substr($attribute, 0, -2) : null;
 					if($relationship) {
+
+						// Grab the relationship.
+
 						$relationObject = DataObject::get_by_id($object['ClassName'], $object['ID'])->$relationship();
-						$relationVisibility = $relationObject->APIwesomeVisibility ? explode(',', $relationObject->APIwesomeVisibility) : null;
-						$map = $relationObject->toMap();
-						$select = $map;
-
-						// Construct the output, including any visibility customisation.
-
 						if($attributeVisibility) {
+
+							// Grab the attribute visibility.
+
+							$relationVisibility = $relationObject->APIwesomeVisibility ? explode(',', $relationObject->APIwesomeVisibility) : null;
+							if($relationVisibility && in_array('1', $relationVisibility)) {
+								$map = $relationObject->toMap();
+							}
+							else {
+								$output[$relationship] = array($relationObject->ClassName => array('ID' => $relationObject->ID));
+								continue;
+							}
+
+							// Grab all data object visible attributes.
+
 							$select = array('ClassName' => $relationObject->ClassName, 'ID' => $relationObject->ID);
 							$iteration = 0;
-							foreach($map as $name => $content) {
-
-								// Take the visibility attribute into account.
-
-								if(($name !== 'ClassName') && ($name !== 'APIwesomeVisibility')) {
-									if(is_array($relationVisibility) && isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
-										$select[$name] = $content;
+							foreach($map as $relationshipAttribute => $relationshipValue) {
+								if(($relationshipAttribute !== 'ClassName') && ($relationshipAttribute !== 'APIwesomeVisibility')) {
+									if(isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
+										$select[$relationshipAttribute] = $relationshipValue;
 									}
 									$iteration++;
 								}
 							}
 						}
+						else {
+							$select = $map;
+						}
 
-						// Make sure there isn't another level of recursion available.
+						// Check the corresponding relationship.
 
 						$output[$relationship] = array($relationObject->ClassName => $this->recursiveRelationships($select, $attributeVisibility, $cache));
 					}
@@ -199,12 +209,12 @@ class APIwesomeService {
 		}
 		else {
 
-			// If we have already returned this data object with the same ID.
+			// This relationship has previously been cached.
 
 			$output['ID'] = $object['ID'];
 		}
 
-		// Return the attributes from this level of recursion.
+		// Return the visible relationship attributes.
 
 		return $output;
 	}
@@ -213,9 +223,9 @@ class APIwesomeService {
 	 *	Compose the appropriate XML output for the corresponding array of data objects.
 	 *	NOTE: DataList->toNestedArray();
 	 *
-	 *	@parameter array
-	 *	@parameter boolean
-	 *	@parameter boolean
+	 *	@parameter <{DATA_OBJECTS}> array
+	 *	@parameter <{USE_ATTRIBUTE_VISIBILITY}> boolean
+	 *	@parameter <{SET_CONTENT_HEADER}> boolean
 	 *	@return XML
 	 */
 
@@ -247,14 +257,17 @@ class APIwesomeService {
 	private function recursiveXML(&$parentXML, $object) {
 
 		foreach($object as $attribute => $value) {
-
-			// Remove attributes that are not required.
-
 			if($attribute !== 'APIwesomeVisibility') {
+
+				// Convert a corresponding relationship to an XML child element.
+
 				if(is_array($value)) {
-					foreach($value as $name => $variable) {
-						$relationshipXML = $parentXML->addChild($name);
-						$this->recursiveXML($relationshipXML, $variable);
+					foreach($value as $relationshipAttribute => $relationshipValue) {
+						$relationshipXML = $parentXML->addChild($relationshipAttribute);
+
+						// Check the corresponding relationship.
+
+						$this->recursiveXML($relationshipXML, $relationshipValue);
 					}
 				}
 				else {
