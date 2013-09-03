@@ -156,13 +156,13 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Delete existing output configurations for data objects excluded.
 
-			if(is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
+			if($existing && is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
 				$this->deleteConfiguration($object, $existing);
 			}
 
 			// Add an output configuration for new data objects.
 
-			else if($existing && is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
+			else if(!$existing && is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
 				$this->addConfiguration($object);
 			}
 		}
