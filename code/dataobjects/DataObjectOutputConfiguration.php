@@ -128,18 +128,20 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		parent::requireDefaultRecords();
 
-		// Grab the list of data objects that have been completely removed.
+		// Using MySQL, grab the list of data objects that have been completely removed.
 
 		$database = $GLOBALS['databaseConfig']['database'];
-		$tables = DB::query('SHOW TABLES FROM ' . Convert::raw2sql($database));
-		foreach($tables as $table) {
-			$table = $table['Tables_in_' . $database];
+		if(strtoupper($database) === 'MYSQLDATABASE') {
+			$tables = DB::query('SHOW TABLES FROM ' . Convert::raw2sql($database));
+			foreach($tables as $table) {
+				$table = $table['Tables_in_' . $database];
 
-			// Delete existing output configurations for these data objects.
+				// Delete existing output configurations for these data objects.
 
-			if(!class_exists($table)) {
-				$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($table) . "'");
-				$this->deleteConfiguration($table, $existing);
+				if(!class_exists($table)) {
+					$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($table) . "'");
+					$this->deleteConfiguration($table, $existing);
+				}
 			}
 		}
 

@@ -162,7 +162,7 @@ class APIwesomeService {
 					// Grab the name of a relationship.
 
 					$relationship = ((substr($attribute, strlen($attribute) - 2) === 'ID') && (strlen($attribute) > 2)) ? substr($attribute, 0, -2) : null;
-					if($relationship) {
+					if($relationship && ($value != 0)) {
 
 						// Grab the relationship.
 
@@ -187,7 +187,7 @@ class APIwesomeService {
 							foreach($map as $relationshipAttribute => $relationshipValue) {
 								if(($relationshipAttribute !== 'ClassName') && ($relationshipAttribute !== 'APIwesomeVisibility')) {
 									if(isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
-										$select[$relationshipAttribute] = $relationshipValue;
+										$select[$relationshipAttribute] = is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue;
 									}
 									$iteration++;
 								}
@@ -201,8 +201,8 @@ class APIwesomeService {
 
 						$output[$relationship] = array($relationObject->ClassName => $this->recursiveRelationships($select, $attributeVisibility, $cache));
 					}
-					else {
-						$output[$attribute] = $value;
+					else if(!$relationship) {
+						$output[$attribute] = is_integer($value) ? (string)$value : $value;
 					}
 				}
 			}
@@ -275,6 +275,26 @@ class APIwesomeService {
 				}
 			}
 		}
+	}
+
+	/**
+	 *	Parse the corresponding APIwesome JSON input, returning the array of data objects.
+	 *
+	 *	@parameter <{APIWESOME_JSON}> JSON
+	 *	@return array
+	 */
+
+	public function parseJSON($JSON) {
+	}
+
+	/**
+	 *	Parse the corresponding APIwesome XML input, returning the array of data objects.
+	 *
+	 *	@parameter <{APIWESOME_XML}> XML
+	 *	@return array
+	 */
+
+	public function parseXML($XML) {
 	}
 
 }
