@@ -1,6 +1,6 @@
 # APIwesome
 
-A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data objects.
+	A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data objects.
 
 ## Requirement
 
@@ -9,7 +9,7 @@ A module for SilverStripe which will automatically create customisable JSON/XML 
 ## Getting Started
 
 * Place the module under your root project directory.
-* Define your custom JSON/XML data object exclusions/inclusions through project configuration.
+* Define any custom JSON/XML data object exclusions/inclusions through project configuration.
 * `/dev/build`
 * Select `JSON/XML Configuration` through the CMS.
 * Configure visibility customisation.
@@ -32,24 +32,20 @@ A module for SilverStripe which will automatically create customisable JSON/XML 
 * Both available using different URL parameters.
 * Preview JSON/XML available under model admin of your data objects.
 
-```php
-// JSON/XML retrieval code example:
-Singleton('APIwesomeService')->retrieve('<DataObjectName>', '<OutputType>');
-```
-
 ### Development
 
 * This module may also be used for custom developer JSON/XML functionality using the service controller methods available.
 * This API is also used to parse incoming JSON/XML from another APIwesome instance, and return the appropriate data objects list. Therefore this can be used as both an API and an external connector between multiple projects.
 
 ```php
-// parse json example
-Singleton('APIwesomeService')->parseJSON('<JSON>');
-```
+/* Create a service */
+$service = Singleton('APIwesomeService');
 
-```php
-// @parse xml example
-Singleton('APIwesomeService')->parseXML('<XML>');
+$JSON = $service->retrieve('DataObjectName', 'JSON');
+$objects = $service->parseJSON($JSON);
+
+$XML = $service->retrieve('DataObjectName', 'XML');
+$objects = $service->parseXML($XML);
 ```
 
 ## Maintainer Contact
