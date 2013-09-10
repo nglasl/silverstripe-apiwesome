@@ -23,20 +23,12 @@
 * All data objects are included by default (excluding core), unless inclusions have been defined.
 
 ```php
-/**
- *	EXAMPLE: JSON/XML data object exclusions.
- */
-
 DataObjectOutputConfiguration::customise_data_objects('exclude', array(
 	'DataObjectName'
 ));
 ```
 
 ```php
-/**
- *	EXAMPLE: JSON/XML data object inclusions.
- */
-
 DataObjectOutputConfiguration::customise_data_objects('include', array(
 	'DataObjectName'
 ));
@@ -58,37 +50,20 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 
 ```php
 $service = Singleton('APIwesomeService');
-
-/**
- *	EXAMPLE: Retrieving the appropriate JSON.
- */
-
 $JSON = $service->retrieve('DataObjectName', 'JSON');
 ```
 
 ```php
-/**
- *	EXAMPLE: Retrieving the appropriate XML.
- */
-
 $XML = $service->retrieve('DataObjectName', 'XML');
 ```
 
 * This API is also used to parse incoming JSON/XML from another APIwesome instance, and return the appropriate data objects list. Therefore this can be used as both an API and an external connector between multiple projects.
 
 ```php
-/**
- *	EXAMPLE: Parsing the APIwesome JSON.
- */
-
 $objects = $service->parseJSON($JSON);
 ```
 
 ```php
-/**
- *	EXAMPLE: Parsing the APIwesome XML.
- */
-
 $objects = $service->parseXML($XML);
 ```
 
