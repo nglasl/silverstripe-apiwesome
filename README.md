@@ -16,7 +16,7 @@
 * Configure attribute visibility.
 * `/apiwesome/retrieve/data-object-name/json` or `/apiwesome/retrieve/data-object-name/xml`
 
-## Functionality
+## Overview
 
 ### Data Object Exclusions/Inclusions
 
@@ -34,10 +34,9 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 ));
 ```
 
-### Attribute Visibility
+### Attribute Visibility Customisation
 
-Customisation will be required before your data object JSON/XML is available.
-Relationships are also displayed in JSON/XML using recursive attribute visibility on `has_one` relationships.
+The JSON/XML feed will only be available to a data object with attribute visibility set. The relationships (has_one) may also be displayed, where visibility is recursively determined.
 
 ### JSON/XML Output
 
