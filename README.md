@@ -20,7 +20,7 @@
 
 ### Data Object Exclusions/Inclusions
 
-* All data objects are included by default (excluding core), unless inclusions have explicitly been defined.
+All data objects are included by default (excluding core), unless inclusions have explicitly been defined.
 
 ```php
 DataObjectOutputConfiguration::customise_data_objects('exclude', array(
@@ -36,13 +36,13 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 
 ### Attribute Visibility
 
-* Customisation will be required before your data object JSON/XML is available.
-* Relationships are also displayed in JSON/XML using recursive attribute visibility on `has_one` relationships.
+Customisation will be required before your data object JSON/XML is available.
+Relationships are also displayed in JSON/XML using recursive attribute visibility on `has_one` relationships.
 
 ### JSON/XML Output
 
-* Both available using different URL parameters.
-* Preview JSON/XML available under model admin of your data objects.
+Both available using different URL parameters.
+Preview JSON/XML available under model admin of your data objects.
 
 ### Development
 
@@ -50,7 +50,7 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 $service = Singleton('APIwesomeService');
 ```
 
-* This module may also be used for custom developer JSON/XML functionality using the service controller methods available.
+This module may also be used for custom developer JSON/XML functionality using the service controller methods available.
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
@@ -60,7 +60,7 @@ $JSON = $service->retrieve('DataObjectName', 'JSON');
 $XML = $service->retrieve('DataObjectName', 'XML');
 ```
 
-* This API is also used to parse incoming JSON/XML from another APIwesome instance, and return the appropriate data objects list. Therefore this can be used as both an API and an external connector between multiple projects.
+This API is also used to parse incoming JSON/XML from another APIwesome instance, and return the appropriate data objects list. Therefore this can be used as both an API and an external connector between multiple projects.
 
 ```php
 $objects = $service->parseJSON($JSON);
