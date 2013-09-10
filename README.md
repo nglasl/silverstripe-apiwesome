@@ -24,12 +24,18 @@
 
 ```php
 /**
- *	EXAMPLE: JSON/XML data object exclusions/inclusions.
+ *	EXAMPLE: JSON/XML data object exclusions.
  */
 
 DataObjectOutputConfiguration::customise_data_objects('exclude', array(
 	'DataObjectName'
 ));
+```
+
+```php
+/**
+ *	EXAMPLE: JSON/XML data object inclusions.
+ */
 
 DataObjectOutputConfiguration::customise_data_objects('include', array(
 	'DataObjectName'
@@ -54,10 +60,17 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 $service = Singleton('APIwesomeService');
 
 /**
- *	EXAMPLE: Retrieving the appropriate JSON/XML.
+ *	EXAMPLE: Retrieving the appropriate JSON.
  */
 
 $JSON = $service->retrieve('DataObjectName', 'JSON');
+```
+
+```php
+/**
+ *	EXAMPLE: Retrieving the appropriate XML.
+ */
+
 $XML = $service->retrieve('DataObjectName', 'XML');
 ```
 
