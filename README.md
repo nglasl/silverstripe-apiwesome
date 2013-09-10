@@ -39,7 +39,11 @@
 * This API is also used to parse incoming JSON/XML from another APIwesome instance, and return the appropriate data objects list. Therefore this can be used as both an API and an external connector between multiple projects.
 
 ```php
-/* Create a service */
+
+/**
+ *	EXAMPLE: Retrieve the appropriate JSON/XML output of the specified data object type, parsing it to return a formatted array of data objects and their relationships.
+ */
+
 $service = Singleton('APIwesomeService');
 
 $JSON = $service->retrieve('DataObjectName', 'JSON');
