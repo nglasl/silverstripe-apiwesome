@@ -18,9 +18,9 @@
 
 ## Functionality
 
-### Data Object Exclusion/Inclusion
+### Data Object Exclusions/Inclusions
 
-* All data objects are included by default (excluding core), unless inclusions have been defined.
+* All data objects are included by default (excluding core), unless inclusions have explicitly been defined.
 
 ```php
 DataObjectOutputConfiguration::customise_data_objects('exclude', array(
@@ -46,11 +46,11 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 
 ### Development
 
-* This module may also be used for custom developer JSON/XML functionality using the service controller methods available.
-
 ```php
-	$service = Singleton('APIwesomeService');
+$service = Singleton('APIwesomeService');
 ```
+
+* This module may also be used for custom developer JSON/XML functionality using the service controller methods available.
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
