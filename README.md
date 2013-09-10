@@ -42,13 +42,19 @@
 $service = Singleton('APIwesomeService');
 
 /**
- *	EXAMPLE: Retrieving JSON/XML and parsing it back to an array.
+ *	EXAMPLE: Retrieving the appropriate JSON/XML.
  */
 
 $JSON = $service->retrieve('DataObjectName', 'JSON');
-$objects = $service->parseJSON($JSON);
-
 $XML = $service->retrieve('DataObjectName', 'XML');
+```
+
+```php
+/**
+ *	EXAMPLE: Parsing the JSON/XML.
+ */
+
+$objects = $service->parseJSON($JSON);
 $objects = $service->parseXML($XML);
 ```
 
