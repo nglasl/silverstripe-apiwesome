@@ -232,7 +232,7 @@ class DataObjectOutputConfiguration extends DataObject {
 					$fields->addFieldToTab('Root.Main', CheckboxField::create(
 						"{$name}Visibility",
 						"Display <strong>{$printName}</strong>?",
-						(is_array($visibility) && isset($visibility[$iteration])) ? $visibility[$iteration] : 0
+						(isset($visibility[$iteration])) ? $visibility[$iteration] : 0
 					));
 					$iteration++;
 				}

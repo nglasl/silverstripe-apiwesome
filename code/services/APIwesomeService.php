@@ -111,14 +111,14 @@ class APIwesomeService {
 
 		// Convert the corresponding array of data objects to JSON.
 		
-		$JSON = array();
+		$temporary = array();
 		foreach($objects as $object) {
 
 			// Compose the appropriate output for all relationships.
 
-			$JSON[] = array($object['ClassName'] => $this->recursiveRelationships($object, $attributeVisibility));
+			$temporary[] = array($object['ClassName'] => $this->recursiveRelationships($object, $attributeVisibility));
 		}
-		$JSON = Convert::array2json(array('DataObjectList' => $JSON));
+		$JSON = Convert::array2json(array('DataObjectList' => $temporary));
 
 		// Apply a defined javascript callback function.
 
@@ -278,23 +278,56 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Parse the corresponding APIwesome JSON input, returning the array of data objects.
+	 *	Parse the corresponding APIwesome JSON input, returning a formatted array of data objects and relationships.
 	 *
 	 *	@parameter <{APIWESOME_JSON}> JSON
 	 *	@return array
 	 */
 
 	public function parseJSON($JSON) {
+		
+		// Convert the corresponding JSON to a formatted array of data objects.
+
+		$temporary = Convert::json2array($JSON);
+		$objects = isset($temporary['DataObjectList']) ? $temporary['DataObjectList'] : null;
+		return $objects;
 	}
 
 	/**
-	 *	Parse the corresponding APIwesome XML input, returning the array of data objects.
+	 *	Parse the corresponding APIwesome XML input, returning a formatted array of data objects and relationships.
 	 *
 	 *	@parameter <{APIWESOME_XML}> XML
 	 *	@return array
 	 */
 
 	public function parseXML($XML) {
+
+		// Convert the corresponding XML to a formatted array of data objects.
+
+		$temporary = (strpos($XML, '<DataObjectList>') && strrpos($XML, '</DataObjectList>')) ? $this->recursiveXMLArray(new SimpleXMLElement($XML)) : null;
+		if($temporary) {
+
+			// Compose a format similar to that of the JSON.
+
+			$objects = array();
+			foreach($temporary as $class => $value) {
+				foreach($value as $object) {
+					$objects[] = array($class => $object);
+				}
+			}
+		}
+		return $objects;
+	}
+
+	/**
+	 *	Recursively compose an array for the given XML children elements.
+	 */
+
+	private function recursiveXMLArray($XML, $objects = array()) {
+		foreach((array)$XML as $attribute => $value) {
+			$objects[$attribute] = (is_object($value) || is_array($value)) ? $this->recursiveXMLArray($value) : $value;
+		}
+		return $objects;
 	}
 
 }
