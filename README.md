@@ -8,19 +8,19 @@ A module for SilverStripe which will automatically create customisable JSON/XML 
 
 ## Getting Started
 
-* Place the module under your root project directory
-* Define your custom JSON/XML data object exclusions/inclusions through project configuration files
+* Place the module under your root project directory.
+* Define your custom JSON/XML data object exclusions/inclusions through project configuration files.
 * `<{WEBSITE}>/dev/build`
-* Select `JSON/XML Configuration` from the CMS
-* Configure visibility customisation
-* ```php<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/json```
+* Select `JSON/XML Configuration` from the CMS.
+* Configure visibility customisation.
+* `<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/json`
 * `<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml`
 
 ## Functionality
 
 ### Data Object Exclusion/Inclusion
 
-* All data objects are included by default (excluding core), unless inclusions have been defined
+* All data objects are included by default (excluding core), unless inclusions have been defined.
 
 ### Attribute Visibility
 
@@ -37,9 +37,8 @@ A module for SilverStripe which will automatically create customisable JSON/XML 
 Singleton('APIwesomeService')->retrieve('<DataObjectName>', '<OutputType>');
 ```
 
-### Other
+### Development
 
-* Security measures to prevent intrusion attempts and important fields such as passwords being leaked.
 * This module may also be used for custom developer JSON/XML functionality using the service controller methods available.
 * This API is also used to parse incoming JSON/XML from another APIwesome instance, and return the appropriate data objects list. Therefore this can be used as both an API and an external connector between multiple projects.
 
@@ -55,4 +54,4 @@ Singleton('APIwesomeService')->parseXML('<XML>');
 
 ## Maintainer Contact
 
-* Nathan Glasl <nathan@silverstripe.com.au>
+* Nathan Glasl `nathan@silverstripe.com.au`
