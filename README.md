@@ -14,10 +14,7 @@
 * `/dev/build`
 * Select `JSON/XML Configuration` through the CMS.
 * Configure attribute visibility.
-
-
-* `/apiwesome/retrieve/data-object-name/json`
-* `/apiwesome/retrieve/data-object-name/xml`
+* `/apiwesome/retrieve/data-object-name/json` or `/apiwesome/retrieve/data-object-name/xml`
 
 ## Functionality
 
