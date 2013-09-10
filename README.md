@@ -9,12 +9,12 @@ A module for SilverStripe which will automatically create customisable JSON/XML 
 ## Getting Started
 
 * Place the module under your root project directory.
-* Define your custom JSON/XML data object exclusions/inclusions through project configuration files.
+* Define your custom JSON/XML data object exclusions/inclusions through project configuration.
 * `/dev/build`
-* Select `JSON/XML Configuration` from the CMS.
+* Select `JSON/XML Configuration` through the CMS.
 * Configure visibility customisation.
-* `/apiwesome/retrieve/<data-object-name>/json`
-* `/apiwesome/retrieve/<data-object-name>/xml`
+* `/apiwesome/retrieve/data-object-name/json`
+* `/apiwesome/retrieve/data-object-name/xml`
 
 ## Functionality
 
@@ -54,4 +54,4 @@ Singleton('APIwesomeService')->parseXML('<XML>');
 
 ## Maintainer Contact
 
-`Nathan Glasl` nathan@silverstripe.com.au
+	Nathan Glasl, nathan@silverstripe.com.au
