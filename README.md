@@ -22,6 +22,22 @@
 
 * All data objects are included by default (excluding core), unless inclusions have been defined.
 
+```php
+/**
+ *
+ *	EXAMPLE: JSON/XML data object exclusions/inclusions.
+ *
+ */
+
+DataObjectOutputConfiguration::customise_data_objects('exclude', array(
+	'DataObjectName'
+));
+
+DataObjectOutputConfiguration::customise_data_objects('include', array(
+	'DataObjectName'
+));
+```
+
 ### Attribute Visibility
 
 * Customisation will be required before your data object JSON/XML is available.
@@ -40,7 +56,9 @@
 $service = Singleton('APIwesomeService');
 
 /**
+ *
  *	EXAMPLE: Retrieving the appropriate JSON/XML.
+ *
  */
 
 $JSON = $service->retrieve('DataObjectName', 'JSON');
@@ -51,7 +69,9 @@ $XML = $service->retrieve('DataObjectName', 'XML');
 
 ```php
 /**
+ *
  *	EXAMPLE: Parsing the JSON/XML.
+ *
  */
 
 $objects = $service->parseJSON($JSON);
