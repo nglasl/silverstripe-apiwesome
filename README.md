@@ -36,11 +36,11 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 
 ### Attribute Visibility Customisation
 
-The JSON/XML feed will only be available to a data object with attribute visibility. The `has_one` relationships may also be displayed, where visibility is determined recursively.
+The JSON/XML feed will only be available to data objects with attribute visibility. Any `has_one` relationships may also be displayed, where attribute visibility is determined recursively.
 
-### JSON/XML Output
+### Output
 
-The JSON/XML feed is not only available by request, but also by preview through the appropriate model admin of your data objects.
+The JSON/XML feed is not only available by URL request, but also by preview through the appropriate model admin of your data object.
 
 ### Development
 
@@ -48,7 +48,7 @@ The JSON/XML feed is not only available by request, but also by preview through 
 $service = Singleton('APIwesomeService');
 ```
 
-The service methods available may also be functionally called by developers to generate JSON/XML.
+The service methods available may be functionally called by developers to generate JSON/XML.
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
@@ -58,7 +58,7 @@ $JSON = $service->retrieve('DataObjectName', 'JSON');
 $XML = $service->retrieve('DataObjectName', 'XML');
 ```
 
-They may also be used to parse JSON/XML from another project's APIwesome module, returning the appropriate data object list. Therefore, this module may be used as both an API and external connector between multiple instances of projects.
+They may also be used to parse JSON/XML from another project's APIwesome, returning the appropriate array of data objects. Therefore, this module may be used as both an API and external connector between multiple instances of projects.
 
 ```php
 $objects = $service->parseJSON($JSON);
