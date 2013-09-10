@@ -49,7 +49,10 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 * This module may also be used for custom developer JSON/XML functionality using the service controller methods available.
 
 ```php
-$service = Singleton('APIwesomeService');
+	$service = Singleton('APIwesomeService');
+```
+
+```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
 ```
 
