@@ -14,6 +14,7 @@
 * `/dev/build`
 * Select `JSON/XML Configuration` through the CMS.
 * Configure attribute visibility.
+
 * `/apiwesome/retrieve/data-object-name/json`
 * `/apiwesome/retrieve/data-object-name/xml`
 
@@ -36,7 +37,6 @@
 ### Development
 
 * This module may also be used for custom developer JSON/XML functionality using the service controller methods available.
-* This API is also used to parse incoming JSON/XML from another APIwesome instance, and return the appropriate data objects list. Therefore this can be used as both an API and an external connector between multiple projects.
 
 ```php
 $service = Singleton('APIwesomeService');
@@ -48,6 +48,8 @@ $service = Singleton('APIwesomeService');
 $JSON = $service->retrieve('DataObjectName', 'JSON');
 $XML = $service->retrieve('DataObjectName', 'XML');
 ```
+
+* This API is also used to parse incoming JSON/XML from another APIwesome instance, and return the appropriate data objects list. Therefore this can be used as both an API and an external connector between multiple projects.
 
 ```php
 /**
