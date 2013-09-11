@@ -1,4 +1,4 @@
-# APIwesome
+# APIwesome (JSON/XML API)
 
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data
 	objects.
@@ -50,14 +50,15 @@ Accessing the service:
 $service = Singleton('APIwesomeService');
 ```
 
-The service methods available may be programmatically called to generate JSON:
+The methods available may be programmatically called to generate JSON:
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
 ```
 
 ```php
-$JSON = $service->retrieveJSON($objects, true, true, true);
+$objects = DataObjectName::get()->toNestedArray();
+$JSON = $service->retrieveJSON($objects);
 ```
 
 XML:
@@ -67,10 +68,11 @@ $XML = $service->retrieve('DataObjectName', 'XML');
 ```
 
 ```php
-$XML = $service->retrieveXML($objects, true, true);
+$objects = DataObjectName::get()->toNestedArray();
+$XML = $service->retrieveXML($objects);
 ```
 
-They may also be used to parse JSON/XML from another project's APIwesome, returning the appropriate array of data objects. Therefore, this module may be used as both an API and external connector between multiple instances of projects.
+They may also be used to parse JSON/XML from another APIwesome instance. Therefore, this module may be used as both an API and external connector between multiple projects.
 
 ```php
 $objects = $service->parseJSON($JSON);
