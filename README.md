@@ -36,11 +36,11 @@ DataObjectOutputConfiguration::customise_data_objects('include', array(
 
 ### Attribute Visibility Customisation
 
-The JSON/XML feed will only be available to data objects with attribute visibility. Any `has_one` relationships may also be displayed, where attribute visibility is determined recursively.
+The JSON/XML feed will only be available to data objects with attribute visibility set through the CMS. Any `has_one` relationships may be displayed, where attribute visibility is determined recursively.
 
 ### Output
 
-The JSON/XML feed is not only available by URL request, but also by preview through the appropriate model admin of your data object.
+The JSON/XML feed may also be previewed through the appropriate model admin of your data object.
 
 ### Development
 
