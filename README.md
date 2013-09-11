@@ -42,20 +42,32 @@ The JSON/XML feed will only be available to data objects with attribute visibili
 
 The JSON/XML feed may also be previewed through the appropriate model admin of your data object.
 
-### Development
+### Developer Functionality
+
+Accessing the service:
 
 ```php
 $service = Singleton('APIwesomeService');
 ```
 
-The service methods available may be functionally called by developers to generate JSON/XML.
+The service methods available may be programmatically called to generate JSON:
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
 ```
 
 ```php
+$JSON = $service->retrieveJSON($objects, true, true, true);
+```
+
+XML:
+
+```php
 $XML = $service->retrieve('DataObjectName', 'XML');
+```
+
+```php
+$XML = $service->retrieveXML($objects, true, true);
 ```
 
 They may also be used to parse JSON/XML from another project's APIwesome, returning the appropriate array of data objects. Therefore, this module may be used as both an API and external connector between multiple instances of projects.
