@@ -16,7 +16,7 @@ class APIwesomeAdminExtension extends Extension {
 		$gridfield = $form->fields->items[0];
 		if(isset($gridfield)) {
 			$configuration = $gridfield->config;
-			$configuration->removeComponent($configuration->getComponentByType('GridFieldAddNewButton'));
+			$configuration->removeComponentsByType('GridFieldAddNewButton');
 		}
 	}
 
