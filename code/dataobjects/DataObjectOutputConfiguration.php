@@ -197,8 +197,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		// Grab a single data object.
 
-		$object = DataObject::get_one($this->IsFor, '', true, 'APIwesomeVisibility DESC');
-		if($object) {
+		if($object = DataObject::get_one($this->IsFor, '', true, 'APIwesomeVisibility DESC')) {
 
 			// Grab the appropriate attributes for this data object.
 
