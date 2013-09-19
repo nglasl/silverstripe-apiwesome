@@ -266,7 +266,7 @@ class DataObjectOutputConfiguration extends DataObject {
 		foreach($this->record as $name => $value) {
 			if(strrpos($name, 'Visibility')) {
 				$value = $value ? $value : 0;
-				$visibility .= "$value,";
+				$visibility .= "{$value},";
 			}
 		}
 		$visibility = rtrim($visibility, ',');

@@ -125,7 +125,7 @@ class APIwesomeService {
 		$header = false;
 		if($callback && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($objects[0]['ClassName']) . "'"))) {
 			if($configuration->CallbackFunction) {
-				$JSON = str_replace(' ', '_', $configuration->CallbackFunction) . "($JSON);";
+				$JSON = str_replace(' ', '_', $configuration->CallbackFunction) . "({$JSON});";
 
 				// Apply a javascript content response header.
 
