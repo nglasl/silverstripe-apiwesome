@@ -249,6 +249,7 @@ class DataObjectOutputConfiguration extends DataObject {
 				"<p class='apiwesome notification'><strong>No {$name}s Found</strong></p>"
 			));
 		}
+		$this->extend('updateCMSFields', $fields);
 		return $fields;
 	}
 
