@@ -1,4 +1,4 @@
-# APIwesome (JSON/XML API)
+# apiwesome (JSON/XML API)
 
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data
 	objects.
