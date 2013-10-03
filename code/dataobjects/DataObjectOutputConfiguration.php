@@ -8,8 +8,8 @@
 class DataObjectOutputConfiguration extends DataObject {
 
 	public static $db = array(
-		'IsFor' => 'VARCHAR(255)',
-		'CallbackFunction' => 'VARCHAR(255)'
+		'IsFor' => 'Varchar(255)',
+		'CallbackFunction' => 'Varchar(255)'
 	);
 
 	public static $default_sort = 'IsFor';

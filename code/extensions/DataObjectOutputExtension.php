@@ -12,7 +12,7 @@ class DataObjectOutputExtension extends DataExtension {
 	 */
 
 	public static $db = array(
-		'APIwesomeVisibility' => 'TEXT'
+		'APIwesomeVisibility' => 'Text'
 	);
 
 	/**
