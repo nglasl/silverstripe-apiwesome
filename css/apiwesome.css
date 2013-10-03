@@ -26,3 +26,7 @@ a.apiwesome.preview.json, a.apiwesome.preview.xml {
 a.apiwesome.preview.json {
 	margin: 6px 0;
 }
+
+div.visibility.checkbox input, div.visibility.checkbox label {
+	vertical-align: middle;
+}

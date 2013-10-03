@@ -197,6 +197,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		// Grab a single data object.
 
+		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 		if($object = DataObject::get_one($this->IsFor, '', true, 'APIwesomeVisibility DESC')) {
 
 			// Grab the appropriate attributes for this data object.
@@ -232,7 +233,7 @@ class DataObjectOutputConfiguration extends DataObject {
 						"{$name}Visibility",
 						"Display <strong>{$printName}</strong>?",
 						(isset($visibility[$iteration])) ? $visibility[$iteration] : 0
-					));
+					)->addExtraClass('visibility'));
 					$iteration++;
 				}
 			}
@@ -241,7 +242,6 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Display a notification that a data object should first be created.
 
-			Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 			$fields->removeByName('CallbackFunction');
 			$name = $this->printIsFor();
 			$fields->addFieldToTab('Root.Main', LiteralField::create(
