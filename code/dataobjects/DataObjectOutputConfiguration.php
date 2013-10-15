@@ -27,7 +27,7 @@ class DataObjectOutputConfiguration extends DataObject {
 		'printIsFor' => 'Is For'
 	);
 
-	/*
+	/**
 	 *	The default data objects to exclude.
 	 */
 
@@ -57,14 +57,14 @@ class DataObjectOutputConfiguration extends DataObject {
 		'DataObjectOutputConfiguration'
 	);
 	
-	/*
+	/**
 	 *	The custom data objects to exclude, defined under project configuration.
 	 */
 
 	private static $custom_exclusions = array(
 	);
 	
-	/*
+	/**
 	 *	The custom data objects to include, defined under project configuration.
 	 */
 

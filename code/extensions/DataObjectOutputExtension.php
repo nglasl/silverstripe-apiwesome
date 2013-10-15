@@ -7,7 +7,7 @@
 
 class DataObjectOutputExtension extends DataExtension {
 
-	/*
+	/**
 	 *	Append an additional JSON/XML output visibility field to each data object.
 	 */
 
