@@ -20,11 +20,11 @@ class DataObjectOutputConfiguration extends DataObject {
 	);
 
 	public static $summary_fields = array(
-		'printIsFor'
+		'getTitle'
 	);
 
 	public static $field_labels = array(
-		'printIsFor' => 'Is For'
+		'getTitle' => 'Is For'
 	);
 
 	/**
@@ -176,7 +176,7 @@ class DataObjectOutputConfiguration extends DataObject {
 	 *	@return string
 	 */
 
-	public function printIsFor() {
+	public function getTitle() {
 
 		// Add spaces between words.
 
@@ -240,7 +240,7 @@ class DataObjectOutputConfiguration extends DataObject {
 			// Display a notification that a data object should first be created.
 
 			$fields->removeByName('CallbackFunction');
-			$name = $this->printIsFor();
+			$name = $this->getTitle();
 			$fields->addFieldToTab('Root.Main', LiteralField::create(
 				'ConfigurationNotification',
 				"<p class='apiwesome notification'><strong>No {$name}s Found</strong></p>"
