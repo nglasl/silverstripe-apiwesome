@@ -49,8 +49,8 @@ class APIwesomeService {
 
 		// Make sure this data object type has visibility customisation.
 
-		if(in_array($class, ClassInfo::subclassesFor('DataObject')) && DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'") && ($object = DataObject::get_one($class, '', true, 'APIwesomeVisibility DESC'))) {
-			$visibility = $object->APIwesomeVisibility ? explode(',', $object->APIwesomeVisibility) : null;
+		if(in_array($class, ClassInfo::subclassesFor('DataObject')) && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'")) && DataObject::get_one($class)) {
+			$visibility = $configuration->APIwesomeVisibility ? explode(',', $configuration->APIwesomeVisibility) : null;
 			if($visibility && in_array('1', $visibility)) {
 
 				// Grab the appropriate attributes for this data object.
@@ -63,12 +63,10 @@ class APIwesomeService {
 				$select = '';
 				$iteration = 0;
 				foreach($columns as $attribute => $type) {
-					if($attribute !== 'APIwesomeVisibility') {
-						if(isset($visibility[$iteration]) && $visibility[$iteration]) {
-							$select .= $attribute . ', ';
-						}
-						$iteration++;
+					if(isset($visibility[$iteration]) && $visibility[$iteration]) {
+						$select .= $attribute . ', ';
 					}
+					$iteration++;
 				}
 
 				// Grab all data object visible attributes.
@@ -157,7 +155,7 @@ class APIwesomeService {
 		if(!in_array("{$object['ClassName']} {$object['ID']}", $cache)) {
 			$cache[] = "{$object['ClassName']} {$object['ID']}";
 			foreach($object as $attribute => $value) {
-				if(($attribute !== 'ClassName') && ($attribute !== 'APIwesomeVisibility') && ($attribute !== 'RecordClassName')) {
+				if(($attribute !== 'ClassName') && ($attribute !== 'RecordClassName')) {
 
 					// Grab the name of a relationship.
 
@@ -171,9 +169,15 @@ class APIwesomeService {
 
 							// Grab the attribute visibility.
 
-							$relationVisibility = $relationObject->APIwesomeVisibility ? explode(',', $relationObject->APIwesomeVisibility) : null;
+							$relationConfiguration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($relationObject->ClassName) . "'");
+							$relationVisibility = ($relationConfiguration && $relationConfiguration->APIwesomeVisibility) ? explode(',', $relationConfiguration->APIwesomeVisibility) : null;
 							if($relationVisibility && in_array('1', $relationVisibility)) {
-								$map = $relationObject->toMap();
+								$temporaryMap = $relationObject->toMap();
+								$columns = DataObject::database_fields($relationObject->ClassName);
+								$map = array();
+								foreach($columns as $column => $type) {
+									$map[$column] = isset($temporaryMap[$column]) ? $temporaryMap[$column] : null;
+								}
 							}
 							else {
 								$output[$relationship] = array($relationObject->ClassName => array('ID' => $relationObject->ID));
@@ -185,9 +189,11 @@ class APIwesomeService {
 							$select = array('ClassName' => $relationObject->ClassName, 'ID' => $relationObject->ID);
 							$iteration = 0;
 							foreach($map as $relationshipAttribute => $relationshipValue) {
-								if(($relationshipAttribute !== 'ClassName') && ($relationshipAttribute !== 'APIwesomeVisibility')) {
+								if($relationshipAttribute !== 'ClassName') {
 									if(isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
-										$select[$relationshipAttribute] = is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue;
+										if(!is_null($relationshipValue)) {
+											$select[$relationshipAttribute] = is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue;
+										}
 									}
 									$iteration++;
 								}
@@ -257,22 +263,20 @@ class APIwesomeService {
 	private function recursiveXML(&$parentXML, $object) {
 
 		foreach($object as $attribute => $value) {
-			if($attribute !== 'APIwesomeVisibility') {
 
-				// Convert a corresponding relationship to an XML child element.
+			// Convert a corresponding relationship to an XML child element.
 
-				if(is_array($value)) {
-					foreach($value as $relationshipAttribute => $relationshipValue) {
-						$relationshipXML = $parentXML->addChild($relationshipAttribute);
+			if(is_array($value)) {
+				foreach($value as $relationshipAttribute => $relationshipValue) {
+					$relationshipXML = $parentXML->addChild($relationshipAttribute);
 
-						// Check the corresponding relationship.
+					// Check the corresponding relationship.
 
-						$this->recursiveXML($relationshipXML, $relationshipValue);
-					}
+					$this->recursiveXML($relationshipXML, $relationshipValue);
 				}
-				else {
-					$parentXML->addChild($attribute, $value);
-				}
+			}
+			else {
+				$parentXML->addChild($attribute, $value);
 			}
 		}
 	}

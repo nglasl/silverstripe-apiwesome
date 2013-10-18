@@ -9,6 +9,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 	public static $db = array(
 		'IsFor' => 'Varchar(255)',
+		'APIwesomeVisibility' => 'Text',
 		'CallbackFunction' => 'Varchar(255)'
 	);
 
@@ -76,25 +77,6 @@ class DataObjectOutputConfiguration extends DataObject {
 	 */
 
 	public static function apply_required_extensions() {
-
-		// Grab the list of all data object types, along with any inclusions/exclusions defined.
-
-		$objects = ClassInfo::subclassesFor('DataObject');
-		$inclusions = self::$custom_inclusions;
-		$exclusions = array_unique(array_merge(self::$exclusions, self::$custom_exclusions));
-
-		// Apply extensions to each valid data object found.
-
-		foreach($objects as $object) {
-
-			// Apply the extension to each data object not excluded, unless inclusions have been defined.
-
-			if(is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
-				Object::add_extension($object, 'DataObjectOutputExtension');
-			}
-		}
-
-		// Apply the remaining required extensions.
 
 		Object::add_extension('APIwesomeAdmin', 'APIwesomeAdminExtension');
 		Object::add_extension('ModelAdmin', 'ModelAdminPreviewExtension');
@@ -191,20 +173,21 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		$fields = parent::getCMSFields();
 
-		// Hide the data object name associated with this configuration.
+		// Hide the data object name and output visibility associated with this configuration.
 
 		$fields->removeByName('IsFor');
+		$fields->removeByName('APIwesomeVisibility');
 
 		// Grab a single data object.
 
 		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
-		if($object = DataObject::get_one($this->IsFor, '', true, 'APIwesomeVisibility DESC')) {
+		if(DataObject::get_one($this->IsFor)) {
 
 			// Grab the appropriate attributes for this data object.
 
 			$columns = DataObject::database_fields($this->IsFor);
 			array_shift($columns);
-			$visibility = $object->APIwesomeVisibility ? explode(',', $object->APIwesomeVisibility) : null;
+			$visibility = $this->APIwesomeVisibility ? explode(',', $this->APIwesomeVisibility) : null;
 
 			// Display the check box fields for JSON/XML output visibility.
 
@@ -214,24 +197,19 @@ class DataObjectOutputConfiguration extends DataObject {
 			$iteration = 0;
 			foreach($columns as $name => $type) {
 
-				// Ignore the visibility attribute.
+				// Print the attribute name, including any relationships.
 
-				if($name !== 'APIwesomeVisibility') {
+				$printName = ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $name));
+				$printName = (substr($printName, strlen($printName) - 2) === 'ID') ? substr($printName, 0, -2) : $printName;
 
-					// Print the attribute name, including any relationships.
+				// Set an already existing attribute visibility.
 
-					$printName = ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $name));
-					$printName = (substr($printName, strlen($printName) - 2) === 'ID') ? substr($printName, 0, -2) : $printName;
-
-					// Set an already existing attribute visibility.
-
-					$configuration->push(CheckboxField::create(
-						"{$name}Visibility",
-						"Display <strong>{$printName}</strong>?",
-						(isset($visibility[$iteration])) ? $visibility[$iteration] : 0
-					)->addExtraClass('visibility'));
-					$iteration++;
-				}
+				$configuration->push(CheckboxField::create(
+					"{$name}Visibility",
+					"Display <strong>{$printName}</strong>?",
+					(isset($visibility[$iteration])) ? $visibility[$iteration] : 0
+				)->addExtraClass('visibility'));
+				$iteration++;
 			}
 			$fields->addFieldToTab('Root.Main', $configuration);
 		}
@@ -254,30 +232,23 @@ class DataObjectOutputConfiguration extends DataObject {
 	 *	Save the JSON/XML output visibility customisation for each associated data object.
 	 */
 
-	public function onAfterWrite() {
+	public function onBeforeWrite() {
 
-		parent::onAfterWrite();
+		parent::onBeforeWrite();
 
 		// Append the visibility customisation to a string.
 
 		$visibility = '';
 		foreach($this->record as $name => $value) {
-			if(strrpos($name, 'Visibility')) {
+			if(strrpos($name, 'Visibility') && ($name !== 'APIwesomeVisibility')) {
 				$value = $value ? $value : 0;
 				$visibility .= "{$value},";
 			}
 		}
-		$visibility = rtrim($visibility, ',');
 
 		// Write this visibility customisation string.
 
-		$objects = DataObject::get($this->IsFor);
-		if($objects && $objects instanceof DataList) {
-			foreach($objects as $object) {
-				$object->APIwesomeVisibility = $visibility;
-				$object->write();
-			}
-		}
+		$this->APIwesomeVisibility = rtrim($visibility, ',');
 	}
 
 	/**
