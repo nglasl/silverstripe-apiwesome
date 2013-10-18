@@ -206,15 +206,11 @@ class DataObjectOutputConfiguration extends DataObject {
 			array_shift($columns);
 			$visibility = $object->APIwesomeVisibility ? explode(',', $object->APIwesomeVisibility) : null;
 
-			// Display a check box field title.
-
-			$fields->addFieldToTab('Root.Main', LiteralField::create(
-				'VisibilityTitle',
-				'<strong>Visibility</strong>'
-			));
-
 			// Display the check box fields for JSON/XML output visibility.
 
+			$configuration = FieldGroup::create(
+				'Visibility'
+			)->addExtraClass('visibility');
 			$iteration = 0;
 			foreach($columns as $name => $type) {
 
@@ -229,7 +225,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 					// Set an already existing attribute visibility.
 
-					$fields->addFieldToTab('Root.Main', CheckboxField::create(
+					$configuration->push(CheckboxField::create(
 						"{$name}Visibility",
 						"Display <strong>{$printName}</strong>?",
 						(isset($visibility[$iteration])) ? $visibility[$iteration] : 0
@@ -237,6 +233,7 @@ class DataObjectOutputConfiguration extends DataObject {
 					$iteration++;
 				}
 			}
+			$fields->addFieldToTab('Root.Main', $configuration);
 		}
 		else {
 

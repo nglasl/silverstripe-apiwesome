@@ -27,6 +27,10 @@ a.apiwesome.preview.json {
 	margin: 6px 0;
 }
 
-div.visibility.checkbox input, div.visibility.checkbox label {
+div.visibility div.fieldgroup div {
+	float: none;
+}
+
+div.visibility div.fieldgroup div input, div.visibility div.fieldgroup div label {
 	vertical-align: middle;
 }
