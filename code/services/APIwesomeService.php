@@ -276,7 +276,6 @@ class APIwesomeService {
 				}
 			}
 			else {
-				//$parentXML->addChild($attribute, $value);
 				$parentXML->$attribute = $value;
 			}
 		}
