@@ -3,6 +3,8 @@
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data
 	objects.
 
+http://slid.es/nglasl/silverstripe-apiwesome
+
 ## Requirement
 
 * SilverStripe 3.0.X
