@@ -48,10 +48,6 @@ class DataObjectOutputConfiguration extends DataObject {
 		'PermissionRoleCode',
 		'SiteConfig',
 		'SiteTree',
-		'Page',
-		'ErrorPage',
-		'RedirectorPage',
-		'VirtualPage',
 		'LeftAndMainTest_Object',
 		'ModelAdminTest_Contact',
 		'ModelAdminTest_Player',
@@ -146,7 +142,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Add an output configuration for new data objects.
 
-			else if(!$existing && is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
+			else if(!$existing && is_subclass_of($object, 'DataObject') && !is_subclass_of($object, 'SiteTree') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
 				$this->addConfiguration($object);
 			}
 		}
