@@ -47,7 +47,7 @@ class APIwesome extends Controller {
 
 	/**
 	 *
-	 *	Retrieve the appropriate JSON/XML output of a specified data object type.
+	 *	Retrieve the appropriate JSON/XML output of a specified data object type, with optional filters parsed from the GET request.
 	 *
 	 *	@URLparameter <{DATA_OBJECT_NAME}> string
 	 *	@URLparameter <{OUTPUT_TYPE}> string
@@ -77,7 +77,7 @@ class APIwesome extends Controller {
 			foreach($name as $partial) {
 				$class .= ucfirst(strtolower($partial));
 			}
-			return $this->service->retrieve($class, $parameters['OtherID'], $this->getRequest()->getVar('limit'), ($this->getRequest()->getVar('filter') ? explode(',', $this->getRequest()->getVar('filter')) : null), ($this->getRequest()->getVar('sort') ? explode(',', $this->getRequest()->getVar('sort')) : null));
+			return $this->service->retrieve($class, $parameters['OtherID'], $this->getRequest()->getVar('limit'), explode(',', $this->getRequest()->getVar('filter')), explode(',', $this->getRequest()->getVar('sort')));
 		}
 		else {
 			return $this->httpError(404);

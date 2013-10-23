@@ -8,7 +8,7 @@
 class APIwesomeService {
 
 	/**
-	 *	Retrieve the appropriate JSON/XML output of a specified data object type.
+	 *	Retrieve the appropriate JSON/XML output of a specified data object type, with optional filters.
 	 *
 	 *	@parameter <{DATA_OBJECT_NAME}> string
 	 *	@parameter <{OUTPUT_TYPE}> string
@@ -42,7 +42,7 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Return all data object visible attributes of the specified type.
+	 *	Return all data object visible attributes of the specified type, with optional filters.
 	 *
 	 *	@parameter <{DATA_OBJECT_NAME}> string
 	 *	@parameter <{LIMIT}> integer
