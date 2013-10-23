@@ -37,7 +37,6 @@ class DataObjectOutputConfiguration extends DataObject {
 		'Email_BounceRecord',
 		'File',
 		'Folder',
-		'Image',
 		'Image_Cached',
 		'Group',
 		'LoginAttempt',
@@ -181,7 +180,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Grab the appropriate attributes for this data object.
 
-			$columns = DataObject::database_fields($this->IsFor);
+			$columns = DataObject::database_fields(($this->IsFor === 'Image') ? 'File' : $this->IsFor);
 			array_shift($columns);
 			$visibility = $this->APIwesomeVisibility ? explode(',', $this->APIwesomeVisibility) : null;
 

@@ -55,6 +55,11 @@ class APIwesomeService {
 
 				// Grab the appropriate attributes for this data object.
 
+				$where = array();
+				if($class === 'Image') {
+					$class = 'File';
+					$where[] = "ClassName = 'Image'";
+				}
 				$columns = DataObject::database_fields($class);
 				array_shift($columns);
 
@@ -71,7 +76,7 @@ class APIwesomeService {
 
 				// Grab all data object visible attributes.
 
-				$query = new SQLQuery("ClassName, {$select}ID", array($class));
+				$query = new SQLQuery("ClassName, {$select}ID", array($class), $where);
 				$objects = array();
 				foreach($query->execute() as $temporary) {
 
@@ -80,7 +85,10 @@ class APIwesomeService {
 					$object = array();
 					foreach($temporary as $attribute => $value) {
 						if($value) {
-							$object[$attribute] = $value;
+
+							// Compose any asset file paths.
+
+							$object[$attribute] = ((strtolower($attribute) === 'filename') && (strpos($value, 'assets/') !== false)) ? Director::absoluteURL($value) : $value;
 						}
 					}
 					$objects[] = $object;
@@ -173,14 +181,14 @@ class APIwesomeService {
 							$relationVisibility = ($relationConfiguration && $relationConfiguration->APIwesomeVisibility) ? explode(',', $relationConfiguration->APIwesomeVisibility) : null;
 							if($relationVisibility && in_array('1', $relationVisibility)) {
 								$temporaryMap = $relationObject->toMap();
-								$columns = DataObject::database_fields($relationObject->ClassName);
+								$columns = DataObject::database_fields(($relationObject->ClassName === 'Image') ? 'File' : $relationObject->ClassName);
 								$map = array();
 								foreach($columns as $column => $type) {
 									$map[$column] = isset($temporaryMap[$column]) ? $temporaryMap[$column] : null;
 								}
 							}
 							else {
-								$output[$relationship] = array($relationObject->ClassName => array('ID' => $relationObject->ID));
+								$output[$relationship] = array($relationObject->ClassName => array('ID' => (string)$relationObject->ID));
 								continue;
 							}
 
@@ -192,7 +200,10 @@ class APIwesomeService {
 								if($relationshipAttribute !== 'ClassName') {
 									if(isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
 										if(!is_null($relationshipValue)) {
-											$select[$relationshipAttribute] = is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue;
+
+											// Compose any asset file paths.
+
+											$select[$relationshipAttribute] = ((strtolower($relationshipAttribute) === 'filename') && (strpos($relationshipValue, 'assets/') !== false)) ? Director::absoluteURL($relationshipValue) : (is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue);
 										}
 									}
 									$iteration++;
