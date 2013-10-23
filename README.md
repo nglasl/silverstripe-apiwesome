@@ -42,7 +42,9 @@ The JSON/XML feed will only be available to data objects with attribute visibili
 
 ### Output
 
-The JSON/XML feed may also be previewed through the appropriate model admin of your data object.
+A JSON/XML feed request may have a number of optional filters applied: `?limit=5` `&filter=Column,value` `&sort=Column,ORDER`
+
+It may also be previewed through the appropriate model admin of your data object.
 
 ### Developer Functionality
 
@@ -56,6 +58,7 @@ The methods available may be programmatically called to generate JSON:
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
+$JSON = $service->retrieve('DataObjectName', 'JSON', 5, array('Column', 'value'), array('Column', 'ORDER'));
 ```
 
 ```php
@@ -67,6 +70,7 @@ XML:
 
 ```php
 $XML = $service->retrieve('DataObjectName', 'XML');
+$XML = $service->retrieve('DataObjectName', 'XML', 5, array('Column', 'value'), array('Column', 'ORDER'));
 ```
 
 ```php
