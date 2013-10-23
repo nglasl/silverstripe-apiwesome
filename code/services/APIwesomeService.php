@@ -88,7 +88,7 @@ class APIwesomeService {
 
 							// Compose any asset file paths.
 
-							$object[$attribute] = ((strtolower($attribute) === 'filename') && (strpos($value, 'assets/') !== false)) ? Director::absoluteURL($value) : $value;
+							$object[$attribute] = ((strpos(strtolower($attribute), 'file') !== false) && (strpos($value, 'assets/') !== false)) ? Director::absoluteURL($value) : $value;
 						}
 					}
 					$objects[] = $object;
@@ -203,7 +203,7 @@ class APIwesomeService {
 
 											// Compose any asset file paths.
 
-											$select[$relationshipAttribute] = ((strtolower($relationshipAttribute) === 'filename') && (strpos($relationshipValue, 'assets/') !== false)) ? Director::absoluteURL($relationshipValue) : (is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue);
+											$select[$relationshipAttribute] = ((strpos(strtolower($relationshipAttribute), 'file') !== false) && (strpos($relationshipValue, 'assets/') !== false)) ? Director::absoluteURL($relationshipValue) : (is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue);
 										}
 									}
 									$iteration++;
