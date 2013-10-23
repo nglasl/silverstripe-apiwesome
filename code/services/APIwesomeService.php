@@ -78,7 +78,7 @@ class APIwesomeService {
 					$where[] = Convert::raw2sql($filter[0]) . " = '" . Convert::raw2sql($filter[1]) . "'";
 				}
 				if(is_array($sort) && (count($sort) === 2)) {
-					if(!isset($columns[$sort[0]])) {
+					if(!isset($columns[$sort[0]]) || (($sort[1] !== 'ASC') && ($sort[1] !== 'DESC'))) {
 						return null;
 					}
 					$sort = Convert::raw2sql($sort[0]) . ' ' . Convert::raw2sql($sort[1]);
