@@ -51,10 +51,14 @@ class APIwesome extends Controller {
 	 *
 	 *	@URLparameter <{DATA_OBJECT_NAME}> string
 	 *	@URLparameter <{OUTPUT_TYPE}> string
+	 *	@URLfilter <{LIMIT}> integer
+	 *	@URLfilter <{FILTER}> string
+	 *	@URLfilter <{SORT}> string
 	 *	@return JSON/XML
 	 *
-	 *	EXAMPLE JSON:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/json
-	 *	EXAMPLE XML:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml
+	 *	EXAMPLE JSON:		<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/json
+	 *	EXAMPLE XML:		<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml
+	 *	EXAMPLE FILTERS:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml?limit=5&filter=column,value&sort=column,order
 	 *
 	 */
 
@@ -73,7 +77,7 @@ class APIwesome extends Controller {
 			foreach($name as $partial) {
 				$class .= ucfirst(strtolower($partial));
 			}
-			return $this->service->retrieve($class, $parameters['OtherID']);
+			return $this->service->retrieve($class, $parameters['OtherID'], $this->getRequest()->getVar('limit'), ($this->getRequest()->getVar('filter') ? explode(',', $this->getRequest()->getVar('filter')) : null), ($this->getRequest()->getVar('sort') ? explode(',', $this->getRequest()->getVar('sort')) : null));
 		}
 		else {
 			return $this->httpError(404);

@@ -12,14 +12,17 @@ class APIwesomeService {
 	 *
 	 *	@parameter <{DATA_OBJECT_NAME}> string
 	 *	@parameter <{OUTPUT_TYPE}> string
+	 *	@parameter <{LIMIT}> integer
+	 *	@parameter <{FILTER}> array(string, string)
+	 *	@parameter <{SORT}> array(string, string)
 	 *	@return JSON/XML
 	 */
 
-	public function retrieve($class, $output) {
+	public function retrieve($class, $output, $limit = null, $filter = null, $sort = null) {
 
 		// Grab all visible data objects of the specified type.
 
-		$objects = $this->retrieveValidated($class);
+		$objects = $this->retrieveValidated($class, $limit, $filter, $sort);
 
 		// Return the appropriate JSON/XML output of these data objects.
 
@@ -42,10 +45,13 @@ class APIwesomeService {
 	 *	Return all data object visible attributes of the specified type.
 	 *
 	 *	@parameter <{DATA_OBJECT_NAME}> string
+	 *	@parameter <{LIMIT}> integer
+	 *	@parameter <{FILTER}> array(string, string)
+	 *	@parameter <{SORT}> array(string, string)
 	 *	@return array
 	 */
 
-	public function retrieveValidated($class) {
+	public function retrieveValidated($class, $limit = null, $filter = null, $sort = null) {
 
 		// Make sure this data object type has visibility customisation.
 
@@ -63,6 +69,24 @@ class APIwesomeService {
 				$columns = DataObject::database_fields($class);
 				array_shift($columns);
 
+				// Make sure the filter and sort are valid.
+
+				if(is_array($filter) && (count($filter) === 2)) {
+					if(!isset($columns[$filter[0]])) {
+						return null;
+					}
+					$where[] = Convert::raw2sql($filter[0]) . " = '" . Convert::raw2sql($filter[1]) . "'";
+				}
+				if(is_array($sort) && (count($sort) === 2)) {
+					if(!isset($columns[$sort[0]])) {
+						return null;
+					}
+					$sort = Convert::raw2sql($sort[0]) . ' ' . Convert::raw2sql($sort[1]);
+				}
+				else {
+					$sort = array();
+				}
+
 				// Apply any visibility customisation.
 
 				$select = '';
@@ -76,7 +100,7 @@ class APIwesomeService {
 
 				// Grab all data object visible attributes.
 
-				$query = new SQLQuery("ClassName, {$select}ID", array($class), $where);
+				$query = new SQLQuery("ClassName, {$select}ID", $class, $where, $sort, array(), array(), (is_numeric($limit) ? $limit : array()));
 				$objects = array();
 				foreach($query->execute() as $temporary) {
 
