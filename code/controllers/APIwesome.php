@@ -7,13 +7,13 @@
 
 class APIwesome extends Controller {
 
-	public $service;
+	private $service;
 
-	public static $dependencies = array(
+	private static $dependencies = array(
 		'service' => '%$APIwesomeService',
 	);
 
-	public static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'retrieve'
 	);
 

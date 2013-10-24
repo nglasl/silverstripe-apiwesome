@@ -7,24 +7,24 @@
 
 class DataObjectOutputConfiguration extends DataObject {
 
-	public static $db = array(
+	private static $db = array(
 		'IsFor' => 'Varchar(255)',
 		'APIwesomeVisibility' => 'Text',
 		'CallbackFunction' => 'Varchar(255)'
 	);
 
-	public static $default_sort = 'IsFor';
+	private static $default_sort = 'IsFor';
 
-	public static $searchable_fields = array(
+	private static $searchable_fields = array(
 		'IsFor',
 		'CallbackFunction'
 	);
 
-	public static $summary_fields = array(
+	private static $summary_fields = array(
 		'getTitle'
 	);
 
-	public static $field_labels = array(
+	private static $field_labels = array(
 		'getTitle' => 'Is For'
 	);
 

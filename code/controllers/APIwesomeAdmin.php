@@ -7,10 +7,10 @@
 
 class APIwesomeAdmin extends ModelAdmin {
 
-	public static $managed_models = 'DataObjectOutputConfiguration';
+	private static $managed_models = 'DataObjectOutputConfiguration';
 
-	public static $menu_title = 'JSON/XML Configuration';
+	private static $menu_title = 'JSON/XML Configuration';
 
-	public static $url_segment = 'json-xml';
+	private static $url_segment = 'json-xml';
 
 }
