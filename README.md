@@ -42,7 +42,7 @@ The JSON/XML feed will only be available to data objects with attribute visibili
 
 ### Output
 
-A JSON/XML feed request may have a number of optional filters applied:
+A JSON/XML feed request may have a number of optional filters applied, where `&filter` will only apply for a visible attribute:
 
 * `?limit=5`
 * `&filter=Attribute,value`
