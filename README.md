@@ -45,8 +45,8 @@ The JSON/XML feed will only be available to data objects with attribute visibili
 A JSON/XML feed request may have a number of optional filters applied:
 
 * `?limit=5`
-* `&filter=Column,value`
-* `&sort=Column,ORDER`
+* `&filter=Attribute,value`
+* `&sort=Attribute,ORDER`
 
 It may also be previewed through the appropriate model admin of your data object.
 
@@ -62,8 +62,8 @@ The methods available may be programmatically called to generate JSON, with opti
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
-$JSON = $service->retrieve('DataObjectName', 'JSON', 5, array('Column', 'value'),
-	array('Column', 'ORDER'));
+$JSON = $service->retrieve('DataObjectName', 'JSON', 5, array('Attribute', 'value'),
+	array('Attribute', 'ORDER'));
 ```
 
 ```php
@@ -75,8 +75,8 @@ XML, with optional filters:
 
 ```php
 $XML = $service->retrieve('DataObjectName', 'XML');
-$XML = $service->retrieve('DataObjectName', 'XML', 5, array('Column', 'value'),
-	array('Column', 'ORDER'));
+$XML = $service->retrieve('DataObjectName', 'XML', 5, array('Attribute', 'value'),
+	array('Attribute', 'ORDER'));
 ```
 
 ```php
