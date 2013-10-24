@@ -71,12 +71,12 @@ class APIwesomeService {
 
 				// Make sure the filter and sort are valid.
 
-				$validFilter = false;
+				$filterValid = false;
 				if(is_array($filter) && (count($filter) === 2)) {
 					if(!isset($columns[$filter[0]])) {
 						return null;
 					}
-					$validFilter = true;
+					$filterValid = true;
 				}
 				if(is_array($sort) && (count($sort) === 2)) {
 					$sort[1] = strtoupper($sort[1]);
@@ -92,18 +92,23 @@ class APIwesomeService {
 				// Apply any visibility customisation.
 
 				$select = '';
+				$filterApplied = false;
 				$iteration = 0;
 				foreach($columns as $attribute => $type) {
 					if(isset($visibility[$iteration]) && $visibility[$iteration]) {
 						$select .= $attribute . ', ';
-						if($validFilter && ($filter[0] === $attribute)) {
+						if($filterValid && ($filter[0] === $attribute)) {
 
 							// Apply the filter if the matching attribute is visible.
 
+							$filterApplied = true;
 							$where[] = Convert::raw2sql($filter[0]) . " = '" . Convert::raw2sql($filter[1]) . "'";
 						}
 					}
 					$iteration++;
+				}
+				if($filterValid && !$filterApplied) {
+					return null;
 				}
 
 				// Grab all data object visible attributes.
