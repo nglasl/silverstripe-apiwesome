@@ -7,7 +7,7 @@ http://slid.es/nglasl/apiwesome
 
 ## Requirement
 
-* SilverStripe 3.0.X
+* SilverStripe 3.1.X
 
 ## Getting Started
 
