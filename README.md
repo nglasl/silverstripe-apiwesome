@@ -22,7 +22,7 @@ http://slid.es/nglasl/apiwesome
 
 ### Data Object Exclusions/Inclusions
 
-All data objects are included by default (excluding core), unless inclusions have explicitly been defined.
+All data objects are included by default (excluding most core), unless inclusions have explicitly been defined.
 
 ```php
 DataObjectOutputConfiguration::customise_data_objects('exclude', array(
