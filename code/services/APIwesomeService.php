@@ -73,14 +73,14 @@ class APIwesomeService {
 
 				$filterValid = false;
 				if(is_array($filter) && (count($filter) === 2)) {
-					if(!isset($columns[$filter[0]])) {
+					if(!isset($columns[$filter[0]]) && ($filter[0] !== 'ID') && ($filter[0] !== 'ClassName')) {
 						return null;
 					}
 					$filterValid = true;
 				}
 				if(is_array($sort) && (count($sort) === 2)) {
 					$sort[1] = strtoupper($sort[1]);
-					if(!isset($columns[$sort[0]]) || (($sort[1] !== 'ASC') && ($sort[1] !== 'DESC'))) {
+					if(!isset($columns[$sort[0]]) && ($sort[0] !== 'ID') && ($sort[0] !== 'ClassName') || (($sort[1] !== 'ASC') && ($sort[1] !== 'DESC'))) {
 						return null;
 					}
 					$sort = Convert::raw2sql($sort[0]) . ' ' . Convert::raw2sql($sort[1]);
@@ -97,7 +97,7 @@ class APIwesomeService {
 				foreach($columns as $attribute => $type) {
 					if(isset($visibility[$iteration]) && $visibility[$iteration]) {
 						$select .= $attribute . ', ';
-						if($filterValid && ($filter[0] === $attribute)) {
+						if($filterValid && !$filterApplied && (($filter[0] === $attribute) || ($filter[0] === 'ID') || ($filter[0] === 'ClassName'))) {
 
 							// Apply the filter if the matching attribute is visible.
 
