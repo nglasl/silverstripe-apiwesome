@@ -13,4 +13,14 @@ class APIwesomeAdmin extends ModelAdmin {
 
 	private static $url_segment = 'json-xml';
 
+	/**
+	 *	Correct the button styling.
+	 */
+
+	public function init() {
+
+		parent::init();
+		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
+	}
+
 }
