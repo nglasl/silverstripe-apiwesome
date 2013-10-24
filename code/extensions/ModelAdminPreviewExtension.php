@@ -18,9 +18,9 @@ class ModelAdminPreviewExtension extends Extension {
 
 			// Make sure the appropriate JSON/XML exists for this data object type.
 
+			Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 			$objects = singleton('APIwesomeService')->retrieveValidated($gridfield->name);
 			if($objects) {
-				Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 				$configuration = $gridfield->config;
 				$configuration->addComponent(new APIwesomePreviewButton());
 			}
