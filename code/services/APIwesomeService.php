@@ -71,11 +71,12 @@ class APIwesomeService {
 
 				// Make sure the filter and sort are valid.
 
+				$validFilter = false;
 				if(is_array($filter) && (count($filter) === 2)) {
 					if(!isset($columns[$filter[0]])) {
 						return null;
 					}
-					$where[] = Convert::raw2sql($filter[0]) . " = '" . Convert::raw2sql($filter[1]) . "'";
+					$validFilter = true;
 				}
 				if(is_array($sort) && (count($sort) === 2)) {
 					$sort[1] = strtoupper($sort[1]);
@@ -95,6 +96,12 @@ class APIwesomeService {
 				foreach($columns as $attribute => $type) {
 					if(isset($visibility[$iteration]) && $visibility[$iteration]) {
 						$select .= $attribute . ', ';
+						if($validFilter && ($filter[0] === $attribute)) {
+
+							// Apply the filter if the matching attribute is visible.
+
+							$where[] = Convert::raw2sql($filter[0]) . " = '" . Convert::raw2sql($filter[1]) . "'";
+						}
 					}
 					$iteration++;
 				}
