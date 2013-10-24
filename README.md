@@ -58,7 +58,7 @@ Accessing the service:
 $service = Singleton('APIwesomeService');
 ```
 
-The methods available may be programmatically called to generate JSON:
+The methods available may be programmatically called to generate JSON, with optional filters:
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
@@ -71,7 +71,7 @@ $objects = DataObjectName::get()->toNestedArray();
 $JSON = $service->retrieveJSON($objects);
 ```
 
-XML:
+XML, with optional filters:
 
 ```php
 $XML = $service->retrieve('DataObjectName', 'XML');
