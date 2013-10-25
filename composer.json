@@ -5,8 +5,7 @@
 	"keywords": [
 		"silverstripe",
 		"json",
-		"xml",
-		"api"
+		"xml"
 	],
 	"homepage": "https://github.com/nglasl/silverstripe-apiwesome",
 	"license": "BSD-3-Clause",
