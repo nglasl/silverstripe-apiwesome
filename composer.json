@@ -3,6 +3,8 @@
 	"description": "A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data objects.",
 	"type": "silverstripe-module",
 	"keywords": [
+		"silverstripe",
+		"api",
 		"json",
 		"xml"
 	],
