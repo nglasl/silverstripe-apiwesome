@@ -35,6 +35,7 @@ div.ss-gridfield-buttonrow.ss-gridfield-buttonrow-before:after {
 }
 
 p.grid-csv-button, p.grid-print-button {
+	margin-top: 12px;
 	margin-bottom: 16px !important;
 }
 
