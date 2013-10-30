@@ -237,7 +237,7 @@ class APIwesomeService {
 
 											// Compose any asset file paths.
 
-											$select[$relationshipAttribute] = ((strpos(strtolower($relationshipAttribute), 'file') !== false) && (strpos($relationshipValue, 'assets/') !== false)) ? Director::absoluteURL($relationshipValue) : (is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue);
+											$select[$relationshipAttribute] = (((strpos(strtolower($relationshipAttribute), 'file') !== false) || (strpos(strtolower($relationshipAttribute), 'image') !== false)) && (strpos($relationshipValue, 'assets/') !== false)) ? Director::absoluteURL($relationshipValue) : (is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue);
 										}
 									}
 									$iteration++;
@@ -256,7 +256,7 @@ class APIwesomeService {
 
 						// Compose any asset file paths.
 
-						$output[$attribute] = ((strpos(strtolower($attribute), 'file') !== false) && (strpos($value, 'assets/') !== false)) ? Director::absoluteURL($value) : (is_integer($value) ? (string)$value : $value);
+						$output[$attribute] = (((strpos(strtolower($attribute), 'file') !== false) || (strpos(strtolower($relationshipAttribute), 'image') !== false)) && (strpos($value, 'assets/') !== false)) ? Director::absoluteURL($value) : (is_integer($value) ? (string)$value : $value);
 					}
 				}
 			}
