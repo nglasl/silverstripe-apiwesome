@@ -122,10 +122,7 @@ class APIwesomeService {
 					$object = array();
 					foreach($temporary as $attribute => $value) {
 						if($value) {
-
-							// Compose any asset file paths.
-
-							$object[$attribute] = ((strpos(strtolower($attribute), 'file') !== false) && (strpos($value, 'assets/') !== false)) ? Director::absoluteURL($value) : $value;
+							$object[$attribute] = $value;
 						}
 					}
 					$objects[] = $object;
@@ -256,7 +253,10 @@ class APIwesomeService {
 						$output[$relationship] = array($relationObject->ClassName => $this->recursiveRelationships($select, $attributeVisibility, $cache));
 					}
 					else if(!$relationship) {
-						$output[$attribute] = is_integer($value) ? (string)$value : $value;
+
+						// Compose any asset file paths.
+
+						$output[$attribute] = ((strpos(strtolower($attribute), 'file') !== false) && (strpos($value, 'assets/') !== false)) ? Director::absoluteURL($value) : (is_integer($value) ? (string)$value : $value);
 					}
 				}
 			}
