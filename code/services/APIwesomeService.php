@@ -207,6 +207,7 @@ class APIwesomeService {
 						// Grab the relationship.
 
 						$relationObject = DataObject::get_by_id($object['ClassName'], $object['ID'])->$relationship();
+						$temporaryMap = $relationObject->toMap();
 						if($attributeVisibility) {
 
 							// Grab the attribute visibility.
@@ -214,7 +215,6 @@ class APIwesomeService {
 							$relationConfiguration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($relationObject->ClassName) . "'");
 							$relationVisibility = ($relationConfiguration && $relationConfiguration->APIwesomeVisibility) ? explode(',', $relationConfiguration->APIwesomeVisibility) : null;
 							if($relationVisibility && in_array('1', $relationVisibility)) {
-								$temporaryMap = $relationObject->toMap();
 								$columns = DataObject::database_fields(($relationObject->ClassName === 'Image') ? 'File' : $relationObject->ClassName);
 								$map = array();
 								foreach($columns as $column => $type) {
@@ -245,7 +245,7 @@ class APIwesomeService {
 							}
 						}
 						else {
-							$select = $map;
+							$select = $temporaryMap;
 						}
 
 						// Check the corresponding relationship.
