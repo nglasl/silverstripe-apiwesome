@@ -334,6 +334,7 @@ class APIwesomeService {
 	 *
 	 *	@parameter <{PAGE_ID}> integer
 	 *	@parameter <{OUTPUT_TYPE}> string
+	 *	@URLparameter s <{STAGE_OR_LIVE}> string
 	 *	@return JSON/XML
 	 */
 
