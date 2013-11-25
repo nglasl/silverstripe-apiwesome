@@ -13,7 +13,7 @@ DataObjectOutputConfiguration::apply_required_extensions();
 /**
  *
  *	EXAMPLE: JSON/XML data object exclusions/inclusions.
- *	NOTE: All data objects are included by default (excluding most core), unless inclusions have explicitly been defined.
+ *	NOTE: All data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
  *
  *	@parameter <{FILTER_TYPE}> string
  *	@parameter <{DATA_OBJECT_NAMES}> array(string)
@@ -29,5 +29,7 @@ DataObjectOutputConfiguration::apply_required_extensions();
  *		'<DataObjectName>',
  *		'<DataObjectName>'
  *	));
+ *
+ *	DataObjectOutputConfiguration::customise_data_objects('disabled');
  *
  */

@@ -24,7 +24,7 @@ http://slid.es/nglasl/apiwesome
 
 ### Data Object Exclusions/Inclusions
 
-All data objects are included by default (excluding most core), unless inclusions have explicitly been defined.
+All data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
 
 ```php
 DataObjectOutputConfiguration::customise_data_objects('exclude', array(
@@ -36,6 +36,10 @@ DataObjectOutputConfiguration::customise_data_objects('exclude', array(
 DataObjectOutputConfiguration::customise_data_objects('include', array(
 	'DataObjectName'
 ));
+```
+
+```php
+DataObjectOutputConfiguration::customise_data_objects('disabled');
 ```
 
 ### Attribute Visibility Customisation

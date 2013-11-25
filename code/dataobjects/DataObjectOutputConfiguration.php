@@ -68,6 +68,12 @@ class DataObjectOutputConfiguration extends DataObject {
 	);
 
 	/**
+	 *	Flag used to prevent data object output, defined under project configuration.
+	 */
+
+	private static $disabled = false;
+
+	/**
 	 *	Apply all APIwesome required extensions.
 	 */
 
@@ -79,13 +85,13 @@ class DataObjectOutputConfiguration extends DataObject {
 
 	/**
 	 *	Set JSON/XML data object exclusions/inclusions.
-	 *	NOTE: All data objects are included by default (excluding most core), unless inclusions have explicitly been defined.
+	 *	NOTE: All data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
 	 *
 	 *	@parameter <{FILTER_TYPE}> string
 	 *	@parameter <{DATA_OBJECT_NAMES}> array(string)
 	 */
 
-	public static function customise_data_objects($type, $objects) {
+	public static function customise_data_objects($type, $objects = null) {
 
 		// Merge the exclusions/inclusions in case of multiple definitions.
 
@@ -94,6 +100,9 @@ class DataObjectOutputConfiguration extends DataObject {
 		}
 		else if(is_array($objects) && (strtolower($type) === 'include')) {
 			self::$custom_inclusions = array_unique(array_merge(self::$custom_inclusions, $objects));
+		}
+		else if(strtolower($type) === 'disabled') {
+			self::$disabled = true;
 		}
 	}
 
@@ -135,13 +144,13 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Delete existing output configurations for data objects excluded.
 
-			if(is_subclass_of($object, 'DataObject') && (((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
+			if(is_subclass_of($object, 'DataObject') && (self::$disabled || ((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
 				$this->deleteConfiguration($object, $existing);
 			}
 
 			// Add an output configuration for new data objects.
 
-			else if(!$existing && is_subclass_of($object, 'DataObject') && !is_subclass_of($object, 'SiteTree') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
+			else if(!$existing && !self::$disabled && is_subclass_of($object, 'DataObject') && !is_subclass_of($object, 'SiteTree') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
 				$this->addConfiguration($object);
 			}
 		}
