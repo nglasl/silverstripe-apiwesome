@@ -330,6 +330,41 @@ class APIwesomeService {
 	}
 
 	/**
+	 *	Return the appropriate staged JSON/XML output for the corresponding page.
+	 *
+	 *	@parameter <{PAGE_ID}> integer
+	 *	@parameter <{OUTPUT_TYPE}> string
+	 *	@return JSON/XML
+	 */
+
+	public function retrieveStaged($page, $output) {
+
+		// Bypass any staging preview restrictions where required.
+
+		$request = Controller::curr()->getRequest();
+		$stage = $request->getVar('s') ? $request->getVar('s') : $request->getVar('stage');
+		$output = strtoupper($output);
+		if((($stage === 'Stage') || ($stage === 'Live')) && (($output === 'JSON') || ($output === 'XML'))) {
+
+			// Set the appropriate staging mode.
+
+			Versioned::reading_stage($stage);
+
+			// Compose the appropriate JSON/XML.
+
+			$function = "retrieve{$output}";
+			$temporary = array(
+				0 => SiteTree::get_by_id('SiteTree', $page)->toMap()
+			);
+			return $this->$function($temporary, false, true);
+		}
+
+		// The current request was not valid.
+
+		return array();
+	}
+
+	/**
 	 *	Parse the corresponding APIwesome JSON input, returning a formatted array of data objects and relationships.
 	 *
 	 *	@parameter <{APIWESOME_JSON}> JSON

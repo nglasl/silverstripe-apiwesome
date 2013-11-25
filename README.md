@@ -90,6 +90,12 @@ $objects = DataObjectName::get()->toNestedArray();
 $XML = $service->retrieveXML($objects);
 ```
 
+JSON/XML for a versioned page (though the CMS doesn't correctly preview XML), with regard to the respective stage in `index()`:
+
+```php
+return $service->retrieveStaged($this->data()->ID, 'JSON');
+```
+
 They may also be used to parse JSON/XML from another APIwesome instance. Therefore, this module may be used as both an API and external connector between multiple projects.
 
 ```php
