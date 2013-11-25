@@ -90,7 +90,7 @@ $objects = DataObjectName::get()->toNestedArray();
 $XML = $service->retrieveXML($objects);
 ```
 
-JSON/XML for a versioned page (though the CMS doesn't correctly preview XML), with regard to the respective stage in `index()`:
+JSON/XML for a versioned page (though the CMS may not correctly preview XML), with regard to the respective stage in `index()`:
 
 ```php
 return $service->retrieveStaged($this->data()->ID, 'JSON');
