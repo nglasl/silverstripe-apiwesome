@@ -197,7 +197,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			$configuration = FieldGroup::create(
 				'Visibility'
-			)->addExtraClass('visibility');
+			);
 			$iteration = 0;
 			foreach($columns as $name => $type) {
 
