@@ -19,7 +19,8 @@ p.apiwesome.notification {
 	border-radius: 5px;
 }
 
-a.apiwesome.preview.json, a.apiwesome.preview.xml {
+a.apiwesome.preview.json,
+a.apiwesome.preview.xml {
 	min-width: 150px;
 }
 
@@ -34,7 +35,8 @@ div.ss-gridfield-buttonrow.ss-gridfield-buttonrow-before:after {
 	visibility: hidden;
 }
 
-p.grid-csv-button, p.grid-print-button {
+p.grid-csv-button,
+p.grid-print-button {
 	margin-top: 12px;
 	margin-bottom: 16px !important;
 }
@@ -43,6 +45,7 @@ div.fieldgroup div.fieldgroup div.fieldgroup-field {
 	float: none;
 }
 
-div.fieldgroup div.fieldgroup div.fieldgroup-field input, div.fieldgroup div.fieldgroup div.fieldgroup-field label {
+div.fieldgroup div.fieldgroup div.fieldgroup-field input,
+div.fieldgroup div.fieldgroup div.fieldgroup-field label {
 	vertical-align: middle;
 }
