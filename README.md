@@ -1,11 +1,9 @@
-# apiwesome
+# [apiwesome](http://slid.es/nglasl/apiwesome)
 
 _**NOTE:** This branch is for development only._
 
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data
 	objects.
-
-http://slid.es/nglasl/apiwesome
 
 ## Requirement
 
