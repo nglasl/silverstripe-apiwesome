@@ -56,6 +56,8 @@ It may also be previewed through the appropriate model admin of your data object
 
 ### Developer Functionality
 
+#### PHP
+
 Accessing the service:
 
 ```php
@@ -103,6 +105,36 @@ $objects = $service->parseJSON($JSON);
 ```php
 $objects = $service->parseXML($XML);
 ```
+
+#### jQuery
+
+```javascript
+;(function($) {
+	$(function() {
+
+		$.getJSON('//ss3.1/apiwesome/retrieve/data-object-name/json', function(JSON) {
+
+			// Iterate over each data object.
+
+			$.each(JSON['DataObjectList'], function(index, object) {
+
+				// Iterate over each visible attribute.
+
+				$.each(object['DataObjectName'], function(attribute, value) {
+				});
+			});
+		})
+
+		// The JSON feed has not been configured.
+
+		.fail(function() {
+		});
+
+	});
+})(jQuery);
+```
+
+NOTE: `JSON['DataObjectList']` will not change.
 
 ## Maintainer Contact
 
