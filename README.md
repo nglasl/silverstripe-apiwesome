@@ -108,6 +108,8 @@ $objects = $service->parseXML($XML);
 
 #### jQuery
 
+JSON example:
+
 ```javascript
 ;(function($) {
 	$(function() {
@@ -134,7 +136,7 @@ $objects = $service->parseXML($XML);
 })(jQuery);
 ```
 
-NOTE: `JSON['DataObjectList']` will not change.
+**NOTE:** `JSON['DataObjectList']` will not change.
 
 ## Maintainer Contact
 
