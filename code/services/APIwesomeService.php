@@ -315,8 +315,9 @@ class APIwesomeService {
 			// Convert a corresponding relationship to an XML child element.
 
 			if(is_array($value)) {
+				$relationship = $parentXML->addChild($attribute);
 				foreach($value as $relationshipAttribute => $relationshipValue) {
-					$relationshipXML = $parentXML->addChild($relationshipAttribute);
+					$relationshipXML = $relationship->addChild($relationshipAttribute);
 
 					// Check the corresponding relationship.
 
