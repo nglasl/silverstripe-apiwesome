@@ -127,7 +127,7 @@ JSON example:
 			});
 		})
 
-		// The JSON feed has not been configured.
+		// The JSON feed has not yet been configured.
 
 		.fail(function() {
 		});
