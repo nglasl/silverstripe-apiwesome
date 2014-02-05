@@ -116,7 +116,7 @@ JSON example:
 
 		$.getJSON('//ss3.1/apiwesome/retrieve/data-object-name/json', function(JSON) {
 
-			// Iterate over each data object.
+			// Iterate over each data object. This line will NOT change.
 
 			$.each(JSON['DataObjectList'], function(index, object) {
 
@@ -135,8 +135,6 @@ JSON example:
 	});
 })(jQuery);
 ```
-
-**NOTE:** `JSON['DataObjectList']` will not change.
 
 ## Maintainer Contact
 
