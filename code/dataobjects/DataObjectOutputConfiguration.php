@@ -50,7 +50,8 @@ class DataObjectOutputConfiguration extends DataObject {
 		'LeftAndMainTest_Object',
 		'ModelAdminTest_Contact',
 		'ModelAdminTest_Player',
-		'DataObjectOutputConfiguration'
+		'DataObjectOutputConfiguration',
+		'APIwesomeToken'
 	);
 	
 	/**

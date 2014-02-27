@@ -4,6 +4,14 @@
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
+p.apiwesome.notification,
+div.apiwesome.admin {
+	padding: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
 p.apiwesome.notification {
 	background: #FFA84C;
 	background: -o-linear-gradient(top, #FFA84C, #FF7B0D);
@@ -12,20 +20,42 @@ p.apiwesome.notification {
 	background: -moz-linear-gradient(top, #FFA84C, #FF7B0D);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFA84C), color-stop(100%, #FF7B0D));
 	background: -webkit-linear-gradient(top, #FFA84C, #FF7B0D);
-	padding: 5px;
 	border: 1px solid #FF7400;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
 }
 
-a.apiwesome.preview.json,
-a.apiwesome.preview.xml {
+div.apiwesome.admin {
+	margin-bottom: 16px;
+	background: #B0BEC7;
+	background: -o-linear-gradient(top, #B0BEC7, #98AAB6);
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr = '#B0BEC7', endColorStr = '#98AAB6');
+	background: -ms-linear-gradient(top, #B0BEC7, #98AAB6);
+	background: -moz-linear-gradient(top, #B0BEC7, #98AAB6);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #B0BEC7), color-stop(100%, #98AAB6));
+	background: -webkit-linear-gradient(top, #B0BEC7, #98AAB6);
+	color: white;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+div.apiwesome.admin.token {
+	border: 1px solid #1F9433;
+}
+
+div.apiwesome.admin.error {
+	border: 1px solid #D25F5A;
+}
+
+div.apiwesome.admin div {
+	margin-bottom: 10px;
+}
+
+div.apiwesome.admin a.preview.json {
+	margin-bottom: 5px;
+}
+
+div.apiwesome.admin a.regenerate,
+div.apiwesome.admin a.preview.json,
+div.apiwesome.admin a.preview.xml {
 	min-width: 150px;
-}
-
-a.apiwesome.preview.json {
-	margin: 6px 0;
 }
 
 div.ss-gridfield-buttonrow.ss-gridfield-buttonrow-before:after {
@@ -37,7 +67,7 @@ div.ss-gridfield-buttonrow.ss-gridfield-buttonrow-before:after {
 
 p.grid-csv-button,
 p.grid-print-button {
-	margin-top: 12px;
+	margin-top: 0;
 	margin-bottom: 16px !important;
 }
 

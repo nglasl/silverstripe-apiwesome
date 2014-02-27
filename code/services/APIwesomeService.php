@@ -1,11 +1,30 @@
 <?php
 
 /**
- *	Handles the current request and outputs the appropriate JSON/XML.
+ *	Handles the current request and outputs the appropriate JSON/XML, while providing any additional functionality.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
 class APIwesomeService {
+
+	/**
+	 *	Attempt to create a hash for a new security token.
+	 *
+	 *	@parameter <{EMPTY_KEY_VARIABLE}> null
+	 *	@parameter <{HASH_ITERATION_COUNT}> integer
+	 *	@parameter <{KEY_CHARACTER_OUTPUT_COUNT}> integer
+	 *	@return string/boolean
+	 */
+
+	public function generateHash(&$key = null, $iterations = 14, $characters = 128) {
+
+		// Temporarily store the key for something such as a session.
+
+		$key = bin2hex(openssl_random_pseudo_bytes($characters / 2));
+		$salt = substr(str_replace('+', '.', base64_encode(openssl_random_pseudo_bytes(18))), 0, 22);
+		$hash = crypt($key, '$2a$' . $iterations . '$' . $salt);
+		return (strlen($hash) >= 13) ? $hash : false;
+	}
 
 	/**
 	 *	Retrieve the appropriate JSON/XML output of a specified data object type, with optional filters.

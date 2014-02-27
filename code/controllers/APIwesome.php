@@ -14,6 +14,7 @@ class APIwesome extends Controller {
 	);
 
 	private static $allowed_actions = array(
+		'regenerate',
 		'retrieve'
 	);
 
@@ -42,6 +43,46 @@ class APIwesome extends Controller {
 		}
 		else {
 			throw new SS_HTTPResponse_Exception($response);
+		}
+	}
+
+	/**
+	 *	Attempt to regenerate the current security token.
+	 */
+
+	public function regenerate() {
+
+		// Restrict this functionality to administrators.
+
+		if(Permission::checkMember(Member::currentUser(), 'ADMIN')) {
+
+			// Temporarily pass an empty variable to store the key.
+
+			$key = null;
+			$hash = $this->service->generateHash($key);
+			if($hash) {
+
+				// Instantiate the new security token.
+
+				$token = APIwesomeToken::create();
+				$token->Hash = $hash;
+				$token->write();
+
+				// Temporarily use the session to display the new security token key.
+
+				Session::set('APIwesomeToken', $key);
+			}
+			else {
+
+				// Log the failed security token regeneration.
+
+				SS_Log::log('APIwesome security token regeneration failed.', SS_Log::ERR);
+				Session::set('APIwesomeToken', -1);
+			}
+			return $this->redirect('/admin/json-xml/');
+		}
+		else {
+			return $this->httpError(404);
 		}
 	}
 
