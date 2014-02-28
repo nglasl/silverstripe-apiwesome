@@ -56,21 +56,20 @@ class APIwesome extends Controller {
 
 		if(Permission::checkMember(Member::currentUser(), 'ADMIN')) {
 
-			// Temporarily pass an empty variable to store the key.
+			// Attempt to create a random hash.
 
-			$key = null;
-			$hash = $this->service->generateHash($key);
-			if($hash) {
+			$regeneration = $this->service->generateHash();
+			if($regeneration) {
 
 				// Instantiate the new security token.
 
 				$token = APIwesomeToken::create();
-				$token->Hash = $hash;
+				$token->Hash = $regeneration['hash'];
 				$token->write();
 
 				// Temporarily use the session to display the new security token key.
 
-				Session::set('APIwesomeToken', $key);
+				Session::set('APIwesomeToken', $regeneration['key']);
 			}
 			else {
 
