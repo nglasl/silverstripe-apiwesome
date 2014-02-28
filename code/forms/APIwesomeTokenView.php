@@ -13,11 +13,28 @@ class APIwesomeTokenView implements GridField_HTMLProvider {
 
 	public function getHTMLFragments($gridfield) {
 
+		$existingTokens = APIwesomeToken::get()->exists();
+
 		// Temporarily retrieve the session value, preventing storage vulnerabilities.
 
-		$token = Session::get('APIwesomeToken');
-		$status = ($token !== -1) ? 'token' : 'error';
-		$token = ($token && ($token !== -1)) ? "<div>{$token}</div>" : '';
+		$currentToken = Session::get('APIwesomeToken');
+
+		// Determine the state of the current security token.
+
+		$token = "<div class='token'>";
+		if($currentToken === -1) {
+			$status = 'error';
+			$token .= strtoupper($status);
+		}
+		else if(!$existingTokens) {
+			$status = 'invalid';
+			$token .= strtoupper($status);
+		}
+		else {
+			$status = 'valid';
+			$token .= $currentToken ? $currentToken : strtoupper($status);
+		}
+		$token .= '</div>';
 		return array(
 			'before' => "<div class='apiwesome admin {$status}'>
 				<div><strong>Security Token</strong></div>

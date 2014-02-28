@@ -36,12 +36,34 @@ div.apiwesome.admin {
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
-div.apiwesome.admin.token {
+div.apiwesome.admin.invalid {
+	border: 1px solid #FF7400;
+}
+
+div.apiwesome.admin.valid {
 	border: 1px solid #1F9433;
 }
 
 div.apiwesome.admin.error {
 	border: 1px solid #D25F5A;
+}
+
+div.apiwesome.admin.invalid div.token,
+div.apiwesome.admin.valid div.token,
+div.apiwesome.admin.error div.token {
+	text-shadow: 0 -1px 0 rgba(255, 255, 255, 0.4);
+}
+
+div.apiwesome.admin.invalid div.token {
+	color: #FF7400;
+}
+
+div.apiwesome.admin.valid div.token {
+	color: #1F9433;
+}
+
+div.apiwesome.admin.error div.token {
+	color: #D25F5A;
 }
 
 div.apiwesome.admin div {
