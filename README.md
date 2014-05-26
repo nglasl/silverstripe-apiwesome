@@ -1,4 +1,4 @@
-# [apiwesome](http://slid.es/nglasl/apiwesome)
+# [apiwesome](https://github.com/nglasl)
 
 _**NOTE:** This branch is for development only._
 
