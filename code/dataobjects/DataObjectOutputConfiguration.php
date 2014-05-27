@@ -198,7 +198,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			$configuration = FieldGroup::create(
 				'Visibility'
-			);
+			)->addExtraClass('visibility');
 			$iteration = 0;
 			foreach($columns as $name => $type) {
 
@@ -213,7 +213,7 @@ class DataObjectOutputConfiguration extends DataObject {
 					"{$name}Visibility",
 					"Display <strong>{$printName}</strong>?",
 					(isset($visibility[$iteration])) ? $visibility[$iteration] : 0
-				)->addExtraClass('visibility'));
+				));
 				$iteration++;
 			}
 			$fields->addFieldToTab('Root.Main', $configuration);

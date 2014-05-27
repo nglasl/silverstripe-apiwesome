@@ -93,11 +93,11 @@ p.grid-print-button {
 	margin-bottom: 16px !important;
 }
 
-div.fieldgroup div.fieldgroup div.fieldgroup-field {
+div.visibility div.fieldgroup-field {
 	float: none;
 }
 
-div.fieldgroup div.fieldgroup div.fieldgroup-field input,
-div.fieldgroup div.fieldgroup div.fieldgroup-field label {
+div.visibility div.fieldgroup-field input,
+div.visibility div.fieldgroup-field label {
 	vertical-align: middle;
 }
