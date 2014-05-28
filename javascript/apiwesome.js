@@ -19,8 +19,19 @@
 			$('div.apiwesome.admin input.preview.token').entwine({
 				onkeyup: function() {
 
-					var preview = $('div.apiwesome.admin a.preview');
-					($(this).val().length > 0) ? preview.removeClass('disabled') : preview.addClass('disabled');
+					var token = $(this).val();
+					$('div.apiwesome.admin a.preview').each(function() {
+
+						var preview = $(this);
+						if(token.length > 0) {
+							preview.attr('href', preview.data('url') + '?token=' + token);
+							preview.removeClass('disabled');
+						}
+						else {
+							preview.addClass('disabled');
+							preview.attr('href', preview.data('url'));
+						}
+					});
 				}
 			});
 
