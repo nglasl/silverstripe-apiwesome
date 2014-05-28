@@ -16,13 +16,14 @@ class APIwesomeAdmin extends ModelAdmin {
 	private static $url_segment = 'json-xml';
 
 	/**
-	 *	Correct the button styling.
+	 *	Correct the button styling and implement a confirmation message for security token regeneration.
 	 */
 
 	public function init() {
 
 		parent::init();
 		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
+		Requirements::javascript(APIWESOME_PATH . '/javascript/apiwesome.js');
 	}
 
 }

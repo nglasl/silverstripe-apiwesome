@@ -15,7 +15,6 @@ class APIwesomeAdminExtension extends Extension {
 
 		$gridfield = $form->fields->items[0];
 		if(isset($gridfield)) {
-			Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 			$configuration = $gridfield->config;
 			$configuration->removeComponentsByType('GridFieldAddNewButton');
 
