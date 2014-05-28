@@ -69,7 +69,7 @@ class APIwesome extends Controller {
 
 				// Temporarily use the session to display the new security token key.
 
-				Session::set('APIwesomeToken', $regeneration['key']);
+				Session::set('APIwesomeToken', "{$regeneration['key']}:{$regeneration['salt']}");
 			}
 			else {
 
@@ -106,9 +106,12 @@ class APIwesome extends Controller {
 
 		$parameters = $this->getRequest()->allParams();
 
-		// Pass the current request parameters over to the APIwesomeService if valid.
+		// Pass the current request parameters over to the APIwesomeService where valid.
 
-		if($parameters['ID'] && $parameters['OtherID']) {
+		if($parameters['ID'] && $parameters['OtherID'] && ($validation = $this->validate($parameters['OtherID']))) {
+			if(is_string($validation)) {
+				return $validation;
+			}
 
 			// Convert the data object name input to the class name.
 
@@ -122,6 +125,52 @@ class APIwesome extends Controller {
 		else {
 			return $this->httpError(404);
 		}
+	}
+
+	/**
+	 *	Confirm that the current request user token exists.
+	 */
+
+	private function validate($output) {
+
+		// Compare the current security token hash against the user token.
+
+		$currentToken = APIwesomeToken::get()->sort('Created', 'DESC')->first();
+		$userToken = explode(':', $this->getRequest()->getVar('token'));
+		if($currentToken && (count($userToken) === 2) && ($generation = $this->service->generateHash($userToken[0], $userToken[1]))) {
+			$hash = $generation['hash'];
+			if($currentToken->Hash === $hash) {
+				return true;
+			}
+
+			// Determine whether the user token has been invalidated.
+
+			else {
+				$tokens = APIwesomeToken::get()->sort('Created', 'DESC');
+				foreach($tokens as $token) {
+					if($token->Hash === $hash) {
+
+						// Return the appropriate JSON/XML output indicating the token expiry.
+
+						$output = strtoupper($output);
+						if($output === 'JSON') {
+							$this->getResponse()->addHeader('Content-Type', 'application/json');
+							$JSON = Convert::array2json(array('Expired' => true));
+							return $JSON;
+						}
+						else if($output === 'XML') {
+							$this->getResponse()->addHeader('Content-Type', 'application/xml');
+							$XML = new SimpleXMLElement('<Expired>true</Expired>');
+							return $XML->asXML();
+						}
+					}
+				}
+			}
+		}
+
+		// Invalid.
+
+		return false;
 	}
 
 }

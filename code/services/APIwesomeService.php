@@ -8,23 +8,26 @@
 class APIwesomeService {
 
 	/**
-	 *	Attempt to create a random hash for a new security token.
+	 *	Attempt to match an existing security token hash, or create a random hash for a new security token.
 	 *
 	 *	@parameter <{HASH_ITERATION_COUNT}> integer
 	 *	@parameter <{KEY_CHARACTER_OUTPUT_COUNT}> integer
 	 *	@return array(string, string)/boolean
 	 */
 
-	public function generateHash($iterations = 14, $characters = 128) {
+	public function generateHash($key = null, $salt = null, $iterations = 12, $characters = 64) {
 
-		$key = bin2hex(openssl_random_pseudo_bytes($characters / 2));
-		$salt = substr(str_replace('+', '.', base64_encode(openssl_random_pseudo_bytes(18))), 0, 22);
+		if(is_null($key) || is_null($salt)) {
+			$key = bin2hex(openssl_random_pseudo_bytes($characters / 2));
+			$salt = substr(str_replace('+', '.', base64_encode(openssl_random_pseudo_bytes(18))), 0, 22);
+		}
 		$hash = crypt($key, '$2a$' . $iterations . '$' . $salt);
 
-		// Temporarily store the key for session use.
+		// Temporarily store the key and salt for session use.
 
 		return (strlen($hash) >= 13) ? array(
 			'key' => $key,
+			'salt' => $salt,
 			'hash' => $hash
 		) : false;
 	}
