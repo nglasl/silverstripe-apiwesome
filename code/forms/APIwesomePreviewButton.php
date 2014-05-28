@@ -16,9 +16,11 @@ class APIwesomePreviewButton implements GridField_HTMLProvider {
 		$object = strtolower(ltrim(preg_replace('/[A-Z]+[^A-Z]/', '-$0', $gridfield->name), '-'));
 		return array(
 			'before' => "<div class='apiwesome admin'>
-				<a href='/apiwesome/retrieve/{$object}/json' target='_blank' class='preview json ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='preview'>Preview JSON &raquo;</a>
+				<div><strong>Security Token</strong></div>
+				<div><input class='preview token' spellcheck='false'></input></div>
+				<a href='/apiwesome/retrieve/{$object}/json' target='_blank' class='preview json disabled ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='preview'>Preview JSON &raquo;</a>
 				<br>
-				<a href='/apiwesome/retrieve/{$object}/xml' target='_blank' class='preview xml ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='preview'>Preview XML &raquo;</a>
+				<a href='/apiwesome/retrieve/{$object}/xml' target='_blank' class='preview xml disabled ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='preview'>Preview XML &raquo;</a>
 			</div>"
 		);
 	}

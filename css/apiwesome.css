@@ -70,14 +70,25 @@ div.apiwesome.admin div {
 	margin-bottom: 10px;
 }
 
-div.apiwesome.admin a.preview.json {
-	margin-bottom: 5px;
-}
-
 div.apiwesome.admin a.regenerate,
 div.apiwesome.admin a.preview.json,
 div.apiwesome.admin a.preview.xml {
 	min-width: 150px;
+}
+
+div.apiwesome.admin input.preview.token {
+	min-width: 600px;
+	padding: 4px;
+}
+
+div.apiwesome.admin a.preview.json {
+	margin-bottom: 5px;
+}
+
+div.apiwesome.admin a.preview.json.disabled,
+div.apiwesome.admin a.preview.xml.disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
 }
 
 div.ss-gridfield-buttonrow.ss-gridfield-buttonrow-before:after {
