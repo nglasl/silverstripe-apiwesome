@@ -38,11 +38,11 @@ class APIwesome extends Controller {
 
 		// Display the error page for the given status code.
 
-		if($this->getRequest()->isMedia() || !($response = ErrorPage::response_for($code))) {
-			return parent::httpError($code, $message);
+		if($response = ErrorPage::response_for($code)) {
+			throw new SS_HTTPResponse_Exception($response, $code);
 		}
 		else {
-			throw new SS_HTTPResponse_Exception($response);
+			return parent::httpError($code, $message);
 		}
 	}
 
@@ -155,12 +155,13 @@ class APIwesome extends Controller {
 						$output = strtoupper($output);
 						if($output === 'JSON') {
 							$this->getResponse()->addHeader('Content-Type', 'application/json');
-							$JSON = Convert::array2json(array('Expired' => true));
+							$JSON = Convert::array2json(array('DataObjectList' => array('Expired' => 1)));
 							return $JSON;
 						}
 						else if($output === 'XML') {
 							$this->getResponse()->addHeader('Content-Type', 'application/xml');
-							$XML = new SimpleXMLElement('<Expired>true</Expired>');
+							$XML = new SimpleXMLElement('<DataObjectList/>');
+							$XML->addChild('Expired', 1);
 							return $XML->asXML();
 						}
 					}
