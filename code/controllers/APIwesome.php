@@ -78,7 +78,7 @@ class APIwesome extends Controller {
 				SS_Log::log('APIwesome security token regeneration failed.', SS_Log::ERR);
 				Session::set('APIwesomeToken', -1);
 			}
-			return $this->redirect('/admin/json-xml/');
+			return $this->redirect('admin/json-xml/');
 		}
 		else {
 			return $this->httpError(404);

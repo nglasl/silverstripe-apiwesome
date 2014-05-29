@@ -10,7 +10,7 @@
 			$('div.apiwesome.admin a.regenerate').entwine({
 				onclick: function() {
 
-					return confirm('This will INVALIDATE any JSON/XML feeds.');
+					return confirm('This will INVALIDATE any JSON/XML feeds!');
 				}
 			});
 

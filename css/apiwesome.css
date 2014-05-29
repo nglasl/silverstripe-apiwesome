@@ -5,6 +5,7 @@
  */
 
 p.apiwesome.notification,
+div.apiwesome.wrapper,
 div.apiwesome.admin {
 	padding: 5px;
 	-moz-border-radius: 5px;
@@ -23,8 +24,13 @@ p.apiwesome.notification {
 	border: 1px solid #FF7400;
 }
 
-div.apiwesome.admin {
+div.apiwesome.wrapper {
 	margin-bottom: 16px;
+	padding: 0;
+	overflow: hidden;
+}
+
+div.apiwesome.admin {
 	background: #B0BEC7;
 	background: -o-linear-gradient(top, #B0BEC7, #98AAB6);
 	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr = '#B0BEC7', endColorStr = '#98AAB6');
@@ -77,7 +83,7 @@ div.apiwesome.admin a.preview.xml {
 }
 
 div.apiwesome.admin input.preview.token {
-	min-width: 600px;
+	min-width: 580px;
 	padding: 4px;
 }
 
@@ -87,6 +93,7 @@ div.apiwesome.admin a.preview.json {
 
 div.apiwesome.admin a.preview.json.disabled,
 div.apiwesome.admin a.preview.xml.disabled {
+	filter: Alpha(opacity = 40);
 	opacity: 0.4;
 	cursor: not-allowed;
 }
