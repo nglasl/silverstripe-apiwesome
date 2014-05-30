@@ -20,7 +20,7 @@ class APIwesomePreviewButton implements GridField_HTMLProvider {
 			'before' => "<div class='apiwesome wrapper'>
 				<div class='apiwesome admin'>
 					<div><strong>Security Token</strong></div>
-					<div><input class='preview token' spellcheck='false'/></div>
+					<div><input class='preview token' autocomplete='off' spellcheck='false'/></div>
 					<a data-url='{$JSON}' href='{$JSON}' target='_blank' class='preview json disabled ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='preview'>Preview JSON &raquo;</a>
 					<br>
 					<a data-url='{$XML}' href='{$XML}' target='_blank' class='preview xml disabled ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='preview'>Preview XML &raquo;</a>

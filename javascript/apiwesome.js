@@ -17,7 +17,7 @@
 			// Determine whether the preview JSON/XML button display should be disabled, based on the given security token.
 
 			$('div.apiwesome.admin input.preview.token').entwine({
-				onkeyup: function() {
+				oninput: function() {
 
 					var token = $(this).val();
 					$('div.apiwesome.admin a.preview').each(function() {
