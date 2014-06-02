@@ -1,6 +1,25 @@
 ;(function($) {
 	$(function() {
 
+		// Determine whether the preview JSON/XML button display and functionality should be enabled, based on the given security token.
+
+		function enable(input) {
+
+			var token = input ? input.val() : $('div.apiwesome.admin input.preview.token').val();
+			$('div.apiwesome.admin a.preview').each(function() {
+
+				var preview = $(this);
+				if(token.length > 0) {
+					preview.attr('href', preview.data('url') + '?token=' + token);
+					preview.removeClass('disabled');
+				}
+				else {
+					preview.addClass('disabled');
+					preview.attr('href', preview.data('url'));
+				}
+			});
+		};
+
 		// Bind the mouse events dynamically.
 
 		$.entwine('ss', function($) {
@@ -14,30 +33,22 @@
 				}
 			});
 
-			// Determine whether the preview JSON/XML button display should be disabled, based on the given security token.
+			// Trigger an interface update on key press.
 
 			$('div.apiwesome.admin input.preview.token').entwine({
-				oninput: function() {
+				onkeyup: function() {
 
-					var token = $(this).val();
-					$('div.apiwesome.admin a.preview').each(function() {
-
-						var preview = $(this);
-						if(token.length > 0) {
-							preview.attr('href', preview.data('url') + '?token=' + token);
-							preview.removeClass('disabled');
-						}
-						else {
-							preview.addClass('disabled');
-							preview.attr('href', preview.data('url'));
-						}
-					});
+					enable($(this));
 				}
 			});
 
-			// Determine whether the preview JSON/XML button functionality should be disabled, based on the given security token.
+			// Trigger an interface update and handle any preview request.
 
 			$('div.apiwesome.admin a.preview').entwine({
+				onmouseenter: function() {
+
+					enable();
+				},
 				onclick: function() {
 
 					return !$(this).hasClass('disabled');
