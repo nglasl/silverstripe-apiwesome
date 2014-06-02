@@ -36,7 +36,7 @@
 			// Trigger an interface update on key press.
 
 			$('div.apiwesome.admin input.preview.token').entwine({
-				onkeyup: function() {
+				onchange: function() {
 
 					enable($(this));
 				}
