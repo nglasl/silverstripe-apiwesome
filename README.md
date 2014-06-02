@@ -16,8 +16,9 @@ _**NOTE:** This branch is for development only._
 * `/dev/build`
 * Select `JSON/XML` through the CMS.
 * Configure attribute visibility.
-* `Regenerate` and copy the security token `x:y`
-* `/apiwesome/retrieve/data-object-name/json?token=x:y` or `/apiwesome/retrieve/data-object-name/xml?token=x:y`
+* `Regenerate` the security token `x:y`
+* `/apiwesome/retrieve/data-object-name/json?token=x:y`
+* `/apiwesome/retrieve/data-object-name/xml?token=x:y`
 
 ## Overview
 
