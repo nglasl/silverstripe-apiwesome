@@ -24,6 +24,8 @@ p.apiwesome.notification {
 	border: 1px solid #FF7400;
 }
 
+// IE9 border radius and background gradient compatibility.
+
 div.apiwesome.wrapper {
 	margin-bottom: 16px;
 	padding: 0;
