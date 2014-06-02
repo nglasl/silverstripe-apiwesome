@@ -14,9 +14,10 @@ _**NOTE:** This branch is for development only._
 * Place the module under your root project directory.
 * Define any custom JSON/XML data object exclusions/inclusions through project configuration.
 * `/dev/build`
-* Select `JSON/XML Configuration` through the CMS.
+* Select `JSON/XML` through the CMS.
 * Configure attribute visibility.
-* `/apiwesome/retrieve/data-object-name/json` or `/apiwesome/retrieve/data-object-name/xml`
+* `Regenerate` and copy the security token `x:y`
+* `/apiwesome/retrieve/data-object-name/json?token=x:y` or `/apiwesome/retrieve/data-object-name/xml?token=x:y`
 
 ## Overview
 
@@ -114,11 +115,17 @@ JSON example:
 ;(function($) {
 	$(function() {
 
-		$.getJSON('//ss3.1/apiwesome/retrieve/data-object-name/json', function(JSON) {
+		$.getJSON('//ss3.1/apiwesome/retrieve/data-object-name/json?token=' + token(), function(JSON) {
 
 			// Iterate over each data object. This line will NOT change.
 
 			$.each(JSON['DataObjectList'], function(index, object) {
+
+				// The JSON feed security token has been regenerated!
+
+				if((index === 'Expired') && (object === true)) {
+					return false;
+				}
 
 				// Iterate over each visible attribute.
 
