@@ -24,7 +24,7 @@ p.apiwesome.notification {
 	border: 1px solid #FF7400;
 }
 
-// IE9 border radius and background gradient compatibility.
+/* IE9 border radius and background gradient compatibility. */
 
 div.apiwesome.wrapper {
 	margin-bottom: 16px;
@@ -99,6 +99,8 @@ div.apiwesome.admin a.preview.xml.disabled {
 	opacity: 0.4;
 	cursor: not-allowed;
 }
+
+/* Correcting some core layout issues. */
 
 div.ss-gridfield-buttonrow.ss-gridfield-buttonrow-before:after {
 	display: block;
