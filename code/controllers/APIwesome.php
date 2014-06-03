@@ -54,7 +54,8 @@ class APIwesome extends Controller {
 
 		// Restrict this functionality to administrators.
 
-		if(Permission::checkMember(Member::currentUser(), 'ADMIN')) {
+		$user = Member::currentUserID();
+		if(Permission::checkMember($user, 'ADMIN')) {
 
 			// Attempt to create a random hash.
 
@@ -65,6 +66,7 @@ class APIwesome extends Controller {
 
 				$token = APIwesomeToken::create();
 				$token->Hash = $regeneration['hash'];
+				$token->AdministratorID = $user;
 				$token->write();
 
 				// Temporarily use the session to display the new security token key.

@@ -11,4 +11,8 @@ class APIwesomeToken extends DataObject {
 		'Hash' => 'Text'
 	);
 
+	private static $has_one = array(
+		'Administrator' => 'Member'
+	);
+
 }
