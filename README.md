@@ -130,7 +130,7 @@ JSON example:
 
 			$.each(JSON['DataObjectList'], function(index, object) {
 
-				// The JSON feed security token has been regenerated!
+				// The JSON feed security token is no longer valid!
 
 				if((index === 'Expired') && (object === true)) {
 					return false;

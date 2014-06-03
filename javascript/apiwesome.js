@@ -11,10 +11,14 @@
 				var preview = $(this);
 				if(token.length > 0) {
 					preview.attr('href', preview.data('url') + '?token=' + token);
-					preview.removeClass('disabled');
+					preview.fadeTo(250, 1, function() {
+						preview.removeClass('disabled');
+					});
 				}
 				else {
-					preview.addClass('disabled');
+					preview.fadeTo(250, 0.4, function() {
+						preview.addClass('disabled');
+					});
 					preview.attr('href', preview.data('url'));
 				}
 			});
