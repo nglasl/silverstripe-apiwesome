@@ -1,7 +1,7 @@
 <?php
 
 /**
- *	APIwesome specific configuration settings.
+ *	The apiwesome specific configuration settings.
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
