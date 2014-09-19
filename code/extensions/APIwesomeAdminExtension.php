@@ -20,7 +20,8 @@ class APIwesomeAdminExtension extends Extension {
 
 			// Restrict the security token to administrators.
 
-			if(Permission::checkMember(Member::currentUser(), 'ADMIN')) {
+			$user = Member::currentUserID();
+			if(Permission::checkMember($user, 'ADMIN')) {
 				$configuration->addComponent(new APIwesomeTokenView());
 			}
 		}
