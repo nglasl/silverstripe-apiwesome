@@ -10,7 +10,7 @@ class APIwesome extends Controller {
 	public $service;
 
 	private static $dependencies = array(
-		'service' => '%$APIwesomeService',
+		'service' => '%$APIwesomeService'
 	);
 
 	private static $allowed_actions = array(
