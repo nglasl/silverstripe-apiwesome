@@ -138,7 +138,7 @@ class APIwesomeService {
 
 				// Grab all data object visible attributes.
 
-				$query = new SQLQuery("ClassName, {$select}ID", $class, $where, $sort, array(), array(), (is_numeric($limit) ? $limit : array()));
+				$query = new SQLQuery("ClassName, {$select}ID", $class, $where, $sort, array(), array(), is_numeric($limit) ? $limit : array());
 				$objects = array();
 				foreach($query->execute() as $temporary) {
 
