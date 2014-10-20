@@ -278,6 +278,7 @@ class DataObjectOutputConfiguration extends DataObject {
 	 */
 
 	private function deleteConfiguration($object, $existing) {
+
 		if($existing) {
 			$existing->delete();
 			DB::alteration_message($object . ' JSON/XML Configuration', 'deleted');

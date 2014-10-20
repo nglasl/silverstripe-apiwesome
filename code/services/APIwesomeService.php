@@ -438,6 +438,7 @@ class APIwesomeService {
 	 */
 
 	private function recursiveXMLArray($XML, $objects = array()) {
+
 		foreach((array)$XML as $attribute => $value) {
 			$objects[$attribute] = (is_object($value) || is_array($value)) ? $this->recursiveXMLArray($value) : $value;
 		}
