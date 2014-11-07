@@ -8,7 +8,6 @@
 if(!defined('APIWESOME_PATH')) {
 	define('APIWESOME_PATH', rtrim(basename(dirname(__FILE__))));
 }
-DataObjectOutputConfiguration::apply_required_extensions();
 
 /**
  *

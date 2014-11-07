@@ -1,0 +1,9 @@
+---
+name: apiwesome-extensions
+---
+APIwesomeAdmin:
+  extensions:
+    - 'APIwesomeAdminExtension'
+ModelAdmin:
+  extensions:
+    - 'ModelAdminPreviewExtension'

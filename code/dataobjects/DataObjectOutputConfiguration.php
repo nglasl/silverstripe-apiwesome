@@ -75,16 +75,6 @@ class DataObjectOutputConfiguration extends DataObject {
 	private static $disabled = false;
 
 	/**
-	 *	Apply all APIwesome required extensions.
-	 */
-
-	public static function apply_required_extensions() {
-
-		Object::add_extension('APIwesomeAdmin', 'APIwesomeAdminExtension');
-		Object::add_extension('ModelAdmin', 'ModelAdminPreviewExtension');
-	}
-
-	/**
 	 *	Set JSON/XML data object exclusions/inclusions.
 	 *	NOTE: All data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
 	 *
