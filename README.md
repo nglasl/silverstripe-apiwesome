@@ -122,7 +122,7 @@ JSON example:
 
 ```javascript
 ;(function($) {
-	$(function() {
+	$(window).load(function() {
 
 		$.getJSON('//ss3.1/apiwesome/retrieve/data-object-name/json?token=' + token(), function(JSON) {
 

@@ -1,5 +1,5 @@
 ;(function($) {
-	$(function() {
+	$(window).load(function() {
 
 		// Determine whether the preview JSON/XML button display and functionality should be enabled, based on the given security token.
 
