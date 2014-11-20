@@ -26,4 +26,18 @@ class APIwesomeAdmin extends ModelAdmin {
 		Requirements::javascript(APIWESOME_PATH . '/javascript/apiwesome.js');
 	}
 
+	/**
+	 *	Update the custom summary fields to be sortable.
+	 */
+
+	public function getEditForm($ID = null, $fields = null) {
+
+		$form = parent::getEditForm($ID, $fields);
+		$gridfield = $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass));
+		$gridfield->getConfig()->getComponentByType('GridFieldSortableHeader')->setFieldSorting(array(
+			'getTitle' => 'IsFor'
+		));
+		return $form;
+	}
+
 }
