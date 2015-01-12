@@ -1,9 +1,9 @@
 # [apiwesome](https://github.com/nglasl)
 
-_The current release is **1.0.0**._
+_The current release is **1.0.0**_
 
-	A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data
-	objects.
+	A module for SilverStripe which will automatically create customisable JSON/XML feeds
+	for your data objects.
 
 ## Requirement
 
