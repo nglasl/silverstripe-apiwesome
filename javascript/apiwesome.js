@@ -44,6 +44,7 @@
 			onchange: function() {
 
 				enable($(this));
+				$('#Form_EditForm').removeClass('changed');
 			}
 		});
 
