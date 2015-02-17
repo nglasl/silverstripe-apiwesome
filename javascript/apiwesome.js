@@ -22,6 +22,7 @@
 				});
 				preview.attr('href', preview.data('url'));
 			}
+			$('#Form_EditForm').removeClass('changed');
 		});
 	};
 
@@ -44,7 +45,18 @@
 			onchange: function() {
 
 				enable($(this));
-				$('#Form_EditForm').removeClass('changed');
+			},
+			onkeydown: function(event) {
+
+				// Trigger nothing on pressing enter.
+
+				if(event.keyCode === 13) {
+
+					// Trigger an interface update.
+
+					$(this).change();
+					return false;
+				}
 			}
 		});
 
