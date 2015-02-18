@@ -48,12 +48,9 @@
 			},
 			onkeydown: function(event) {
 
-				// Trigger nothing on pressing enter.
+				// Trigger only an interface update when pressing enter.
 
 				if(event.keyCode === 13) {
-
-					// Trigger an interface update.
-
 					$(this).change();
 					return false;
 				}
