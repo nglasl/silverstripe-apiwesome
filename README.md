@@ -1,4 +1,4 @@
-# [apiwesome](https://github.com/nglasl)
+# [apiwesome](https://packagist.org/packages/nglasl/silverstripe-apiwesome)
 
 _The current release is **1.0.3**_
 
