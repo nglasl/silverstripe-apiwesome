@@ -4,24 +4,18 @@
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
-p.apiwesome.notification,
+p.apiwesome.notice,
 div.apiwesome.wrapper,
 div.apiwesome.admin {
-	padding: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
 }
 
-p.apiwesome.notification {
-	background: #FFA84C;
-	background: -o-linear-gradient(top, #FFA84C, #FF7B0D);
-	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr = '#FFA84C', endColorStr = '#FF7B0D');
-	background: -ms-linear-gradient(top, #FFA84C, #FF7B0D);
-	background: -moz-linear-gradient(top, #FFA84C, #FF7B0D);
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #FFA84C), color-stop(100%, #FF7B0D));
-	background: -webkit-linear-gradient(top, #FFA84C, #FF7B0D);
-	border: 1px solid #FF7400;
+p.apiwesome.notice {
+	background: #F0F8FC;
+	padding: 10px;
+	border: 1px solid #93CDE8;
 }
 
 /* IE9 border radius and background gradient compatibility. */
@@ -40,6 +34,7 @@ div.apiwesome.admin {
 	background: -moz-linear-gradient(top, #B0BEC7, #98AAB6);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #B0BEC7), color-stop(100%, #98AAB6));
 	background: -webkit-linear-gradient(top, #B0BEC7, #98AAB6);
+	padding: 5px;
 	color: white;
 	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
 }

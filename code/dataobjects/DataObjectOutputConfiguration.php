@@ -205,13 +205,13 @@ class DataObjectOutputConfiguration extends DataObject {
 		}
 		else {
 
-			// Display a notification that a data object should first be created.
+			// Display a notice that data objects should first be created.
 
 			$fields->removeByName('CallbackFunction');
 			$name = $this->getTitle();
 			$fields->addFieldToTab('Root.Main', LiteralField::create(
-				'ConfigurationNotification',
-				"<p class='apiwesome notification'><strong>No {$name}s Found</strong></p>"
+				'ConfigurationNotice',
+				"<p class='apiwesome notice'><strong>No {$name}s Found</strong></p>"
 			));
 		}
 		$this->extend('updateDataObjectOutputConfigurationCMSFields', $fields);
