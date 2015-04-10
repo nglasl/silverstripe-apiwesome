@@ -78,25 +78,26 @@ class APIwesomeService {
 
 	public function retrieveValidated($class, $limit = null, $filter = null, $sort = null) {
 
-		// Make sure this data object type has visibility customisation.
-
 		if(in_array($class, ClassInfo::subclassesFor('DataObject')) && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'")) && DataObject::get_one($class)) {
 			$visibility = $configuration->APIwesomeVisibility ? explode(',', $configuration->APIwesomeVisibility) : null;
-			if($visibility && in_array('1', $visibility)) {
 
-				// Grab the appropriate attributes for this data object.
+			// Grab the appropriate attributes for this data object.
 
-				$where = array();
-				if(is_subclass_of($class, 'SiteTree')) {
-					$where[] = "ClassName = '$class'";
-					$class = 'SiteTree';
-				}
-				else if(is_subclass_of($class, 'File')) {
-					$where[] = "ClassName = '$class'";
-					$class = 'File';
-				}
-				$columns = DataObject::database_fields($class);
-				array_shift($columns);
+			$where = array();
+			if(is_subclass_of($class, 'SiteTree')) {
+				$where[] = "ClassName = '$class'";
+				$class = 'SiteTree';
+			}
+			else if(is_subclass_of($class, 'File')) {
+				$where[] = "ClassName = '$class'";
+				$class = 'File';
+			}
+			$columns = DataObject::database_fields($class);
+			array_shift($columns);
+
+			// Make sure this data object type has visibility customisation.
+
+			if($visibility && (count($visibility) === count($columns)) && in_array('1', $visibility)) {
 
 				// Make sure the filter and sort are valid.
 
@@ -243,9 +244,9 @@ class APIwesomeService {
 
 							$relationConfiguration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($relationObject->ClassName) . "'");
 							$relationVisibility = ($relationConfiguration && $relationConfiguration->APIwesomeVisibility) ? explode(',', $relationConfiguration->APIwesomeVisibility) : null;
-							if($relationVisibility && in_array('1', $relationVisibility)) {
-								$class = is_subclass_of($relationObject->ClassName, 'SiteTree') ? 'SiteTree' : (is_subclass_of($relationObject->ClassName, 'File') ? 'File' : $relationObject->ClassName);
-								$columns = DataObject::database_fields($class);
+							$class = is_subclass_of($relationObject->ClassName, 'SiteTree') ? 'SiteTree' : (is_subclass_of($relationObject->ClassName, 'File') ? 'File' : $relationObject->ClassName);
+							$columns = DataObject::database_fields($class);
+							if($relationVisibility && (count($relationVisibility) === count($columns)) && in_array('1', $relationVisibility)) {
 								$map = array();
 								foreach($columns as $column => $type) {
 									$map[$column] = isset($temporaryMap[$column]) ? $temporaryMap[$column] : null;

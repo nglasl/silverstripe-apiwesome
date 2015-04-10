@@ -197,7 +197,7 @@ class DataObjectOutputConfiguration extends DataObject {
 				$configuration->push(CheckboxField::create(
 					"{$name}Visibility",
 					"Display <strong>{$printName}</strong>?",
-					(isset($visibility[$iteration])) ? $visibility[$iteration] : 0
+					(count($visibility) === count($columns)) && (isset($visibility[$iteration])) ? $visibility[$iteration] : 0
 				));
 				$iteration++;
 			}
