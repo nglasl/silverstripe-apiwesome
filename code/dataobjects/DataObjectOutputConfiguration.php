@@ -76,7 +76,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 	/**
 	 *	Set JSON/XML data object exclusions/inclusions.
-	 *	NOTE: All data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
+	 *	NOTE: ALL data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
 	 *
 	 *	@parameter <{FILTER_TYPE}> string
 	 *	@parameter <{DATA_OBJECT_NAMES}> array(string)
@@ -136,7 +136,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Add an output configuration for new data objects.
 
-			else if(!$existing && !self::$disabled && is_subclass_of($object, 'DataObject') && !is_subclass_of($object, 'SiteTree') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
+			else if(!$existing && is_subclass_of($object, 'DataObject') && !is_subclass_of($object, 'SiteTree') && !self::$disabled && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
 				$this->addConfiguration($object);
 			}
 		}
