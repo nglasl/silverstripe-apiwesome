@@ -136,7 +136,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Add an output configuration for new data objects.
 
-			else if(!$existing && is_subclass_of($object, 'DataObject') && !is_subclass_of($object, 'SiteTree') && !self::$disabled && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
+			else if(!$existing && is_subclass_of($object, 'DataObject') && !self::$disabled && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
 				$this->addConfiguration($object);
 			}
 		}
@@ -175,7 +175,8 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Grab the appropriate attributes for this data object.
 
-			$columns = DataObject::database_fields(($this->IsFor === 'Image') ? 'File' : $this->IsFor);
+			$class = is_subclass_of($this->IsFor, 'SiteTree') ? 'SiteTree' : (is_subclass_of($this->IsFor, 'File') ? 'File' : $this->IsFor);
+			$columns = DataObject::database_fields($class);
 			array_shift($columns);
 			$visibility = $this->APIwesomeVisibility ? explode(',', $this->APIwesomeVisibility) : null;
 
