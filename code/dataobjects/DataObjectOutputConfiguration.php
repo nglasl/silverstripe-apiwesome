@@ -33,27 +33,28 @@ class DataObjectOutputConfiguration extends DataObject {
 	 */
 
 	private static $exclusions = array(
+		'APIwesomeToken',
 		'DataObject',
+		'DataObjectOutputConfiguration',
 		'Email_BounceRecord',
+		'ErrorPage',
 		'File',
 		'Folder',
-		'Image_Cached',
 		'Group',
+		'Image_Cached',
+		'LeftAndMainTest_Object',
 		'LoginAttempt',
 		'Member',
 		'MemberPassword',
+		'ModelAdminTest_Contact',
+		'ModelAdminTest_Player',
 		'Permission',
 		'PermissionRole',
 		'PermissionRoleCode',
 		'SiteConfig',
-		'SiteTree',
-		'LeftAndMainTest_Object',
-		'ModelAdminTest_Contact',
-		'ModelAdminTest_Player',
-		'DataObjectOutputConfiguration',
-		'APIwesomeToken'
+		'SiteTree'
 	);
-	
+
 	/**
 	 *	The custom data objects to exclude, defined under project configuration.
 	 */
@@ -76,7 +77,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 	/**
 	 *	Set JSON/XML data object exclusions/inclusions.
-	 *	NOTE: ALL data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
+	 *	NOTE: ALL data objects are included by default (excluding some core), unless disabled or inclusions have explicitly been defined.
 	 *
 	 *	@parameter <{FILTER_TYPE}> string
 	 *	@parameter <{DATA_OBJECT_NAMES}> array(string)

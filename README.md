@@ -24,7 +24,7 @@ _The current release is **1.0.3**_
 
 ### Data Object Exclusions/Inclusions
 
-ALL data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
+ALL data objects are included by default (excluding some core), unless disabled or inclusions have explicitly been defined.
 
 ```php
 DataObjectOutputConfiguration::customise_data_objects('exclude', array(

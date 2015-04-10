@@ -12,7 +12,7 @@ if(!defined('APIWESOME_PATH')) {
 /**
  *
  *	EXAMPLE: JSON/XML data object exclusions/inclusions.
- *	NOTE: ALL data objects are included by default (excluding most core), unless disabled or inclusions have explicitly been defined.
+ *	NOTE: ALL data objects are included by default (excluding some core), unless disabled or inclusions have explicitly been defined.
  *
  *	@parameter <{FILTER_TYPE}> string
  *	@parameter <{DATA_OBJECT_NAMES}> array(string)
