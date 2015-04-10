@@ -181,6 +181,7 @@ class APIwesomeService {
 	 */
 
 	public function retrieveJSON($objects, $attributeVisibility = false, $contentHeader = false, $callback = false) {
+
 		Versioned::reading_stage('Live');
 
 		// Convert the corresponding array of data objects to JSON.
@@ -319,6 +320,7 @@ class APIwesomeService {
 	 */
 
 	public function retrieveXML($objects, $attributeVisibility = false, $contentHeader = false) {
+
 		Versioned::reading_stage('Live');
 
 		// Convert the corresponding array of data objects to XML.
