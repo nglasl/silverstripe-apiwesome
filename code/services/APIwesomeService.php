@@ -143,6 +143,9 @@ class APIwesomeService {
 
 				// Grab all data object visible attributes.
 
+				if($class::has_extension('Versioned')) {
+					$class = "{$class}_Live";
+				}
 				$query = new SQLQuery("ClassName, {$select}ID", $class, $where, $sort, array(), array(), is_numeric($limit) ? $limit : array());
 				$objects = array();
 				foreach($query->execute() as $temporary) {
@@ -178,6 +181,7 @@ class APIwesomeService {
 	 */
 
 	public function retrieveJSON($objects, $attributeVisibility = false, $contentHeader = false, $callback = false) {
+		Versioned::reading_stage('Live');
 
 		// Convert the corresponding array of data objects to JSON.
 		
@@ -315,6 +319,7 @@ class APIwesomeService {
 	 */
 
 	public function retrieveXML($objects, $attributeVisibility = false, $contentHeader = false) {
+		Versioned::reading_stage('Live');
 
 		// Convert the corresponding array of data objects to XML.
 
