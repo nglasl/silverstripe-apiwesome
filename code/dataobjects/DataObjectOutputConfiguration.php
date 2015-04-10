@@ -37,10 +37,9 @@ class DataObjectOutputConfiguration extends DataObject {
 		'DataObject',
 		'DataObjectOutputConfiguration',
 		'Email_BounceRecord',
-		'ErrorPage',
-		'File',
 		'Folder',
 		'Group',
+		'Image',
 		'Image_Cached',
 		'LeftAndMainTest_Object',
 		'LoginAttempt',
@@ -51,8 +50,7 @@ class DataObjectOutputConfiguration extends DataObject {
 		'Permission',
 		'PermissionRole',
 		'PermissionRoleCode',
-		'SiteConfig',
-		'SiteTree'
+		'SiteConfig'
 	);
 
 	/**
@@ -131,13 +129,13 @@ class DataObjectOutputConfiguration extends DataObject {
 
 			// Delete existing output configurations for data objects excluded.
 
-			if(is_subclass_of($object, 'DataObject') && (self::$disabled || ((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
+			if($existing && is_subclass_of($object, 'DataObject') && (self::$disabled || ((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
 				$this->deleteConfiguration($object, $existing);
 			}
 
 			// Add an output configuration for new data objects.
 
-			else if(!$existing && is_subclass_of($object, 'DataObject') && !self::$disabled && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
+			else if(!$existing && is_subclass_of($object, 'DataObject') && !is_subclass_of($object, 'SiteTree') && !self::$disabled && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
 				$this->addConfiguration($object);
 			}
 		}
