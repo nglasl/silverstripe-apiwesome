@@ -175,7 +175,10 @@ class DataObjectOutputConfiguration extends DataObject {
 			// Grab the appropriate attributes for this data object.
 
 			$class = is_subclass_of($this->IsFor, 'SiteTree') ? 'SiteTree' : (is_subclass_of($this->IsFor, 'File') ? 'File' : $this->IsFor);
-			$columns = DataObject::database_fields($class);
+			$columns = array();
+			foreach(ClassInfo::subclassesFor($class) as $subclass) {
+				$columns = array_merge($columns, DataObject::database_fields($subclass));
+			}
 			array_shift($columns);
 			$visibility = $this->APIwesomeVisibility ? explode(',', $this->APIwesomeVisibility) : null;
 

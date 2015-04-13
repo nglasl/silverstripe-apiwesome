@@ -92,8 +92,41 @@ class APIwesomeService {
 				$where[] = "ClassName = '$class'";
 				$class = 'File';
 			}
-			$columns = DataObject::database_fields($class);
+			$columns = array();
+			$from = array();
+			foreach(ClassInfo::subclassesFor($class) as $subclass) {
+
+				// Determine the tables to join.
+
+				$fields = DataObject::database_fields($subclass);
+				if(ClassInfo::hasTable($subclass)) {
+
+					// Determine the versioned table.
+
+					$same = false;
+					if($subclass === $class) {
+						$same = true;
+					}
+					if($subclass::has_extension('Versioned')) {
+						$subclass = "{$subclass}_Live";
+					}
+					if(!$same) {
+						$from[] = $subclass;
+					}
+				}
+				$subclassColumns = array();
+				foreach($fields as $column => $type) {
+					$subclassColumns["{$subclass}.{$column}"] = $type;
+				}
+				$columns = array_merge($columns, $subclassColumns);
+			}
 			array_shift($columns);
+
+			// Determine the versioned table.
+
+			if($class::has_extension('Versioned')) {
+				$class = "{$class}_Live";
+			}
 
 			// Make sure this data object type has visibility customisation.
 
@@ -121,7 +154,7 @@ class APIwesomeService {
 
 				// Apply any visibility customisation.
 
-				$select = '';
+				$select = ' ';
 				$filterApplied = false;
 				$iteration = 0;
 				foreach($columns as $attribute => $type) {
@@ -143,10 +176,12 @@ class APIwesomeService {
 
 				// Grab all data object visible attributes.
 
-				if($class::has_extension('Versioned')) {
-					$class = "{$class}_Live";
+				$query = new SQLQuery("{$class}.ClassName,{$select}{$class}.ID", $class, $where, $sort, array(), array(), is_numeric($limit) ? $limit : array());
+				foreach($from as $join) {
+					if(strpos($select, " {$join}.") !== false) {
+						$query->addLeftJoin($join, "{$class}.ID = {$join}.ID");
+					}
 				}
-				$query = new SQLQuery("ClassName, {$select}ID", $class, $where, $sort, array(), array(), is_numeric($limit) ? $limit : array());
 				$objects = array();
 				foreach($query->execute() as $temporary) {
 
@@ -198,7 +233,8 @@ class APIwesomeService {
 		// Apply a defined javascript callback function.
 
 		$header = false;
-		if($callback && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($objects[0]['ClassName']) . "'"))) {
+		$class = is_subclass_of($objects[0]['ClassName'], 'SiteTree') ? 'SiteTree' : (is_subclass_of($objects[0]['ClassName'], 'File') ? 'File' : $objects[0]['ClassName']);
+		if($callback && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'"))) {
 			if($configuration->CallbackFunction) {
 				$JSON = str_replace(' ', '_', $configuration->CallbackFunction) . "({$JSON});";
 
@@ -247,11 +283,14 @@ class APIwesomeService {
 
 							// Grab the attribute visibility.
 
-							$relationConfiguration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($relationObject->ClassName) . "'");
-							$relationVisibility = ($relationConfiguration && $relationConfiguration->APIwesomeVisibility) ? explode(',', $relationConfiguration->APIwesomeVisibility) : null;
 							$class = is_subclass_of($relationObject->ClassName, 'SiteTree') ? 'SiteTree' : (is_subclass_of($relationObject->ClassName, 'File') ? 'File' : $relationObject->ClassName);
-							$columns = DataObject::database_fields($class);
-							if($relationVisibility && (count($relationVisibility) === count($columns)) && in_array('1', $relationVisibility)) {
+							$relationConfiguration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'");
+							$relationVisibility = ($relationConfiguration && $relationConfiguration->APIwesomeVisibility) ? explode(',', $relationConfiguration->APIwesomeVisibility) : null;
+							$columns = array();
+							foreach(ClassInfo::subclassesFor($class) as $subclass) {
+								$columns = array_merge($columns, DataObject::database_fields($subclass));
+							}
+							if($relationVisibility && (count($relationVisibility) === (count($columns) - 1)) && in_array('1', $relationVisibility)) {
 								$map = array();
 								foreach($columns as $column => $type) {
 									$map[$column] = isset($temporaryMap[$column]) ? $temporaryMap[$column] : null;
