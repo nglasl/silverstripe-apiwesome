@@ -103,10 +103,7 @@ class APIwesomeService {
 
 					// Determine the versioned table.
 
-					$same = false;
-					if($subclass === $class) {
-						$same = true;
-					}
+					$same = ($subclass === $class);
 					if($subclass::has_extension('Versioned')) {
 						$subclass = "{$subclass}_Live";
 					}
@@ -177,6 +174,9 @@ class APIwesomeService {
 				// Grab all data object visible attributes.
 
 				$query = new SQLQuery("{$class}.ClassName,{$select}{$class}.ID", $class, $where, $sort, array(), array(), is_numeric($limit) ? $limit : array());
+
+				// Determine the tables with visible attributes to join.
+
 				foreach($from as $join) {
 					if(strpos($select, " {$join}.") !== false) {
 						$query->addLeftJoin($join, "{$class}.ID = {$join}.ID");
