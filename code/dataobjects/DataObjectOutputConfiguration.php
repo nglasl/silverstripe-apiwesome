@@ -34,19 +34,11 @@ class DataObjectOutputConfiguration extends DataObject {
 
 	private static $exclusions = array(
 		'APIwesomeToken',
-		'DataObject',
 		'DataObjectOutputConfiguration',
-		'Email_BounceRecord',
-		'Folder',
 		'Group',
-		'Image',
-		'Image_Cached',
-		'LeftAndMainTest_Object',
 		'LoginAttempt',
 		'Member',
 		'MemberPassword',
-		'ModelAdminTest_Contact',
-		'ModelAdminTest_Player',
 		'Permission',
 		'PermissionRole',
 		'PermissionRoleCode',
@@ -127,15 +119,15 @@ class DataObjectOutputConfiguration extends DataObject {
 		foreach($objects as $object) {
 			$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($object) . "'");
 
-			// Delete existing output configurations for data objects excluded.
+			// Delete existing output configurations for invalid data objects, or for those excluded.
 
-			if($existing && is_subclass_of($object, 'DataObject') && (self::$disabled || ((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
+			if($existing && (self::$disabled || (get_parent_class($object) !== 'DataObject') || ClassInfo::classImplements($object, 'TestOnly') || ((count($inclusions) > 0) && !in_array($object, $inclusions)) || ((count($inclusions) === 0) && in_array($object, $exclusions)))) {
 				$this->deleteConfiguration($object, $existing);
 			}
 
-			// Add an output configuration for new data objects.
+			// Add an output configuration for valid data objects.
 
-			else if(!$existing && is_subclass_of($object, 'DataObject') && !is_subclass_of($object, 'SiteTree') && !self::$disabled && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
+			else if(!$existing && !self::$disabled && (get_parent_class($object) === 'DataObject') && !ClassInfo::classImplements($object, 'TestOnly') && (((count($inclusions) > 0) && in_array($object, $inclusions)) || ((count($inclusions) === 0) && !in_array($object, $exclusions)))) {
 				$this->addConfiguration($object);
 			}
 		}
@@ -149,9 +141,13 @@ class DataObjectOutputConfiguration extends DataObject {
 
 	public function getTitle() {
 
-		// Add spaces between words.
+		// Add spaces between words, other characters and numbers.
 
-		return ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $this->IsFor));
+		return ltrim(preg_replace(array(
+			'/([A-Z][a-z]+)/',
+			'/([A-Z]{2,})/',
+			'/([_.0-9]+)/'
+		), ' $0', $this->IsFor));
 	}
 
 	/**
@@ -177,7 +173,14 @@ class DataObjectOutputConfiguration extends DataObject {
 			$class = is_subclass_of($this->IsFor, 'SiteTree') ? 'SiteTree' : (is_subclass_of($this->IsFor, 'File') ? 'File' : $this->IsFor);
 			$columns = array();
 			foreach(ClassInfo::subclassesFor($class) as $subclass) {
-				$columns = array_merge($columns, DataObject::database_fields($subclass));
+
+				// Prepend the table names.
+
+				$subclassColumns = array();
+				foreach(DataObject::database_fields($subclass) as $column => $type) {
+					$subclassColumns["{$subclass}.{$column}"] = $type;
+				}
+				$columns = array_merge($columns, $subclassColumns);
 			}
 			array_shift($columns);
 			$visibility = $this->APIwesomeVisibility ? explode(',', $this->APIwesomeVisibility) : null;
@@ -192,13 +195,17 @@ class DataObjectOutputConfiguration extends DataObject {
 
 				// Print the attribute name, including any relationships.
 
-				$printName = ltrim(preg_replace('/[A-Z]+[^A-Z]/', ' $0', $name));
-				$printName = (substr($printName, strlen($printName) - 2) === 'ID') ? substr($printName, 0, -2) : $printName;
+				$printName = ltrim(preg_replace(array(
+					'/([A-Z][a-z]+)/',
+					'/([A-Z]{2,})/',
+					'/([_.0-9]+)/'
+				), ' $0', $name));
+				$printName = (substr($printName, strlen($printName) - 2) === 'ID') ? substr($printName, 0, -3) : $printName;
 
 				// Set an already existing attribute visibility.
 
 				$configuration->push(CheckboxField::create(
-					"{$name}Visibility",
+					str_replace('.', '-', "{$name}.APIwesomeVisibility"),
 					"Display <strong>{$printName}</strong>?",
 					(count($visibility) === count($columns)) && (isset($visibility[$iteration])) ? $visibility[$iteration] : 0
 				));
@@ -233,7 +240,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		$visibility = '';
 		foreach($this->record as $name => $value) {
-			if(strrpos($name, 'Visibility') && ($name !== 'APIwesomeVisibility')) {
+			if(strrpos($name, 'APIwesomeVisibility')) {
 				$value = $value ? $value : 0;
 				$visibility .= "{$value},";
 			}

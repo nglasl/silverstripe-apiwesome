@@ -8,6 +8,12 @@
 class APIwesomeService {
 
 	/**
+	 *	These are enabled by default, however will greatly impact performance if many relationships are visible.
+	 */
+
+	public $recursiveRelationships = true;
+
+	/**
 	 *	Attempt to match an existing security token hash, or create a random hash for a new security token.
 	 *
 	 *	@parameter <{HASH_ITERATION_COUNT}> integer
@@ -78,7 +84,9 @@ class APIwesomeService {
 
 	public function retrieveValidated($class, $limit = null, $filter = null, $sort = null) {
 
-		if(in_array($class, ClassInfo::subclassesFor('DataObject')) && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'")) && DataObject::get_one($class)) {
+		$class = strtolower($class);
+		if(in_array($class, array_map('strtolower', ClassInfo::subclassesFor('DataObject'))) && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "LOWER(IsFor) = '" . Convert::raw2sql($class) . "'")) && ($temporaryClass = DataObject::get_one($class))) {
+			$class = ClassInfo::baseDataClass($temporaryClass->ClassName);
 			$visibility = $configuration->APIwesomeVisibility ? explode(',', $configuration->APIwesomeVisibility) : null;
 
 			// Grab the appropriate attributes for this data object.
@@ -98,7 +106,7 @@ class APIwesomeService {
 
 				// Determine the tables to join.
 
-				$fields = DataObject::database_fields($subclass);
+				$subclassFields = DataObject::database_fields($subclass);
 				if(ClassInfo::hasTable($subclass)) {
 
 					// Determine the versioned table.
@@ -111,8 +119,11 @@ class APIwesomeService {
 						$from[] = $subclass;
 					}
 				}
+
+				// Prepend the table names.
+
 				$subclassColumns = array();
-				foreach($fields as $column => $type) {
+				foreach($subclassFields as $column => $type) {
 					$subclassColumns["{$subclass}.{$column}"] = $type;
 				}
 				$columns = array_merge($columns, $subclassColumns);
@@ -220,7 +231,7 @@ class APIwesomeService {
 		Versioned::reading_stage('Live');
 
 		// Convert the corresponding array of data objects to JSON.
-		
+
 		$temporary = array();
 		foreach($objects as $object) {
 
@@ -272,12 +283,20 @@ class APIwesomeService {
 
 					// Grab the name of a relationship.
 
-					$relationship = ((substr($attribute, strlen($attribute) - 2) === 'ID') && (strlen($attribute) > 2)) ? substr($attribute, 0, -2) : null;
-					if($relationship && ($value != 0)) {
+					$split = strpos($attribute, '.');
+					$relationship = ((substr($attribute, strlen($attribute) - 2) === 'ID') && (strlen($attribute) > 2)) ? (($split !== false) ? substr(substr($attribute, 0, -2), $split + 1) : substr($attribute, 0, -2)) : null;
+					if($relationship && ($relationObject = DataObject::get_by_id($object['ClassName'], $object['ID'])) && $relationObject->hasMethod($relationship) && ($value != 0)) {
 
 						// Grab the relationship.
 
-						$relationObject = DataObject::get_by_id($object['ClassName'], $object['ID'])->$relationship();
+						$relationObject = $relationObject->$relationship();
+
+						// Make sure recursive relationships are enabled.
+
+						if(!$this->recursiveRelationships) {
+							$output[$relationship] = array($relationObject->ClassName => array('ID' => (string)$relationObject->ID));
+							continue;
+						}
 						$temporaryMap = $relationObject->toMap();
 						if($attributeVisibility) {
 
@@ -288,15 +307,19 @@ class APIwesomeService {
 							$relationVisibility = ($relationConfiguration && $relationConfiguration->APIwesomeVisibility) ? explode(',', $relationConfiguration->APIwesomeVisibility) : null;
 							$columns = array();
 							foreach(ClassInfo::subclassesFor($class) as $subclass) {
-								$columns = array_merge($columns, DataObject::database_fields($subclass));
-							}
-							if($relationVisibility && (count($relationVisibility) === (count($columns) - 1)) && in_array('1', $relationVisibility)) {
-								$map = array();
-								foreach($columns as $column => $type) {
-									$map[$column] = isset($temporaryMap[$column]) ? $temporaryMap[$column] : null;
+
+								// Prepend the table names.
+
+								$subclassColumns = array();
+								foreach(DataObject::database_fields($subclass) as $column => $type) {
+									$subclassColumns["{$subclass}.{$column}"] = $type;
 								}
+								$columns = array_merge($columns, $subclassColumns);
 							}
-							else {
+
+							// Make sure this relationship has visibility customisation.
+
+							if(!$relationVisibility || (count($relationVisibility) !== (count($columns) - 1)) || !in_array('1', $relationVisibility)) {
 								$output[$relationship] = array($relationObject->ClassName => array('ID' => (string)$relationObject->ID));
 								continue;
 							}
@@ -305,13 +328,16 @@ class APIwesomeService {
 
 							$select = array('ClassName' => $relationObject->ClassName, 'ID' => $relationObject->ID);
 							$iteration = 0;
-							foreach($map as $relationshipAttribute => $relationshipValue) {
+							foreach($columns as $relationshipAttribute => $relationshipType) {
 								if($relationshipAttribute !== 'ClassName') {
 									if(isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
-										if(!is_null($relationshipValue)) {
+										$split = strpos($relationshipAttribute, '.');
+										$relationshipAttribute = (($split !== false) ? substr($relationshipAttribute, $split + 1) : $relationshipAttribute);
+										if(isset($temporaryMap[$relationshipAttribute]) && $temporaryMap[$relationshipAttribute]) {
 
-											// Compose any asset file paths.
+											// Retrieve the relationship value, and compose any asset file paths.
 
+											$relationshipValue = $temporaryMap[$relationshipAttribute];
 											$select[$relationshipAttribute] = (((strpos(strtolower($relationshipAttribute), 'file') !== false) || (strpos(strtolower($relationshipAttribute), 'image') !== false)) && (strpos($relationshipValue, 'assets/') !== false)) ? Director::absoluteURL($relationshipValue) : (is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue);
 										}
 									}
@@ -327,7 +353,7 @@ class APIwesomeService {
 
 						$output[$relationship] = array($relationObject->ClassName => $this->recursiveRelationships($select, $attributeVisibility, $cache));
 					}
-					else if(!$relationship) {
+					else {
 
 						// Compose any asset file paths.
 

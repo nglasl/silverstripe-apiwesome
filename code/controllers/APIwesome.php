@@ -36,9 +36,34 @@ class APIwesome extends Controller {
 
 	public function httpError($code, $message = null) {
 
-		// Display the error page for the given status code.
+		// Determine the error page for the given status code.
 
-		if($response = ErrorPage::response_for($code)) {
+		$errorPages = ErrorPage::get()->filter('ErrorCode', $code);
+
+		// Allow extension customisation.
+
+		$this->extend('updateErrorPages', $errorPages);
+
+		// Retrieve the error page, falling back to a cached error page.
+
+		$errorPage = $errorPages->first();
+		$cachedPage = ErrorPage::get_filepath_for_errorcode($code, class_exists('Translatable') ? Translatable::get_current_locale() : null);
+
+		// Return the error page response.
+
+		if($errorPage) {
+			Requirements::clear();
+			Requirements::clear_combined_files();
+			$response = ModelAsController::controller_for($errorPage)->handleRequest(new SS_HTTPRequest('GET', ''), DataModel::inst());
+			throw new SS_HTTPResponse_Exception($response, $code);
+		}
+
+		// Return a cached error page response.
+
+		else if(file_exists($cachedPage)) {
+			$response = new SS_HTTPResponse();
+			$response->setStatusCode($code);
+			$response->setBody(file_get_contents($cachedPage));
 			throw new SS_HTTPResponse_Exception($response, $code);
 		}
 		else {
@@ -115,12 +140,12 @@ class APIwesome extends Controller {
 				return $validation;
 			}
 
-			// Convert the data object name input to the class name.
+			// Retrieve the data object name input.
 
 			$name = explode('-', $parameters['ID']);
 			$class = '';
 			foreach($name as $partial) {
-				$class .= ucfirst(strtolower($partial));
+				$class .= $partial;
 			}
 			return $this->service->retrieve($class, $parameters['OtherID'], $this->getRequest()->getVar('limit'), explode(',', $this->getRequest()->getVar('filter')), explode(',', $this->getRequest()->getVar('sort')));
 		}

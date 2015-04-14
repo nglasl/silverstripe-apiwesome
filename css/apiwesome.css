@@ -104,8 +104,8 @@ div.ss-gridfield-buttonrow.ss-gridfield-buttonrow-before:after {
 	visibility: hidden;
 }
 
-#Form_EditForm_DataObjectOutputConfiguration p.grid-csv-button,
-#Form_EditForm_DataObjectOutputConfiguration p.grid-print-button {
+#Form_EditForm p.grid-csv-button,
+#Form_EditForm p.grid-print-button {
 	margin-top: 0;
 	margin-bottom: 16px !important;
 }
