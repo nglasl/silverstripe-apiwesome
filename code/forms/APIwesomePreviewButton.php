@@ -13,6 +13,8 @@ class APIwesomePreviewButton implements GridField_HTMLProvider {
 
 	public function getHTMLFragments($gridfield) {
 
+		// Print the data object name associated with this gridfield, mainly for readability.
+
 		$object = strtolower(ltrim(preg_replace(array(
 			'/([A-Z][a-z]+)/',
 			'/([A-Z]{2,})/',
@@ -20,7 +22,7 @@ class APIwesomePreviewButton implements GridField_HTMLProvider {
 		), '-$0', $gridfield->name), '-'));
 		$object = str_replace('-_-', '_', $object);
 
-		// Print the data object name associated with this gridfield, mainly for readability.
+		// Retrieve the appropriate JSON/XML output paths.
 
 		$JSON = "apiwesome/retrieve/{$object}/json";
 		$XML = "apiwesome/retrieve/{$object}/xml";

@@ -319,7 +319,7 @@ class APIwesomeService {
 
 							// Make sure this relationship has visibility customisation.
 
-							if(!$relationVisibility || (count($relationVisibility) !== (count($columns) - 1)) || !in_array('1', $relationVisibility)) {
+							if(is_null($relationVisibility) || (count($relationVisibility) !== (count($columns) - 1)) || !in_array('1', $relationVisibility)) {
 								$output[$relationship] = array($relationObject->ClassName => array('ID' => (string)$relationObject->ID));
 								continue;
 							}

@@ -195,12 +195,12 @@ class DataObjectOutputConfiguration extends DataObject {
 
 				// Print the attribute name, including any relationships.
 
+				$printName = (substr($name, strlen($name) - 2) === 'ID') ? substr($name, 0, -2) : $name;
 				$printName = ltrim(preg_replace(array(
 					'/([A-Z][a-z]+)/',
 					'/([A-Z]{2,})/',
 					'/([_.0-9]+)/'
-				), ' $0', $name));
-				$printName = (substr($printName, strlen($printName) - 2) === 'ID') ? substr($printName, 0, -3) : $printName;
+				), ' $0', $printName));
 
 				// Set an already existing attribute visibility.
 

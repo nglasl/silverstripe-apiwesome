@@ -44,23 +44,18 @@ class APIwesome extends Controller {
 
 		$this->extend('updateErrorPages', $errorPages);
 
-		// Retrieve the error page, falling back to a cached error page.
+		// Retrieve the error page response.
 
-		$errorPage = $errorPages->first();
-		$cachedPage = ErrorPage::get_filepath_for_errorcode($code, class_exists('Translatable') ? Translatable::get_current_locale() : null);
-
-		// Return the error page response.
-
-		if($errorPage) {
+		if($errorPage = $errorPages->first()) {
 			Requirements::clear();
 			Requirements::clear_combined_files();
 			$response = ModelAsController::controller_for($errorPage)->handleRequest(new SS_HTTPRequest('GET', ''), DataModel::inst());
 			throw new SS_HTTPResponse_Exception($response, $code);
 		}
 
-		// Return a cached error page response.
+		// Retrieve the cached error page response.
 
-		else if(file_exists($cachedPage)) {
+		else if(file_exists($cachedPage = ErrorPage::get_filepath_for_errorcode($code, class_exists('Translatable') ? Translatable::get_current_locale() : null))) {
 			$response = new SS_HTTPResponse();
 			$response->setStatusCode($code);
 			$response->setBody(file_get_contents($cachedPage));
@@ -140,14 +135,9 @@ class APIwesome extends Controller {
 				return $validation;
 			}
 
-			// Retrieve the data object name input.
+			// Retrieve the specified data object type JSON/XML.
 
-			$name = explode('-', $parameters['ID']);
-			$class = '';
-			foreach($name as $partial) {
-				$class .= $partial;
-			}
-			return $this->service->retrieve($class, $parameters['OtherID'], $this->getRequest()->getVar('limit'), explode(',', $this->getRequest()->getVar('filter')), explode(',', $this->getRequest()->getVar('sort')));
+			return $this->service->retrieve(str_replace('-', '', $parameters['ID']), $parameters['OtherID'], $this->getRequest()->getVar('limit'), explode(',', $this->getRequest()->getVar('filter')), explode(',', $this->getRequest()->getVar('sort')));
 		}
 		else {
 			return $this->httpError(404);
