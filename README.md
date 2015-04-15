@@ -48,7 +48,9 @@ The JSON/XML feed will only be available to data objects with attribute visibili
 
 #### Recursive Relationships
 
-This is enabled by default, however will greatly impact performance if many relationships are visible. To disable the recursion..
+This is enabled by default, however will greatly impact performance if many relationships are visible.
+
+To disable the recursion..
 
 ```yaml
 Injector:
