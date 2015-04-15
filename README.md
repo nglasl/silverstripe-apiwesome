@@ -46,7 +46,7 @@ DataObjectOutputConfiguration::customise_data_objects('disabled');
 
 The JSON/XML feed will only be available to data objects with attribute visibility set through the CMS. Any `has_one` relationships may be displayed, where attribute visibility is determined recursively.
 
-#### Disabling Recursive Relationships
+#### Recursive Relationships
 
 These are enabled by default, however will greatly impact performance if many relationships are visible.
 
