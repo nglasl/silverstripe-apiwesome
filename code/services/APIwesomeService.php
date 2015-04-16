@@ -84,14 +84,32 @@ class APIwesomeService {
 
 	public function retrieveValidated($class, $limit = null, $filter = null, $sort = null) {
 
+		// Validate the data object class.
+
 		$class = strtolower($class);
 		if(in_array($class, array_map('strtolower', ClassInfo::subclassesFor('DataObject'))) && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "LOWER(IsFor) = '" . Convert::raw2sql($class) . "'")) && ($temporaryClass = DataObject::get_one($class))) {
 			$class = ClassInfo::baseDataClass($temporaryClass->ClassName);
 			$visibility = $configuration->APIwesomeVisibility ? explode(',', $configuration->APIwesomeVisibility) : null;
 
+			// Validate the filter and sort options.
+
+			$filterValid = (is_array($filter) && (count($filter) === 2));
+			$sortValid = (is_array($sort) && (count($sort) === 2) && ($order = strtoupper($sort[1])) && (($order === 'ASC') || ($order === 'DESC')));
+			$where = array();
+			$filtering = array();
+			$sorting = array();
+
+			// Determine ID based filtering and sorting, as these aren't considered database fields.
+
+			if($filterValid && ($filter[0] === 'ID')) {
+				$where[] = "{$class}.ID = " . (int)$filter[1];
+			}
+			if($sortValid && ($sort[0] === 'ID')) {
+				$sorting[] = "{$class}.ID {$order}";
+			}
+
 			// Grab the appropriate attributes for this data object.
 
-			$where = array();
 			if(is_subclass_of($class, 'SiteTree')) {
 				$where[] = "ClassName = '$class'";
 				$class = 'SiteTree';
@@ -124,7 +142,17 @@ class APIwesomeService {
 
 				$subclassColumns = array();
 				foreach($subclassFields as $column => $type) {
-					$subclassColumns["{$subclass}.{$column}"] = $type;
+					$subclassColumn = "{$subclass}.{$column}";
+					$subclassColumns[$subclassColumn] = $type;
+
+					// Determine the tables to filter and sort on.
+
+					if($filterValid && ($filter[0] === $column)) {
+						$filtering[$subclassColumn] = is_numeric($filter[1]) ? "{$subclassColumn} = " . (int)$filter[1] : "LOWER({$subclassColumn}) = '" . Convert::raw2sql(strtolower($filter[1])) . "'";
+					}
+					if($sortValid && ($sort[0] === $column)) {
+						$sorting[] = "{$subclassColumn} {$order}";
+					}
 				}
 				$columns = array_merge($columns, $subclassColumns);
 			}
@@ -140,51 +168,29 @@ class APIwesomeService {
 
 			if($visibility && (count($visibility) === count($columns)) && in_array('1', $visibility)) {
 
-				// Make sure the filter and sort are valid.
-
-				$filterValid = false;
-				if(is_array($filter) && (count($filter) === 2)) {
-					if(!isset($columns[$filter[0]]) && ($filter[0] !== 'ID') && ($filter[0] !== 'ClassName')) {
-						return null;
-					}
-					$filterValid = true;
-				}
-				if(is_array($sort) && (count($sort) === 2)) {
-					$sort[1] = strtoupper($sort[1]);
-					if(!isset($columns[$sort[0]]) && ($sort[0] !== 'ID') && ($sort[0] !== 'ClassName') || (($sort[1] !== 'ASC') && ($sort[1] !== 'DESC'))) {
-						return null;
-					}
-					$sort = Convert::raw2sql($sort[0]) . ' ' . Convert::raw2sql($sort[1]);
-				}
-				else {
-					$sort = array();
-				}
-
 				// Apply any visibility customisation.
 
 				$select = ' ';
-				$filterApplied = false;
 				$iteration = 0;
 				foreach($columns as $attribute => $type) {
 					if(isset($visibility[$iteration]) && $visibility[$iteration]) {
 						$select .= $attribute . ', ';
-						if($filterValid && !$filterApplied && (($filter[0] === $attribute) || ($filter[0] === 'ID') || ($filter[0] === 'ClassName'))) {
+						if(isset($filtering[$attribute])) {
 
 							// Apply the filter if the matching attribute is visible.
 
-							$filterApplied = true;
-							$where[] = Convert::raw2sql($filter[0]) . " = '" . Convert::raw2sql($filter[1]) . "'";
+							$where[] = $filtering[$attribute];
 						}
 					}
 					$iteration++;
 				}
-				if($filterValid && !$filterApplied) {
-					return null;
+				if(isset($filtering["{$class}.ClassName"])) {
+					$where[] = $filtering["{$class}.ClassName"];
 				}
 
 				// Grab all data object visible attributes.
 
-				$query = new SQLQuery("{$class}.ClassName,{$select}{$class}.ID", $class, $where, $sort, array(), array(), is_numeric($limit) ? $limit : array());
+				$query = new SQLQuery("{$class}.ClassName,{$select}{$class}.ID", $class, $where, $sorting, array(), array(), is_numeric($limit) ? $limit : array());
 
 				// Determine the tables with visible attributes to join.
 
@@ -283,8 +289,7 @@ class APIwesomeService {
 
 					// Grab the name of a relationship.
 
-					$split = strpos($attribute, '.');
-					$relationship = ((substr($attribute, strlen($attribute) - 2) === 'ID') && (strlen($attribute) > 2)) ? (($split !== false) ? substr(substr($attribute, 0, -2), $split + 1) : substr($attribute, 0, -2)) : null;
+					$relationship = ((substr($attribute, strlen($attribute) - 2) === 'ID') && (strlen($attribute) > 2)) ? substr($attribute, 0, -2) : null;
 					if($relationship && ($relationObject = DataObject::get_by_id($object['ClassName'], $object['ID'])) && $relationObject->hasMethod($relationship) && ($value != 0)) {
 
 						// Grab the relationship.
@@ -316,10 +321,11 @@ class APIwesomeService {
 								}
 								$columns = array_merge($columns, $subclassColumns);
 							}
+							array_shift($columns);
 
 							// Make sure this relationship has visibility customisation.
 
-							if(is_null($relationVisibility) || (count($relationVisibility) !== (count($columns) - 1)) || !in_array('1', $relationVisibility)) {
+							if(is_null($relationVisibility) || (count($relationVisibility) !== count($columns)) || !in_array('1', $relationVisibility)) {
 								$output[$relationship] = array($relationObject->ClassName => array('ID' => (string)$relationObject->ID));
 								continue;
 							}
@@ -329,20 +335,18 @@ class APIwesomeService {
 							$select = array('ClassName' => $relationObject->ClassName, 'ID' => $relationObject->ID);
 							$iteration = 0;
 							foreach($columns as $relationshipAttribute => $relationshipType) {
-								if($relationshipAttribute !== 'ClassName') {
-									if(isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
-										$split = strpos($relationshipAttribute, '.');
-										$relationshipAttribute = (($split !== false) ? substr($relationshipAttribute, $split + 1) : $relationshipAttribute);
-										if(isset($temporaryMap[$relationshipAttribute]) && $temporaryMap[$relationshipAttribute]) {
+								if(isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
+									$split = explode('.', $relationshipAttribute);
+									$relationshipAttribute = ((count($split) === 2) ? $split[1] : $relationshipAttribute);
+									if(isset($temporaryMap[$relationshipAttribute]) && $temporaryMap[$relationshipAttribute]) {
 
-											// Retrieve the relationship value, and compose any asset file paths.
+										// Retrieve the relationship value, and compose any asset file paths.
 
-											$relationshipValue = $temporaryMap[$relationshipAttribute];
-											$select[$relationshipAttribute] = (((strpos(strtolower($relationshipAttribute), 'file') !== false) || (strpos(strtolower($relationshipAttribute), 'image') !== false)) && (strpos($relationshipValue, 'assets/') !== false)) ? Director::absoluteURL($relationshipValue) : (is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue);
-										}
+										$relationshipValue = $temporaryMap[$relationshipAttribute];
+										$select[$relationshipAttribute] = (((strpos(strtolower($relationshipAttribute), 'file') !== false) || (strpos(strtolower($relationshipAttribute), 'image') !== false)) && (strpos($relationshipValue, 'assets/') !== false)) ? Director::absoluteURL($relationshipValue) : (is_integer($relationshipValue) ? (string)$relationshipValue : $relationshipValue);
 									}
-									$iteration++;
 								}
+								$iteration++;
 							}
 						}
 						else {
