@@ -48,7 +48,7 @@ The JSON/XML feed will only be available to data objects with attribute visibili
 
 #### Recursive Relationships
 
-This is enabled by default, however will greatly impact performance if many relationships are visible.
+This is enabled by default, however will impact performance if many nested relationships are visible.
 
 To disable the recursion:
 
@@ -156,7 +156,7 @@ JSON example:
 			});
 		})
 
-		// The JSON feed has not yet been configured.
+		// The JSON feed has either not yet been configured, or no data objects were found.
 
 		.fail(function() {
 		});

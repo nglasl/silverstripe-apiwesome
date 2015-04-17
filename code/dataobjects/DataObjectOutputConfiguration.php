@@ -195,7 +195,7 @@ class DataObjectOutputConfiguration extends DataObject {
 				// Print the attribute name, including any relationships.
 
 				$split = explode('.', $name);
-				$printName = ((substr($name, strlen($name) - 2) === 'ID') && (count($split) === 2) && ClassInfo::exists(($split[0])) && Singleton($split[0])->hasMethod($split[1])) ? substr($name, 0, -2) : $name;
+				$printName = ((substr($name, strlen($name) - 2) === 'ID') && (count($split) === 2) && ClassInfo::exists(($split[0])) && Singleton($split[0])->hasMethod(substr($split[1], 0, -2))) ? substr($name, 0, -2) : $name;
 				$printName = ltrim(preg_replace(array(
 					'/([A-Z][a-z]+)/',
 					'/([A-Z]{2,})/',
