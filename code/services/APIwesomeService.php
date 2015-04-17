@@ -99,15 +99,6 @@ class APIwesomeService {
 			$filtering = array();
 			$sorting = array();
 
-			// Determine ID based filtering and sorting, as these aren't considered database fields.
-
-			if($filterValid && ($filter[0] === 'ID')) {
-				$where[] = "{$class}.ID = " . (int)$filter[1];
-			}
-			if($sortValid && ($sort[0] === 'ID')) {
-				$sorting[] = "{$class}.ID {$order}";
-			}
-
 			// Grab the appropriate attributes for this data object.
 
 			if(is_subclass_of($class, 'SiteTree')) {
@@ -162,6 +153,15 @@ class APIwesomeService {
 
 			if($class::has_extension('Versioned')) {
 				$class = "{$class}_Live";
+			}
+
+			// Determine ID based filtering and sorting, as these aren't considered database fields.
+
+			if($filterValid && ($filter[0] === 'ID')) {
+				$where[] = "{$class}.ID = " . (int)$filter[1];
+			}
+			if($sortValid && ($sort[0] === 'ID')) {
+				$sorting[] = "{$class}.ID {$order}";
 			}
 
 			// Make sure this data object type has visibility customisation.
