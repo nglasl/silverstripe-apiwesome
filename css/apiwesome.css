@@ -104,12 +104,6 @@ div.ss-gridfield-buttonrow.ss-gridfield-buttonrow-before:after {
 	visibility: hidden;
 }
 
-#Form_EditForm p.grid-csv-button,
-#Form_EditForm p.grid-print-button {
-	margin-top: 0;
-	margin-bottom: 16px !important;
-}
-
 div.visibility div.fieldgroup-field {
 	float: none;
 }
