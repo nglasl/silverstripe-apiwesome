@@ -3,7 +3,7 @@
 _The current release is **1.1.0**_
 
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds
-	for your data objects (and pages).
+	for your data objects (including pages).
 
 ## Requirement
 
