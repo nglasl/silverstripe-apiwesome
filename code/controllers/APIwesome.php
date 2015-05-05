@@ -148,7 +148,7 @@ class APIwesome extends Controller {
 	 *	Confirm that the current request user token exists.
 	 */
 
-	private function validate($output) {
+	public function validate($output) {
 
 		// Compare the current security token hash against the user token.
 

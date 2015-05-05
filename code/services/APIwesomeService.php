@@ -240,10 +240,21 @@ class APIwesomeService {
 
 		$temporary = array();
 		foreach($objects as $object) {
+			$classExists = isset($object['ClassName']);
+			$class = $classExists ? $object['ClassName'] : 'DataObject';
+			if($classExists && isset($object['ID'])) {
 
-			// Compose the appropriate output for all relationships.
+				// Compose the appropriate output for all relationships.
 
-			$temporary[] = array($object['ClassName'] => $this->recursiveRelationships($object, $attributeVisibility));
+				$temporary[] = array($class => $this->recursiveRelationships($object, $attributeVisibility));
+			}
+			else {
+
+				// This is a custom JSON output, therefore pass it directly through.
+
+				unset($object['ClassName']);
+				$temporary[] = array($class => $object);
+			}
 		}
 		$JSON = Convert::array2json(array('DataObjectList' => $temporary));
 
@@ -396,11 +407,21 @@ class APIwesomeService {
 
 		$XML = new SimpleXMLElement('<DataObjectList/>');
 		foreach($objects as $object) {
+			$classExists = isset($object['ClassName']);
+			$objectXML = $XML->addChild($classExists ? $object['ClassName'] : 'DataObject');
+			if($classExists && isset($object['ID'])) {
 
-			// Compose the appropriate output for all relationships.
+				// Compose the appropriate output for all relationships.
 
-			$objectXML = $XML->addChild($object['ClassName']);
-			$this->recursiveXML($objectXML, $this->recursiveRelationships($object, $attributeVisibility));
+				$this->recursiveXML($objectXML, $this->recursiveRelationships($object, $attributeVisibility));
+			}
+			else {
+
+				// This is a custom XML output, therefore pass it directly through.
+
+				unset($object['ClassName']);
+				$this->recursiveXML($objectXML, $object);
+			}
 		}
 
 		// Apply a content response header and return the composed XML.
