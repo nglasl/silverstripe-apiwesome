@@ -250,7 +250,7 @@ class APIwesomeService {
 			}
 			else {
 
-				// This is a custom JSON output, therefore pass it directly through.
+				// This is a custom JSON output, therefore pass it through directly.
 
 				unset($object['ClassName']);
 				$temporary[] = array($class => $object);
@@ -417,7 +417,7 @@ class APIwesomeService {
 			}
 			else {
 
-				// This is a custom XML output, therefore pass it directly through.
+				// This is a custom XML output, therefore pass it through directly.
 
 				unset($object['ClassName']);
 				$this->recursiveXML($objectXML, $object);
