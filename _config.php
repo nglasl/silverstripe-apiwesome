@@ -9,6 +9,10 @@ if(!defined('APIWESOME_PATH')) {
 	define('APIWESOME_PATH', rtrim(basename(dirname(__FILE__))));
 }
 
+// Update the current apiwesome admin icon.
+
+Config::inst()->update('APIwesomeAdmin', 'menu_icon', APIWESOME_PATH . '/images/apiwesome-icon.png');
+
 /**
  *
  *	EXAMPLE: JSON/XML data object exclusions/inclusions.
