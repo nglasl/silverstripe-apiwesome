@@ -11,7 +11,7 @@ if(!defined('APIWESOME_PATH')) {
 
 // Update the current apiwesome admin icon.
 
-Config::inst()->update('APIwesomeAdmin', 'menu_icon', APIWESOME_PATH . '/images/apiwesome-icon.png');
+Config::inst()->update('APIwesomeAdmin', 'menu_icon', APIWESOME_PATH . '/images/icon.png');
 
 /**
  *
