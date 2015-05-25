@@ -172,7 +172,14 @@ class APIwesome extends Controller {
 						$output = strtoupper($output);
 						if($output === 'JSON') {
 							$this->getResponse()->addHeader('Content-Type', 'application/json');
-							$JSON = Convert::array2json(array('DataObjectList' => array('Expired' => true)));
+
+							// JSON_PRETTY_PRINT.
+
+							$JSON = json_encode(array(
+								'DataObjectList' => array(
+									'Expired' => true
+								)
+							), 128);
 							return $JSON;
 						}
 						else if($output === 'XML') {

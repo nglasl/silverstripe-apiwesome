@@ -8,10 +8,16 @@
 class APIwesomeService {
 
 	/**
-	 *	These are enabled by default, however will greatly impact performance if many relationships are visible.
+	 *	These are enabled by default, however will greatly impact performance if many nested relationships are visible.
 	 */
 
 	public $recursiveRelationships = true;
+
+	/**
+	 *	This is enabled by default, however will slightly impact performance if many nested relationships are visible.
+	 */
+
+	public $prettyJSON = true;
 
 	/**
 	 *	Attempt to match an existing security token hash, or create a random hash for a new security token.
@@ -246,17 +252,26 @@ class APIwesomeService {
 
 				// Compose the appropriate output for all relationships.
 
-				$temporary[] = array($class => $this->recursiveRelationships($object, $attributeVisibility));
+				$temporary[] = array(
+					$class => $this->recursiveRelationships($object, $attributeVisibility)
+				);
 			}
 			else {
 
 				// This is custom JSON, therefore pass it through directly.
 
 				unset($object['ClassName']);
-				$temporary[] = array($class => $object);
+				$temporary[] = array(
+					$class => $object
+				);
 			}
 		}
-		$JSON = Convert::array2json(array('DataObjectList' => $temporary));
+
+		// JSON_PRETTY_PRINT.
+
+		$JSON = json_encode(array(
+			'DataObjectList' => $temporary
+		), $this->prettyJSON ? 128 : 0);
 
 		// Apply a defined javascript callback function.
 
@@ -310,7 +325,11 @@ class APIwesomeService {
 						// Make sure recursive relationships are enabled.
 
 						if(!$this->recursiveRelationships) {
-							$output[$relationship] = array($relationObject->ClassName => array('ID' => (string)$relationObject->ID));
+							$output[$relationship] = array(
+								$relationObject->ClassName => array(
+									'ID' => (string)$relationObject->ID
+								)
+							);
 							continue;
 						}
 						$temporaryMap = $relationObject->toMap();
@@ -337,13 +356,20 @@ class APIwesomeService {
 							// Make sure this relationship has visibility customisation.
 
 							if(is_null($relationVisibility) || (count($relationVisibility) !== count($columns)) || !in_array('1', $relationVisibility)) {
-								$output[$relationship] = array($relationObject->ClassName => array('ID' => (string)$relationObject->ID));
+								$output[$relationship] = array(
+									$relationObject->ClassName => array(
+										'ID' => (string)$relationObject->ID
+									)
+								);
 								continue;
 							}
 
 							// Grab all data object visible attributes.
 
-							$select = array('ClassName' => $relationObject->ClassName, 'ID' => $relationObject->ID);
+							$select = array(
+								'ClassName' => $relationObject->ClassName,
+								'ID' => $relationObject->ID
+							);
 							$iteration = 0;
 							foreach($columns as $relationshipAttribute => $relationshipType) {
 								if(isset($relationVisibility[$iteration]) && $relationVisibility[$iteration]) {
@@ -366,7 +392,9 @@ class APIwesomeService {
 
 						// Check the corresponding relationship.
 
-						$output[$relationship] = array($relationObject->ClassName => $this->recursiveRelationships($select, $attributeVisibility, $cache));
+						$output[$relationship] = array(
+							$relationObject->ClassName => $this->recursiveRelationships($select, $attributeVisibility, $cache)
+						);
 					}
 					else {
 
@@ -529,7 +557,9 @@ class APIwesomeService {
 			$objects = array();
 			foreach($temporary as $class => $value) {
 				foreach($value as $object) {
-					$objects[] = array($class => $object);
+					$objects[] = array(
+						$class => $object
+					);
 				}
 			}
 		}

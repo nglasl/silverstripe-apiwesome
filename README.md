@@ -48,7 +48,7 @@ The JSON/XML feed will only be available to data objects with attribute visibili
 
 #### Recursive Relationships
 
-This is enabled by default, however will impact performance if many nested relationships are visible.
+These are enabled by default, however will greatly impact performance if many nested relationships are visible.
 
 To disable the recursion:
 
@@ -77,6 +77,19 @@ It may also be previewed through the appropriate model admin of your data object
 
 ![preview](images/apiwesome-preview.png)
 
+#### Pretty JSON
+
+This is enabled by default, however will slightly impact performance if many nested relationships are visible.
+
+To disable the pretty printing:
+
+```yaml
+Injector:
+  APIwesomeService:
+    properties:
+      prettyJSON: false
+```
+
 ### Developer Functionality
 
 #### PHP
@@ -91,8 +104,13 @@ The methods available may be programmatically called to generate JSON, with opti
 
 ```php
 $JSON = $service->retrieve('DataObjectName', 'JSON');
-$JSON = $service->retrieve('DataObjectName', 'JSON', 5, array('Attribute', 'value'),
-	array('Attribute', 'ORDER'));
+$JSON = $service->retrieve('DataObjectName', 'JSON', 5, array(
+	'Attribute',
+	'value'
+), array(
+	'Attribute',
+	'ORDER'
+));
 ```
 
 ```php
@@ -104,8 +122,13 @@ XML, with optional filters:
 
 ```php
 $XML = $service->retrieve('DataObjectName', 'XML');
-$XML = $service->retrieve('DataObjectName', 'XML', 5, array('Attribute', 'value'),
-	array('Attribute', 'ORDER'));
+$XML = $service->retrieve('DataObjectName', 'XML', 5, array(
+	'Attribute',
+	'value'
+), array(
+	'Attribute',
+	'ORDER'
+));
 ```
 
 ```php
