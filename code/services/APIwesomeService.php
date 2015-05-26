@@ -66,10 +66,10 @@ class APIwesomeService {
 		if($objects) {
 			$output = strtoupper($output);
 			if($output === 'JSON') {
-				return $this->retrieveJSON($objects, true, true, true);
+				return $this->retrieveJSON($objects, $filters, true, true, true);
 			}
 			else if($output === 'XML') {
-				return $this->retrieveXML($objects, true, true);
+				return $this->retrieveXML($objects, $filters, true, true);
 			}
 		}
 
@@ -232,13 +232,14 @@ class APIwesomeService {
 	 *	NOTE: DataList->toNestedArray();
 	 *
 	 *	@parameter <{DATA_OBJECTS}> array
+	 *	@parameter <{FILTERS}> array
 	 *	@parameter <{USE_ATTRIBUTE_VISIBILITY}> boolean
 	 *	@parameter <{SET_CONTENT_HEADER}> boolean
 	 *	@parameter <{WRAP_JAVASCRIPT_CALLBACK}> boolean
 	 *	@return JSON
 	 */
 
-	public function retrieveJSON($objects, $attributeVisibility = false, $contentHeader = false, $callback = false) {
+	public function retrieveJSON($objects, $filters = null, $attributeVisibility = false, $contentHeader = false, $callback = false) {
 
 		Versioned::reading_stage('Live');
 
@@ -269,11 +270,14 @@ class APIwesomeService {
 
 		// JSON_PRETTY_PRINT.
 
+		$output = array();
+		if($filters) {
+			$output['DataObjectFilters'] = $filters;
+		}
+		$output['DataObjectCount'] = count($temporary);
+		$output['DataObjectList'] = $temporary;
 		$JSON = json_encode(array(
-			'APIwesome' => array(
-				'DataObjectCount' => count($temporary),
-				'DataObjectList' => $temporary
-			)
+			'APIwesome' => $output
 		), $this->prettyJSON ? 128 : 0);
 
 		// Apply a defined javascript callback function.
@@ -425,23 +429,30 @@ class APIwesomeService {
 	 *	NOTE: DataList->toNestedArray();
 	 *
 	 *	@parameter <{DATA_OBJECTS}> array
+	 *	@parameter <{FILTERS}> array
 	 *	@parameter <{USE_ATTRIBUTE_VISIBILITY}> boolean
 	 *	@parameter <{SET_CONTENT_HEADER}> boolean
 	 *	@return XML
 	 */
 
-	public function retrieveXML($objects, $attributeVisibility = false, $contentHeader = false) {
+	public function retrieveXML($objects, $filters = null, $attributeVisibility = false, $contentHeader = false) {
 
 		Versioned::reading_stage('Live');
 
 		// Convert the corresponding array of data objects to XML.
 
 		$XML = new SimpleXMLElement('<APIwesome/>');
+		if($filters) {
+			$filterXML = $XML->addChild('DataObjectFilters');
+			foreach($filters as $attribute => $value) {
+				$filterXML->addChild($attribute, $value);
+			}
+		}
 		$XML->addChild('DataObjectCount', count($objects));
-		$list = $XML->addChild('DataObjectList');
+		$listXML = $XML->addChild('DataObjectList');
 		foreach($objects as $object) {
 			$classExists = isset($object['ClassName']);
-			$objectXML = $list->addChild($classExists ? $object['ClassName'] : 'DataObject');
+			$objectXML = $listXML->addChild($classExists ? $object['ClassName'] : 'DataObject');
 			if($classExists && isset($object['ID'])) {
 
 				// Compose the appropriate output for all relationships.
