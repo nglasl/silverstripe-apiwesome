@@ -268,7 +268,7 @@ class APIwesomeService {
 			}
 		}
 
-		// JSON_PRETTY_PRINT.
+		// Display the filters, even if they weren't applied to visible attributes.
 
 		$output = array();
 		if($filters) {
@@ -276,6 +276,9 @@ class APIwesomeService {
 		}
 		$output['DataObjectCount'] = count($temporary);
 		$output['DataObjectList'] = $temporary;
+
+		// JSON_PRETTY_PRINT.
+
 		$JSON = json_encode(array(
 			'APIwesome' => $output
 		), $this->prettyJSON ? 128 : 0);
@@ -439,7 +442,7 @@ class APIwesomeService {
 
 		Versioned::reading_stage('Live');
 
-		// Convert the corresponding array of data objects to XML.
+		// Display the filters, even if they weren't applied to visible attributes.
 
 		$XML = new SimpleXMLElement('<APIwesome/>');
 		if($filters) {
@@ -449,6 +452,9 @@ class APIwesomeService {
 			}
 		}
 		$XML->addChild('DataObjectCount', count($objects));
+
+		// Convert the corresponding array of data objects to XML.
+
 		$listXML = $XML->addChild('DataObjectList');
 		foreach($objects as $object) {
 			$classExists = isset($object['ClassName']);

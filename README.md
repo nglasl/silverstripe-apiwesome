@@ -67,7 +67,7 @@ A JSON/XML feed request will require the current security token passed through, 
 
 ### Output
 
-A JSON/XML feed request may have a number of optional filters applied, where a `&filter` will only apply to visible attributes:
+A JSON/XML feed request may have a number of optional filters applied, where the `&filter` will only apply to visible attributes:
 
 * `&limit=5`
 * `&sort=Attribute,ORDER`
