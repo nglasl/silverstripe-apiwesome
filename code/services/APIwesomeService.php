@@ -272,10 +272,10 @@ class APIwesomeService {
 
 		$output = array();
 		if($filters) {
-			$output['DataObjectFilters'] = $filters;
+			$output['Filters'] = $filters;
 		}
-		$output['DataObjectCount'] = count($temporary);
-		$output['DataObjectList'] = $temporary;
+		$output['Count'] = count($temporary);
+		$output['DataObjects'] = $temporary;
 
 		// JSON_PRETTY_PRINT.
 
@@ -446,19 +446,19 @@ class APIwesomeService {
 
 		$XML = new SimpleXMLElement('<APIwesome/>');
 		if($filters) {
-			$filterXML = $XML->addChild('DataObjectFilters');
+			$filtersXML = $XML->addChild('Filters');
 			foreach($filters as $attribute => $value) {
-				$filterXML->addChild($attribute, $value);
+				$filtersXML->addChild($attribute, $value);
 			}
 		}
-		$XML->addChild('DataObjectCount', count($objects));
+		$XML->addChild('Count', count($objects));
 
 		// Convert the corresponding array of data objects to XML.
 
-		$listXML = $XML->addChild('DataObjectList');
+		$objectsXML = $XML->addChild('DataObjects');
 		foreach($objects as $object) {
 			$classExists = isset($object['ClassName']);
-			$objectXML = $listXML->addChild($classExists ? $object['ClassName'] : 'DataObject');
+			$objectXML = $objectsXML->addChild($classExists ? $object['ClassName'] : 'DataObject');
 			if($classExists && isset($object['ID'])) {
 
 				// Compose the appropriate output for all relationships.
@@ -556,7 +556,7 @@ class APIwesomeService {
 		// Convert the corresponding JSON to a formatted array of data objects.
 
 		$temporary = Convert::json2array($JSON);
-		$objects = isset($temporary['APIwesome']['DataObjectList']) ? $temporary['APIwesome']['DataObjectList'] : null;
+		$objects = isset($temporary['APIwesome']['DataObjects']) ? $temporary['APIwesome']['DataObjects'] : null;
 		return $objects;
 	}
 
@@ -572,12 +572,12 @@ class APIwesomeService {
 		// Convert the corresponding XML to a formatted array of data objects.
 
 		$temporary = (strpos($XML, '<APIwesome>') && strrpos($XML, '</APIwesome>')) ? $this->recursiveXMLArray(new SimpleXMLElement($XML)) : null;
-		if(is_array($temporary) && isset($temporary['DataObjectList'])) {
+		if(is_array($temporary) && isset($temporary['DataObjects'])) {
 
 			// Compose a format similar to that of the JSON.
 
 			$objects = array();
-			foreach($temporary['DataObjectList'] as $class => $value) {
+			foreach($temporary['DataObjects'] as $class => $value) {
 				foreach($value as $object) {
 					$objects[] = array(
 						$class => $object

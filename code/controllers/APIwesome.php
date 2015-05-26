@@ -179,8 +179,8 @@ class APIwesome extends Controller {
 
 							$JSON = json_encode(array(
 								'APIwesome' => array(
-									'DataObjectCount' => 0,
-									'DataObjectList' => array(
+									'Count' => 0,
+									'DataObjects' => array(
 										'Expired' => true
 									)
 								)
@@ -190,9 +190,9 @@ class APIwesome extends Controller {
 						else if($output === 'XML') {
 							$this->getResponse()->addHeader('Content-Type', 'application/xml');
 							$XML = new SimpleXMLElement('<APIwesome/>');
-							$XML->addChild('DataObjectCount', 0);
-							$list = $XML->addChild('DataObjectList');
-							$list->addChild('Expired', true);
+							$XML->addChild('Count', 0);
+							$objectsXML = $XML->addChild('DataObjects');
+							$objectsXML->addChild('Expired', true);
 							return $XML->asXML();
 						}
 					}

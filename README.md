@@ -166,7 +166,7 @@ JSON example:
 			// Iterate over each data object.
 
 			if(JSON['APIwesome'] !== undefined) {
-				$.each(JSON['APIwesome']['DataObjectList'], function(index, object) {
+				$.each(JSON['APIwesome']['DataObjects'], function(index, object) {
 
 					// The JSON feed security token is no longer valid!
 
