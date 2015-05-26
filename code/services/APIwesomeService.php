@@ -50,16 +50,16 @@ class APIwesomeService {
 	 *	@parameter <{DATA_OBJECT_NAME}> string
 	 *	@parameter <{OUTPUT_TYPE}> string
 	 *	@parameter <{LIMIT}> integer
-	 *	@parameter <{FILTER}> array(string, string)
 	 *	@parameter <{SORT}> array(string, string)
+	 *	@parameter <{FILTERS}> array
 	 *	@return JSON/XML
 	 */
 
-	public function retrieve($class, $output, $limit = null, $filter = null, $sort = null) {
+	public function retrieve($class, $output, $limit = null, $sort = null, $filters = null) {
 
 		// Grab all visible data objects of the specified type.
 
-		$objects = $this->retrieveValidated($class, $limit, $filter, $sort);
+		$objects = $this->retrieveValidated($class, $limit, $sort, $filters);
 
 		// Return the appropriate JSON/XML output of these data objects.
 
@@ -83,12 +83,12 @@ class APIwesomeService {
 	 *
 	 *	@parameter <{DATA_OBJECT_NAME}> string
 	 *	@parameter <{LIMIT}> integer
-	 *	@parameter <{FILTER}> array(string, string)
 	 *	@parameter <{SORT}> array(string, string)
+	 *	@parameter <{FILTERS}> array
 	 *	@return array
 	 */
 
-	public function retrieveValidated($class, $limit = null, $filter = null, $sort = null) {
+	public function retrieveValidated($class, $limit = null, $sort = null, $filters = null) {
 
 		// Validate the data object class.
 
@@ -97,9 +97,9 @@ class APIwesomeService {
 			$class = ClassInfo::baseDataClass($temporaryClass->ClassName);
 			$visibility = $configuration->APIwesomeVisibility ? explode(',', $configuration->APIwesomeVisibility) : null;
 
-			// Validate the filter and sort options.
+			// Validate the sort and filters.
 
-			$filterValid = (is_array($filter) && (count($filter) === 2));
+			$filterValid = (is_array($filters) && count($filters));
 			$sortValid = (is_array($sort) && (count($sort) === 2) && ($order = strtoupper($sort[1])) && (($order === 'ASC') || ($order === 'DESC')));
 			$where = array();
 			$filtering = array();
@@ -142,10 +142,10 @@ class APIwesomeService {
 					$subclassColumn = "{$subclass}.{$column}";
 					$subclassColumns[$subclassColumn] = $type;
 
-					// Determine the tables to filter and sort on.
+					// Determine the tables to sort and filter on.
 
-					if($filterValid && ($filter[0] === $column)) {
-						$filtering[$subclassColumn] = is_numeric($filter[1]) ? "{$subclassColumn} = " . (int)$filter[1] : "LOWER({$subclassColumn}) = '" . Convert::raw2sql(strtolower($filter[1])) . "'";
+					if($filterValid && isset($filters[$column])) {
+						$filtering[$subclassColumn] = is_numeric($filters[$column]) ? "{$subclassColumn} = " . (int)$filters[$column] : "LOWER({$subclassColumn}) = '" . Convert::raw2sql(strtolower($filters[$column])) . "'";
 					}
 					if($sortValid && ($sort[0] === $column)) {
 						$sorting[] = "{$subclassColumn} {$order}";
@@ -161,10 +161,10 @@ class APIwesomeService {
 				$class = "{$class}_Live";
 			}
 
-			// Determine ID based filtering and sorting, as these aren't considered database fields.
+			// Determine ID based sorting and filtering, as these aren't considered database fields.
 
-			if($filterValid && ($filter[0] === 'ID')) {
-				$where[] = "{$class}.ID = " . (int)$filter[1];
+			if($filterValid && isset($filters['ID'])) {
+				$where[] = "{$class}.ID = " . (int)$filters['ID'];
 			}
 			if($sortValid && ($sort[0] === 'ID')) {
 				$sorting[] = "{$class}.ID {$order}";

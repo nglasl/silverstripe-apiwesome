@@ -114,13 +114,13 @@ class APIwesome extends Controller {
 	 *	@URLparameter <{DATA_OBJECT_NAME}> string
 	 *	@URLparameter <{OUTPUT_TYPE}> string
 	 *	@URLfilter <{LIMIT}> integer
-	 *	@URLfilter <{FILTER}> string
 	 *	@URLfilter <{SORT}> string
+	 *	@URLfilters <{FILTERS}> string
 	 *	@return JSON/XML
 	 *
 	 *	EXAMPLE JSON:		<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/json
 	 *	EXAMPLE XML:		<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml
-	 *	EXAMPLE FILTERS:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml?limit=5&filter=Attribute,value&sort=Attribute,ORDER
+	 *	EXAMPLE FILTERS:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml?limit=5&sort=Attribute,ORDER&filter1=value&filter2=value
 	 *
 	 */
 
@@ -137,7 +137,9 @@ class APIwesome extends Controller {
 
 			// Retrieve the specified data object type JSON/XML.
 
-			return $this->service->retrieve(str_replace('-', '', $parameters['ID']), $parameters['OtherID'], $this->getRequest()->getVar('limit'), explode(',', $this->getRequest()->getVar('filter')), explode(',', $this->getRequest()->getVar('sort')));
+			$filters = $this->getRequest()->getVars();
+			unset($filters['url'], $filters['token'], $filters['limit'], $filters['sort']);
+			return $this->service->retrieve(str_replace('-', '', $parameters['ID']), $parameters['OtherID'], $this->getRequest()->getVar('limit'), explode(',', $this->getRequest()->getVar('sort')), $filters);
 		}
 		else {
 			return $this->httpError(404);

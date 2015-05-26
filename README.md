@@ -67,11 +67,12 @@ A JSON/XML feed request will require the current security token passed through, 
 
 ### Output
 
-A JSON/XML feed request may have a number of optional filters applied, where `&filter` will only apply for a visible attribute:
+A JSON/XML feed request may have a number of optional filters applied, where a `&filter` will only apply to visible attributes:
 
 * `&limit=5`
-* `&filter=Attribute,value`
 * `&sort=Attribute,ORDER`
+* `&filter1=value`
+* `&filter2=value`
 
 It may also be previewed through the appropriate model admin of your data object.
 
@@ -106,10 +107,12 @@ The methods available may be programmatically called to generate JSON, with opti
 $JSON = $service->retrieve('DataObjectName', 'JSON');
 $JSON = $service->retrieve('DataObjectName', 'JSON', 5, array(
 	'Attribute',
-	'value'
-), array(
-	'Attribute',
 	'ORDER'
+), array(
+	'Attribute1',
+	'value',
+	'Attribute2',
+	'value'
 ));
 ```
 
@@ -124,10 +127,12 @@ XML, with optional filters:
 $XML = $service->retrieve('DataObjectName', 'XML');
 $XML = $service->retrieve('DataObjectName', 'XML', 5, array(
 	'Attribute',
-	'value'
-), array(
-	'Attribute',
 	'ORDER'
+), array(
+	'Attribute1',
+	'value',
+	'Attribute2',
+	'value'
 ));
 ```
 
