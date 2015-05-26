@@ -109,10 +109,8 @@ $JSON = $service->retrieve('DataObjectName', 'JSON', 5, array(
 	'Attribute',
 	'ORDER'
 ), array(
-	'Attribute1',
-	'value',
-	'Attribute2',
-	'value'
+	'Attribute1' => 'value',
+	'Attribute2' => 'value'
 ));
 ```
 
@@ -129,10 +127,8 @@ $XML = $service->retrieve('DataObjectName', 'XML', 5, array(
 	'Attribute',
 	'ORDER'
 ), array(
-	'Attribute1',
-	'value',
-	'Attribute2',
-	'value'
+	'Attribute1' => 'value',
+	'Attribute2' => 'value'
 ));
 ```
 

@@ -99,11 +99,11 @@ class APIwesomeService {
 
 			// Validate the sort and filters.
 
-			$filterValid = (is_array($filters) && count($filters));
-			$sortValid = (is_array($sort) && (count($sort) === 2) && ($order = strtoupper($sort[1])) && (($order === 'ASC') || ($order === 'DESC')));
 			$where = array();
-			$filtering = array();
+			$sortValid = (is_array($sort) && (count($sort) === 2) && ($order = strtoupper($sort[1])) && (($order === 'ASC') || ($order === 'DESC')));
+			$filterValid = (is_array($filters) && count($filters));
 			$sorting = array();
+			$filtering = array();
 
 			// Grab the appropriate attributes for this data object.
 
@@ -144,11 +144,11 @@ class APIwesomeService {
 
 					// Determine the tables to sort and filter on.
 
-					if($filterValid && isset($filters[$column])) {
-						$filtering[$subclassColumn] = is_numeric($filters[$column]) ? "{$subclassColumn} = " . (int)$filters[$column] : "LOWER({$subclassColumn}) = '" . Convert::raw2sql(strtolower($filters[$column])) . "'";
-					}
 					if($sortValid && ($sort[0] === $column)) {
 						$sorting[] = "{$subclassColumn} {$order}";
+					}
+					if($filterValid && isset($filters[$column])) {
+						$filtering[$subclassColumn] = is_numeric($filters[$column]) ? "{$subclassColumn} = " . (int)$filters[$column] : "LOWER({$subclassColumn}) = '" . Convert::raw2sql(strtolower($filters[$column])) . "'";
 					}
 				}
 				$columns = array_merge($columns, $subclassColumns);
@@ -163,11 +163,11 @@ class APIwesomeService {
 
 			// Determine ID based sorting and filtering, as these aren't considered database fields.
 
-			if($filterValid && isset($filters['ID'])) {
-				$where[] = "{$class}.ID = " . (int)$filters['ID'];
-			}
 			if($sortValid && ($sort[0] === 'ID')) {
 				$sorting[] = "{$class}.ID {$order}";
+			}
+			if($filterValid && isset($filters['ID'])) {
+				$where[] = "{$class}.ID = " . (int)$filters['ID'];
 			}
 
 			// Make sure this data object type has visibility customisation.
