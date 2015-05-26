@@ -178,16 +178,21 @@ class APIwesome extends Controller {
 							// JSON_PRETTY_PRINT.
 
 							$JSON = json_encode(array(
-								'DataObjectList' => array(
-									'Expired' => true
+								'APIwesome' => array(
+									'DataObjectCount' => 0,
+									'DataObjectList' => array(
+										'Expired' => true
+									)
 								)
 							), 128);
 							return $JSON;
 						}
 						else if($output === 'XML') {
 							$this->getResponse()->addHeader('Content-Type', 'application/xml');
-							$XML = new SimpleXMLElement('<DataObjectList/>');
-							$XML->addChild('Expired', true);
+							$XML = new SimpleXMLElement('<APIwesome/>');
+							$XML->addChild('DataObjectCount', 0);
+							$list = $XML->addChild('DataObjectList');
+							$list->addChild('Expired', true);
 							return $XML->asXML();
 						}
 					}

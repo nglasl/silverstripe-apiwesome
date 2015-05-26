@@ -163,21 +163,26 @@ JSON example:
 
 		$.getJSON('//ss3.1/apiwesome/retrieve/data-object-name/json?token=' + token(), function(JSON) {
 
-			// Iterate over each data object. This line will NOT change.
+			// Iterate over each data object.
 
-			$.each(JSON['DataObjectList'], function(index, object) {
+			if(JSON['APIwesome'] !== undefined) {
+				$.each(JSON['APIwesome']['DataObjectList'], function(index, object) {
 
-				// The JSON feed security token is no longer valid!
+					// The JSON feed security token is no longer valid!
 
-				if((index === 'Expired') && (object === true)) {
-					return false;
-				}
+					if((index === 'Expired') && (object === true)) {
+						return false;
+					}
 
-				// Iterate over each visible attribute.
+					// Iterate over each visible attribute.
 
-				$.each(object['DataObjectName'], function(attribute, value) {
+					$.each(object, function(type, attributes) {
+						$.each(attributes, function(attribute, value) {
+						});
+						break;
+					});
 				});
-			});
+			}
 		})
 
 		// The JSON feed has either not yet been configured, or no data objects were found.

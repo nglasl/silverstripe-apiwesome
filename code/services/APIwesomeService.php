@@ -270,7 +270,10 @@ class APIwesomeService {
 		// JSON_PRETTY_PRINT.
 
 		$JSON = json_encode(array(
-			'DataObjectList' => $temporary
+			'APIwesome' => array(
+				'DataObjectCount' => count($temporary),
+				'DataObjectList' => $temporary
+			)
 		), $this->prettyJSON ? 128 : 0);
 
 		// Apply a defined javascript callback function.
@@ -433,10 +436,12 @@ class APIwesomeService {
 
 		// Convert the corresponding array of data objects to XML.
 
-		$XML = new SimpleXMLElement('<DataObjectList/>');
+		$XML = new SimpleXMLElement('<APIwesome/>');
+		$XML->addChild('DataObjectCount', count($objects));
+		$list = $XML->addChild('DataObjectList');
 		foreach($objects as $object) {
 			$classExists = isset($object['ClassName']);
-			$objectXML = $XML->addChild($classExists ? $object['ClassName'] : 'DataObject');
+			$objectXML = $list->addChild($classExists ? $object['ClassName'] : 'DataObject');
 			if($classExists && isset($object['ID'])) {
 
 				// Compose the appropriate output for all relationships.
@@ -534,7 +539,7 @@ class APIwesomeService {
 		// Convert the corresponding JSON to a formatted array of data objects.
 
 		$temporary = Convert::json2array($JSON);
-		$objects = isset($temporary['DataObjectList']) ? $temporary['DataObjectList'] : null;
+		$objects = isset($temporary['APIwesome']['DataObjectList']) ? $temporary['APIwesome']['DataObjectList'] : null;
 		return $objects;
 	}
 
@@ -549,13 +554,13 @@ class APIwesomeService {
 
 		// Convert the corresponding XML to a formatted array of data objects.
 
-		$temporary = (strpos($XML, '<DataObjectList>') && strrpos($XML, '</DataObjectList>')) ? $this->recursiveXMLArray(new SimpleXMLElement($XML)) : null;
-		if($temporary) {
+		$temporary = (strpos($XML, '<APIwesome>') && strrpos($XML, '</APIwesome>')) ? $this->recursiveXMLArray(new SimpleXMLElement($XML)) : null;
+		if(is_array($temporary) && isset($temporary['DataObjectList'])) {
 
 			// Compose a format similar to that of the JSON.
 
 			$objects = array();
-			foreach($temporary as $class => $value) {
+			foreach($temporary['DataObjectList'] as $class => $value) {
 				foreach($value as $object) {
 					$objects[] = array(
 						$class => $object
