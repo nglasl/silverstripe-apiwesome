@@ -1,6 +1,6 @@
 # [apiwesome](https://packagist.org/packages/nglasl/silverstripe-apiwesome)
 
-_The current release is **1.2.0**_
+_The current release is **1.3.0**_
 
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds
 	for your data objects (including pages).
