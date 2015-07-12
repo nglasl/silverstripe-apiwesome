@@ -44,6 +44,8 @@ DataObjectOutputConfiguration::customise_data_objects('disabled');
 
 ### Attribute Visibility Customisation
 
+![visibility](images/apiwesome-visibility.png)
+
 The JSON/XML feed will only be available to data objects with attribute visibility set through the CMS. Any `has_one` relationships may be displayed, where attribute visibility is determined recursively.
 
 #### Recursive Relationships
