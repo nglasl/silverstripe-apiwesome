@@ -40,7 +40,7 @@ class APIwesomeTokenView implements GridField_HTMLProvider {
 				<div class='apiwesome admin {$status}'>
 					<div><strong>Security Token</strong></div>
 					{$token}
-					<a href='apiwesome/regenerate' class='regenerate ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='arrow-circle-double'>Regenerate &raquo;</a>
+					<a href='apiwesome/regenerateToken' class='regenerate ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='arrow-circle-double'>Regenerate &raquo;</a>
 				</div>
 			</div>"
 		);

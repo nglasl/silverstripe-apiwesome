@@ -14,7 +14,7 @@ class APIwesome extends Controller {
 	);
 
 	private static $allowed_actions = array(
-		'regenerate',
+		'regenerateToken',
 		'retrieve'
 	);
 
@@ -70,7 +70,7 @@ class APIwesome extends Controller {
 	 *	Attempt to regenerate the current security token.
 	 */
 
-	public function regenerate() {
+	public function regenerateToken() {
 
 		// Restrict this functionality to administrators.
 
