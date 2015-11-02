@@ -3,7 +3,7 @@ name: apiwesome-extensions
 ---
 APIwesomeAdmin:
   extensions:
-    - 'APIwesomeAdminExtension'
+    - 'APIwesomeTokenExtension'
 ModelAdmin:
   extensions:
     - 'ModelAdminPreviewExtension'

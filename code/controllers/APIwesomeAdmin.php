@@ -16,27 +16,18 @@ class APIwesomeAdmin extends ModelAdmin {
 	private static $url_segment = 'json-xml';
 
 	/**
-	 *	Correct the button styling and implement a confirmation message for security token regeneration.
-	 */
-
-	public function init() {
-
-		parent::init();
-		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
-		Requirements::javascript(APIWESOME_PATH . '/javascript/apiwesome.js');
-	}
-
-	/**
-	 *	Update the custom summary fields to be sortable.
+	 *	Update the custom summary fields to be sortable, and remove the add functionality.
 	 */
 
 	public function getEditForm($ID = null, $fields = null) {
 
 		$form = parent::getEditForm($ID, $fields);
 		$gridfield = $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass));
-		$gridfield->getConfig()->getComponentByType('GridFieldSortableHeader')->setFieldSorting(array(
+		$configuration = $gridfield->getConfig();
+		$configuration->getComponentByType('GridFieldSortableHeader')->setFieldSorting(array(
 			'getTitle' => 'IsFor'
 		));
+		$configuration->removeComponentsByType('GridFieldAddNewButton');
 		return $form;
 	}
 
