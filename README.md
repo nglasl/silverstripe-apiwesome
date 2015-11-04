@@ -71,9 +71,11 @@ A JSON/XML feed request will require the current security token passed through, 
 
 The security token generation and validation is modular, and can still be used when the JSON/XML is disabled (more below):
 
+```yaml
 SecurityAdmin:
   extensions:
     - 'APIwesomeTokenExtension'
+```
 
 ### Output
 
