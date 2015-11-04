@@ -1,6 +1,6 @@
 # [apiwesome](https://packagist.org/packages/nglasl/silverstripe-apiwesome)
 
-_The current release is **2.0.3**_
+_The current release is **2.1.0**_
 
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds
 	for your data objects (including pages).
@@ -165,7 +165,7 @@ $objects = $service->parseJSON($JSON);
 $objects = $service->parseXML($XML);
 ```
 
-The security token validation (and generation) is modular, and can still be used when the JSON/XML is completely disabled (more above):
+The security token validation (and generation) is modular, and can be used for other applications (more above):
 
 ```php
 $validation = $service->validateToken($this->getRequest()->getVar('token'));
