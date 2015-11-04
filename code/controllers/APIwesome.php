@@ -152,7 +152,7 @@ class APIwesome extends Controller {
 	}
 
 	/**
-	 *	Determine whether the current request token matches the current security token.
+	 *	Determine whether the request token matches the current security token.
 	 *
 	 *	@parameter <{OUTPUT_TYPE}> string
 	 *	@return boolean/JSON/XML
@@ -163,12 +163,18 @@ class APIwesome extends Controller {
 		$validation = $this->service->validateToken($this->getRequest()->getVar('token'));
 		switch($validation) {
 			case APIwesomeService::VALID:
+
+				// The token matches the current security token.
+
 				return true;
 			case APIwesomeService::INVALID:
+
+				// The token does not match a security token.
+
 				return false;
 			case APIwesomeService::EXPIRED:
 
-				// Return the appropriate JSON/XML output indicating the token expiry.
+				// The token matches a previous security token.
 
 				$output = strtoupper($output);
 				if($output === 'JSON') {
