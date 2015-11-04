@@ -69,7 +69,7 @@ A JSON/XML feed request will require the current security token passed through, 
 
 ![token](https://raw.githubusercontent.com/nglasl/silverstripe-apiwesome/master/images/apiwesome-token.png)
 
-The security token generation is modular, and can still be used when the JSON/XML is completely disabled (more below):
+The security token generation (and validation) is modular, and can still be used when the JSON/XML is completely disabled (more below):
 
 ```yaml
 SecurityAdmin:
@@ -165,7 +165,7 @@ $objects = $service->parseJSON($JSON);
 $objects = $service->parseXML($XML);
 ```
 
-The security token validation is modular, and can still be used when the JSON/XML is completely disabled:
+The security token validation (and generation) is modular, and can still be used when the JSON/XML is completely disabled (more above):
 
 ```php
 $validation = $service->validateToken($this->getRequest()->getVar('token'));
