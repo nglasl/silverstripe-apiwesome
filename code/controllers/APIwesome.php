@@ -152,7 +152,7 @@ class APIwesome extends Controller {
 	}
 
 	/**
-	 *	Determine whether the current request user token exists.
+	 *	Determine whether the current request token matches the current security token.
 	 *
 	 *	@parameter <{OUTPUT_TYPE}> string
 	 *	@return boolean/JSON/XML

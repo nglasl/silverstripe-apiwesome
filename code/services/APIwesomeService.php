@@ -45,7 +45,7 @@ class APIwesomeService {
 	}
 
 	/**
-	 *	Determine whether a token exists.
+	 *	Determine whether a token matches the current security token.
 	 *
 	 *	@parameter <{SECURITY_TOKEN}> string
 	 *	@return integer
@@ -57,7 +57,7 @@ class APIwesomeService {
 
 	public function validateToken($token) {
 
-		// Compare the token against the current security token hash.
+		// Compare the token against the current security token.
 
 		$token = explode(':', $token);
 		$currentToken = APIwesomeToken::get()->sort('Created', 'DESC')->first();
