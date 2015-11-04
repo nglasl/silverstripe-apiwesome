@@ -45,6 +45,52 @@ class APIwesomeService {
 	}
 
 	/**
+	 *	Determine whether a token exists.
+	 *
+	 *	@parameter <{SECURITY_TOKEN}> string
+	 *	@return integer
+	 */
+
+	const VALID = 1;
+	const INVALID = 2;
+	const EXPIRED = 4;
+
+	public function validateToken($token) {
+
+		// Compare the token against the current security token hash.
+
+		$token = explode(':', $token);
+		$currentToken = APIwesomeToken::get()->sort('Created', 'DESC')->first();
+		if((count($token) === 2) && ($generation = $this->generateHash($token[0], $token[1])) && $currentToken) {
+			$hash = $generation['hash'];
+			if($hash === $currentToken->Hash) {
+
+				// The token matches the current security token.
+
+				return self::VALID;
+			}
+
+			// Determine whether the token has been invalidated.
+
+			else {
+				$tokens = APIwesomeToken::get()->sort('Created', 'DESC');
+				foreach($tokens as $token) {
+					if($hash === $token->Hash) {
+
+						// The token matches a previous security token.
+
+						return self::EXPIRED;
+					}
+				}
+			}
+		}
+
+		// The token does not match a security token.
+
+		return self::INVALID;
+	}
+
+	/**
 	 *	Retrieve the appropriate JSON/XML output of a specified data object type, with optional filters.
 	 *
 	 *	@parameter <{DATA_OBJECT_NAME}> string

@@ -152,62 +152,50 @@ class APIwesome extends Controller {
 	}
 
 	/**
-	 *	Confirm that the current request user token exists.
+	 *	Determine whether the current request user token exists.
+	 *
+	 *	@parameter <{OUTPUT_TYPE}> string
+	 *	@return boolean/JSON/XML
 	 */
 
 	public function validate($output) {
 
-		// Compare the current security token hash against the user token.
-
-		$currentToken = APIwesomeToken::get()->sort('Created', 'DESC')->first();
-		$userToken = explode(':', $this->getRequest()->getVar('token'));
-		if($currentToken && (count($userToken) === 2) && ($generation = $this->service->generateHash($userToken[0], $userToken[1]))) {
-			$hash = $generation['hash'];
-			if($currentToken->Hash === $hash) {
+		$validation = $this->service->validateToken($this->getRequest()->getVar('token'));
+		switch($validation) {
+			case APIwesomeService::VALID:
 				return true;
-			}
+			case APIwesomeService::INVALID:
+				return false;
+			case APIwesomeService::EXPIRED:
 
-			// Determine whether the user token has been invalidated.
+				// Return the appropriate JSON/XML output indicating the token expiry.
 
-			else {
-				$tokens = APIwesomeToken::get()->sort('Created', 'DESC');
-				foreach($tokens as $token) {
-					if($token->Hash === $hash) {
+				$output = strtoupper($output);
+				if($output === 'JSON') {
+					$this->getResponse()->addHeader('Content-Type', 'application/json');
 
-						// Return the appropriate JSON/XML output indicating the token expiry.
+					// JSON_PRETTY_PRINT.
 
-						$output = strtoupper($output);
-						if($output === 'JSON') {
-							$this->getResponse()->addHeader('Content-Type', 'application/json');
-
-							// JSON_PRETTY_PRINT.
-
-							$JSON = json_encode(array(
-								'APIwesome' => array(
-									'Count' => 0,
-									'DataObjects' => array(
-										'Expired' => true
-									)
-								)
-							), 128);
-							return $JSON;
-						}
-						else if($output === 'XML') {
-							$this->getResponse()->addHeader('Content-Type', 'application/xml');
-							$XML = new SimpleXMLElement('<APIwesome/>');
-							$XML->addChild('Count', 0);
-							$objectsXML = $XML->addChild('DataObjects');
-							$objectsXML->addChild('Expired', true);
-							return $XML->asXML();
-						}
-					}
+					$JSON = json_encode(array(
+						'APIwesome' => array(
+							'Count' => 0,
+							'DataObjects' => array(
+								'Expired' => true
+							)
+						)
+					), 128);
+					return $JSON;
 				}
-			}
+				else if($output === 'XML') {
+					$this->getResponse()->addHeader('Content-Type', 'application/xml');
+					$XML = new SimpleXMLElement('<APIwesome/>');
+					$XML->addChild('Count', 0);
+					$objectsXML = $XML->addChild('DataObjects');
+					$objectsXML->addChild('Expired', true);
+					return $XML->asXML();
+				}
+				break;
 		}
-
-		// Invalid.
-
-		return false;
 	}
 
 }
