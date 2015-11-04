@@ -35,12 +35,20 @@ class APIwesomeTokenView implements GridField_HTMLProvider {
 			$token .= $currentToken ? $currentToken : strtoupper($status);
 		}
 		$token .= '</div>';
+
+		// Determine where the request will come from.
+
+		$regenerateURL = 'apiwesome/regenerateToken';
+		$controller = Controller::curr();
+		if(!($controller instanceof APIwesomeAdmin)) {
+			$regenerateURL .= '?from=' . $controller->Link();
+		}
 		return array(
 			'before' => "<div class='apiwesome wrapper'>
 				<div class='apiwesome admin {$status}'>
 					<div><strong>Security Token</strong></div>
 					{$token}
-					<a href='apiwesome/regenerateToken' class='regenerate ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='arrow-circle-double'>Regenerate &raquo;</a>
+					<a href='{$regenerateURL}' class='regenerate ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='arrow-circle-double'>Regenerate &raquo;</a>
 				</div>
 			</div>"
 		);
