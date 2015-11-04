@@ -69,7 +69,7 @@ A JSON/XML feed request will require the current security token passed through, 
 
 ![token](https://raw.githubusercontent.com/nglasl/silverstripe-apiwesome/master/images/apiwesome-token.png)
 
-The security token generation and validation is modular, and can still be used when the JSON/XML is disabled (more below):
+The security token generation and validation is modular, and can still be used when the JSON/XML is completely disabled (more below):
 
 ```yaml
 SecurityAdmin:
