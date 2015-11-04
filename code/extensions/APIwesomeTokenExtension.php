@@ -13,22 +13,22 @@ class APIwesomeTokenExtension extends Extension {
 
 	public function updateEditForm(&$form) {
 
-		// Determine whether the security section is being viewed.
+		// Determine whether the security section is being used.
 
 		$security = ($this->owner instanceof SecurityAdmin);
 		$gridfield = $security ? $form->fields->items[0]->Tabs()->first()->fieldByName('Members') : $form->fields->items[0];
 		if(isset($gridfield) && $gridfield instanceof GridField) {
-			$configuration = $gridfield->config;
 
 			// Restrict the security token to administrators.
 
 			$user = Member::currentUserID();
 			if(Permission::checkMember($user, 'ADMIN')) {
-
-				// Correct the button styling and implement a confirmation message for security token regeneration.
-
 				Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
+
+				// Display a confirmation message when regenerating the security token.
+
 				Requirements::javascript(APIWESOME_PATH . '/javascript/apiwesome.js');
+				$configuration = $gridfield->config;
 				$configuration->addComponent(new APIwesomeTokenView());
 			}
 		}
