@@ -36,7 +36,7 @@ class APIwesomeTokenView implements GridField_HTMLProvider {
 		}
 		$token .= '</div>';
 
-		// Determine where the request will come from.
+		// Determine the current controller.
 
 		$regenerateURL = 'apiwesome/regenerateToken';
 		$controller = Controller::curr();
