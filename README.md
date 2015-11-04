@@ -3,7 +3,8 @@
 _The current release is **2.1.0**_
 
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds
-	for your data objects (including pages), and provides a modular security token that can be used for other applications.
+	for your data objects (including pages), and provides a modular security token that can
+	be used for other applications.
 
 ## Requirement
 

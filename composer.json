@@ -1,6 +1,6 @@
 {
 	"name": "nglasl/silverstripe-apiwesome",
-	"description": "A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data objects (including pages).",
+	"description": "A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data objects (including pages), and provides a modular security token that can be used for other applications.",
 	"type": "silverstripe-module",
 	"keywords": [
 		"silverstripe",
