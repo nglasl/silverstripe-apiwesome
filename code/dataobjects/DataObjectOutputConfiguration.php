@@ -84,6 +84,10 @@ class DataObjectOutputConfiguration extends DataObject {
 		}
 		else if(strtolower($type) === 'disabled') {
 			self::$disabled = true;
+
+			// The CMS interface will no longer be required.
+
+			CMSMenu::remove_menu_item('APIwesomeAdmin');
 		}
 	}
 
