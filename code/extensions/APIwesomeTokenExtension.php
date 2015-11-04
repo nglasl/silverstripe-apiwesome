@@ -15,8 +15,18 @@ class APIwesomeTokenExtension extends Extension {
 
 		// Determine whether the security section is being used.
 
-		$security = ($this->owner instanceof SecurityAdmin);
-		$gridfield = $security ? $form->fields->items[0]->Tabs()->first()->fieldByName('Members') : $form->fields->items[0];
+		if($this->owner instanceof SecurityAdmin) {
+			$gridfield = null;
+			foreach($form->fields->items[0]->Tabs()->first()->Fields() as $field) {
+				if($field instanceof GridField) {
+					$gridfield = $field;
+					break;
+				}
+			}
+		}
+		else {
+			$gridfield = $form->fields->items[0];
+		}
 		if(isset($gridfield) && $gridfield instanceof GridField) {
 
 			// Restrict the security token to administrators.
