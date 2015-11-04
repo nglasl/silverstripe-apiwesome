@@ -27,7 +27,7 @@ class APIwesomeTokenExtension extends Extension {
 		else {
 			$gridfield = $form->fields->items[0];
 		}
-		if(isset($gridfield) && $gridfield instanceof GridField) {
+		if(isset($gridfield) && ($gridfield instanceof GridField)) {
 
 			// Restrict the security token to administrators.
 
