@@ -8,7 +8,7 @@
 class APIwesomeTokenExtension extends Extension {
 
 	/**
-	 *	Add the security token functionality.
+	 *	Display the current security token (allowing regeneration for an administrator).
 	 */
 
 	public function updateEditForm(&$form) {
