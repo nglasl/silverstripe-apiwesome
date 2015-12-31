@@ -5,203 +5,200 @@
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
-class APIwesome extends Controller {
+class APIwesome extends Controller
+{
 
-	public $service;
+    public $service;
 
-	private static $dependencies = array(
-		'service' => '%$APIwesomeService'
-	);
+    private static $dependencies = array(
+        'service' => '%$APIwesomeService'
+    );
 
-	private static $allowed_actions = array(
-		'regenerateToken',
-		'retrieve'
-	);
+    private static $allowed_actions = array(
+        'regenerateToken',
+        'retrieve'
+    );
 
-	/**
-	 *	Reject a direct APIwesome request.
-	 */
+    /**
+     *	Reject a direct APIwesome request.
+     */
 
-	public function index() {
+    public function index()
+    {
+        return $this->httpError(404);
+    }
 
-		return $this->httpError(404);
-	}
+    /**
+     *	Display an error page on invalid request.
+     *
+     *	@parameter <{ERROR_CODE}> integer
+     *	@parameter <{ERROR_MESSAGE}> string
+     */
 
-	/**
-	 *	Display an error page on invalid request.
-	 *
-	 *	@parameter <{ERROR_CODE}> integer
-	 *	@parameter <{ERROR_MESSAGE}> string
-	 */
+    public function httpError($code, $message = null)
+    {
 
-	public function httpError($code, $message = null) {
+        // Determine the error page for the given status code.
 
-		// Determine the error page for the given status code.
+        $errorPages = ErrorPage::get()->filter('ErrorCode', $code);
 
-		$errorPages = ErrorPage::get()->filter('ErrorCode', $code);
+        // Allow extension customisation.
 
-		// Allow extension customisation.
+        $this->extend('updateErrorPages', $errorPages);
 
-		$this->extend('updateErrorPages', $errorPages);
+        // Retrieve the error page response.
 
-		// Retrieve the error page response.
+        if ($errorPage = $errorPages->first()) {
+            Requirements::clear();
+            Requirements::clear_combined_files();
+            $response = ModelAsController::controller_for($errorPage)->handleRequest(new SS_HTTPRequest('GET', ''), DataModel::inst());
+            throw new SS_HTTPResponse_Exception($response, $code);
+        }
 
-		if($errorPage = $errorPages->first()) {
-			Requirements::clear();
-			Requirements::clear_combined_files();
-			$response = ModelAsController::controller_for($errorPage)->handleRequest(new SS_HTTPRequest('GET', ''), DataModel::inst());
-			throw new SS_HTTPResponse_Exception($response, $code);
-		}
+        // Retrieve the cached error page response.
 
-		// Retrieve the cached error page response.
+        elseif (file_exists($cachedPage = ErrorPage::get_filepath_for_errorcode($code, class_exists('Translatable') ? Translatable::get_current_locale() : null))) {
+            $response = new SS_HTTPResponse();
+            $response->setStatusCode($code);
+            $response->setBody(file_get_contents($cachedPage));
+            throw new SS_HTTPResponse_Exception($response, $code);
+        } else {
+            return parent::httpError($code, $message);
+        }
+    }
 
-		else if(file_exists($cachedPage = ErrorPage::get_filepath_for_errorcode($code, class_exists('Translatable') ? Translatable::get_current_locale() : null))) {
-			$response = new SS_HTTPResponse();
-			$response->setStatusCode($code);
-			$response->setBody(file_get_contents($cachedPage));
-			throw new SS_HTTPResponse_Exception($response, $code);
-		}
-		else {
-			return parent::httpError($code, $message);
-		}
-	}
+    /**
+     *	Attempt to regenerate the current security token.
+     */
 
-	/**
-	 *	Attempt to regenerate the current security token.
-	 */
+    public function regenerateToken()
+    {
 
-	public function regenerateToken() {
+        // Restrict this functionality to administrators.
 
-		// Restrict this functionality to administrators.
+        $user = Member::currentUserID();
+        if (Permission::checkMember($user, 'ADMIN')) {
 
-		$user = Member::currentUserID();
-		if(Permission::checkMember($user, 'ADMIN')) {
+            // Attempt to create a random hash.
 
-			// Attempt to create a random hash.
+            $regeneration = $this->service->generateHash();
+            if ($regeneration) {
 
-			$regeneration = $this->service->generateHash();
-			if($regeneration) {
+                // Instantiate the new security token.
 
-				// Instantiate the new security token.
+                $token = APIwesomeToken::create();
+                $token->Hash = $regeneration['hash'];
+                $token->AdministratorID = $user;
+                $token->write();
 
-				$token = APIwesomeToken::create();
-				$token->Hash = $regeneration['hash'];
-				$token->AdministratorID = $user;
-				$token->write();
+                // Temporarily use the session to display the new security token key.
 
-				// Temporarily use the session to display the new security token key.
+                Session::set('APIwesomeToken', "{$regeneration['key']}:{$regeneration['salt']}");
+            } else {
 
-				Session::set('APIwesomeToken', "{$regeneration['key']}:{$regeneration['salt']}");
-			}
-			else {
+                // Log the failed security token regeneration.
 
-				// Log the failed security token regeneration.
+                SS_Log::log('APIwesome security token regeneration failed.', SS_Log::ERR);
+                Session::set('APIwesomeToken', -1);
+            }
 
-				SS_Log::log('APIwesome security token regeneration failed.', SS_Log::ERR);
-				Session::set('APIwesomeToken', -1);
-			}
+            // Determine where the request came from.
 
-			// Determine where the request came from.
+            $from = $this->getRequest()->getVar('from');
+            $redirect = $from ? $from : 'admin/json-xml/';
+            return $this->redirect($redirect);
+        } else {
+            return $this->httpError(404);
+        }
+    }
 
-			$from = $this->getRequest()->getVar('from');
-			$redirect = $from ? $from : 'admin/json-xml/';
-			return $this->redirect($redirect);
-		}
-		else {
-			return $this->httpError(404);
-		}
-	}
+    /**
+     *
+     *	Retrieve the appropriate JSON/XML output of a specified data object type, with optional filters parsed from the GET request.
+     *
+     *	@URLparameter <{DATA_OBJECT_NAME}> string
+     *	@URLparameter <{OUTPUT_TYPE}> string
+     *	@URLfilter <{LIMIT}> integer
+     *	@URLfilter <{SORT}> string
+     *	@URLfilters <{FILTERS}> string
+     *	@return JSON/XML
+     *
+     *	EXAMPLE JSON:		<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/json
+     *	EXAMPLE XML:		<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml
+     *	EXAMPLE FILTERS:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml?limit=5&sort=Attribute,ORDER&filter1=value&filter2=value
+     *
+     */
 
-	/**
-	 *
-	 *	Retrieve the appropriate JSON/XML output of a specified data object type, with optional filters parsed from the GET request.
-	 *
-	 *	@URLparameter <{DATA_OBJECT_NAME}> string
-	 *	@URLparameter <{OUTPUT_TYPE}> string
-	 *	@URLfilter <{LIMIT}> integer
-	 *	@URLfilter <{SORT}> string
-	 *	@URLfilters <{FILTERS}> string
-	 *	@return JSON/XML
-	 *
-	 *	EXAMPLE JSON:		<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/json
-	 *	EXAMPLE XML:		<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml
-	 *	EXAMPLE FILTERS:	<{WEBSITE}>/apiwesome/retrieve/<data-object-name>/xml?limit=5&sort=Attribute,ORDER&filter1=value&filter2=value
-	 *
-	 */
+    public function retrieve()
+    {
+        $parameters = $this->getRequest()->allParams();
 
-	public function retrieve() {
+        // Pass the current request parameters over to the APIwesomeService where valid.
 
-		$parameters = $this->getRequest()->allParams();
+        if ($parameters['ID'] && $parameters['OtherID'] && ($validation = $this->validate($parameters['OtherID']))) {
+            if (is_string($validation)) {
+                return $validation;
+            }
 
-		// Pass the current request parameters over to the APIwesomeService where valid.
+            // Retrieve the specified data object type JSON/XML.
 
-		if($parameters['ID'] && $parameters['OtherID'] && ($validation = $this->validate($parameters['OtherID']))) {
-			if(is_string($validation)) {
-				return $validation;
-			}
+            $filters = $this->getRequest()->getVars();
+            unset($filters['url'], $filters['token'], $filters['limit'], $filters['sort']);
+            return $this->service->retrieve(str_replace('-', '', $parameters['ID']), $parameters['OtherID'], $this->getRequest()->getVar('limit'), explode(',', $this->getRequest()->getVar('sort')), $filters);
+        } else {
+            return $this->httpError(404);
+        }
+    }
 
-			// Retrieve the specified data object type JSON/XML.
+    /**
+     *	Determine whether the request token matches the current security token.
+     *
+     *	@parameter <{OUTPUT_TYPE}> string
+     *	@return boolean/JSON/XML
+     */
 
-			$filters = $this->getRequest()->getVars();
-			unset($filters['url'], $filters['token'], $filters['limit'], $filters['sort']);
-			return $this->service->retrieve(str_replace('-', '', $parameters['ID']), $parameters['OtherID'], $this->getRequest()->getVar('limit'), explode(',', $this->getRequest()->getVar('sort')), $filters);
-		}
-		else {
-			return $this->httpError(404);
-		}
-	}
+    public function validate($output)
+    {
+        $validation = $this->service->validateToken($this->getRequest()->getVar('token'));
+        switch ($validation) {
+            case APIwesomeService::VALID:
 
-	/**
-	 *	Determine whether the request token matches the current security token.
-	 *
-	 *	@parameter <{OUTPUT_TYPE}> string
-	 *	@return boolean/JSON/XML
-	 */
+                // The token matches the current security token.
 
-	public function validate($output) {
+                return true;
+            case APIwesomeService::INVALID:
 
-		$validation = $this->service->validateToken($this->getRequest()->getVar('token'));
-		switch($validation) {
-			case APIwesomeService::VALID:
+                // The token does not match a security token.
 
-				// The token matches the current security token.
+                return false;
+            case APIwesomeService::EXPIRED:
 
-				return true;
-			case APIwesomeService::INVALID:
+                // The token matches a previous security token.
 
-				// The token does not match a security token.
+                $output = strtoupper($output);
+                if ($output === 'JSON') {
+                    $this->getResponse()->addHeader('Content-Type', 'application/json');
 
-				return false;
-			case APIwesomeService::EXPIRED:
+                    // JSON_PRETTY_PRINT.
 
-				// The token matches a previous security token.
-
-				$output = strtoupper($output);
-				if($output === 'JSON') {
-					$this->getResponse()->addHeader('Content-Type', 'application/json');
-
-					// JSON_PRETTY_PRINT.
-
-					$JSON = json_encode(array(
-						'APIwesome' => array(
-							'Count' => 0,
-							'DataObjects' => array(
-								'Expired' => true
-							)
-						)
-					), 128);
-					return $JSON;
-				}
-				else if($output === 'XML') {
-					$this->getResponse()->addHeader('Content-Type', 'application/xml');
-					$XML = new SimpleXMLElement('<APIwesome/>');
-					$XML->addChild('Count', 0);
-					$objectsXML = $XML->addChild('DataObjects');
-					$objectsXML->addChild('Expired', true);
-					return $XML->asXML();
-				}
-				break;
-		}
-	}
-
+                    $JSON = json_encode(array(
+                        'APIwesome' => array(
+                            'Count' => 0,
+                            'DataObjects' => array(
+                                'Expired' => true
+                            )
+                        )
+                    ), 128);
+                    return $JSON;
+                } elseif ($output === 'XML') {
+                    $this->getResponse()->addHeader('Content-Type', 'application/xml');
+                    $XML = new SimpleXMLElement('<APIwesome/>');
+                    $XML->addChild('Count', 0);
+                    $objectsXML = $XML->addChild('DataObjects');
+                    $objectsXML->addChild('Expired', true);
+                    return $XML->asXML();
+                }
+                break;
+        }
+    }
 }

@@ -5,14 +5,14 @@
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
-class APIwesomeToken extends DataObject {
+class APIwesomeToken extends DataObject
+{
 
-	private static $db = array(
-		'Hash' => 'Text'
-	);
+    private static $db = array(
+        'Hash' => 'Text'
+    );
 
-	private static $has_one = array(
-		'Administrator' => 'Member'
-	);
-
+    private static $has_one = array(
+        'Administrator' => 'Member'
+    );
 }

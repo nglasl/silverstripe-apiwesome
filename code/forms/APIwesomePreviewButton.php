@@ -5,29 +5,31 @@
  *	@author Nathan Glasl <nathan@silverstripe.com.au>
  */
 
-class APIwesomePreviewButton implements GridField_HTMLProvider {
+class APIwesomePreviewButton implements GridField_HTMLProvider
+{
 
-	/**
-	 *	Render the CMS JSON/XML preview buttons.
-	 */
+    /**
+     *	Render the CMS JSON/XML preview buttons.
+     */
 
-	public function getHTMLFragments($gridfield) {
+    public function getHTMLFragments($gridfield)
+    {
 
-		// Print the data object name associated with this gridfield, mainly for readability.
+        // Print the data object name associated with this gridfield, mainly for readability.
 
-		$object = strtolower(ltrim(preg_replace(array(
-			'/([A-Z][a-z]+)/',
-			'/([A-Z]{2,})/',
-			'/([_.0-9]+)/'
-		), '-$0', $gridfield->name), '-'));
-		$object = str_replace('-_-', '_', $object);
+        $object = strtolower(ltrim(preg_replace(array(
+            '/([A-Z][a-z]+)/',
+            '/([A-Z]{2,})/',
+            '/([_.0-9]+)/'
+        ), '-$0', $gridfield->name), '-'));
+        $object = str_replace('-_-', '_', $object);
 
-		// Retrieve the appropriate JSON/XML output paths.
+        // Retrieve the appropriate JSON/XML output paths.
 
-		$JSON = "apiwesome/retrieve/{$object}/json";
-		$XML = "apiwesome/retrieve/{$object}/xml";
-		return array(
-			'before' => "<div class='apiwesome wrapper'>
+        $JSON = "apiwesome/retrieve/{$object}/json";
+        $XML = "apiwesome/retrieve/{$object}/xml";
+        return array(
+            'before' => "<div class='apiwesome wrapper'>
 				<div class='apiwesome admin'>
 					<div><strong>Security Token</strong></div>
 					<div><input class='preview token' spellcheck='false'/></div>
@@ -36,7 +38,6 @@ class APIwesomePreviewButton implements GridField_HTMLProvider {
 					<a data-url='{$XML}' href='{$XML}' target='_blank' class='preview xml disabled ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-primary' data-icon='preview'>Preview XML &raquo;</a>
 				</div>
 			</div>"
-		);
-	}
-
+        );
+    }
 }
