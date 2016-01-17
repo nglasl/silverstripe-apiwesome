@@ -50,7 +50,7 @@ class DataObjectOutputConfiguration extends DataObject {
 
 	private static $custom_exclusions = array(
 	);
-	
+
 	/**
 	 *	The custom data objects to include, defined under project configuration.
 	 */
@@ -160,6 +160,7 @@ class DataObjectOutputConfiguration extends DataObject {
 	public function getCMSFields() {
 
 		$fields = parent::getCMSFields();
+		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 
 		// Hide the data object name and output visibility associated with this configuration.
 
@@ -168,7 +169,6 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		// Grab a single data object.
 
-		Requirements::css(APIWESOME_PATH . '/css/apiwesome.css');
 		if(DataObject::get_one($this->IsFor)) {
 
 			// Grab the appropriate attributes for this data object.
