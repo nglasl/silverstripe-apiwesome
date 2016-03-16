@@ -1,6 +1,6 @@
 # [apiwesome](https://packagist.org/packages/nglasl/silverstripe-apiwesome)
 
-_The current release is **2.1.1**_
+_The current release is **2.2.0**_
 
 	A module for SilverStripe which will automatically create customisable JSON/XML feeds
 	for your data objects (including pages), and provides a modular security token that
@@ -8,7 +8,7 @@ _The current release is **2.1.1**_
 
 ## Requirement
 
-* SilverStripe 3.0.X or 3.1.X
+* SilverStripe 3.0.X, 3.1.X or 3.2.X
 
 ## Getting Started
 

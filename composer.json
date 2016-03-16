@@ -15,13 +15,13 @@
 		"email": "nathan@silverstripe.com.au"
 	}],
 	"require": {
-		"silverstripe/cms": "3.1.*",
-		"silverstripe/framework": "3.1.*"
+		"silverstripe/cms": "3.2.*",
+		"silverstripe/framework": "3.2.*"
 	},
 	"extra": {
 		"installer-name": "apiwesome",
 		"branch-alias": {
-			"dev-master": "2.1.x-dev"
+			"dev-master": "2.2.x-dev"
 		},
 		"screenshots": [
 			"https://raw.githubusercontent.com/nglasl/silverstripe-apiwesome/master/images/apiwesome-visibility.png"

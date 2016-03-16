@@ -101,12 +101,14 @@ class DataObjectOutputConfiguration extends DataObject {
 
 		// Grab the list of data objects that have been completely removed.
 
-		foreach(DB::getConn()->tableList() as $table) {
+		foreach(DB::table_list() as $table) {
 
 			// Delete existing output configurations for these data objects.
 
 			if(!class_exists($table)) {
-				$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($table) . "'");
+				$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', array(
+					'IsFor = ?' => $table
+				));
 				$this->deleteConfiguration($table, $existing);
 			}
 		}
@@ -120,7 +122,9 @@ class DataObjectOutputConfiguration extends DataObject {
 		// Check existing output configurations for these data objects.
 
 		foreach($objects as $object) {
-			$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($object) . "'");
+			$existing = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', array(
+				'IsFor = ?' => $object
+			));
 
 			// Delete existing output configurations for invalid data objects, or for those excluded.
 

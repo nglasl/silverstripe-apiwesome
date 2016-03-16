@@ -139,7 +139,9 @@ class APIwesomeService {
 		// Validate the data object class.
 
 		$class = strtolower($class);
-		if(in_array($class, array_map('strtolower', ClassInfo::subclassesFor('DataObject'))) && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "LOWER(IsFor) = '" . Convert::raw2sql($class) . "'")) && ($temporaryClass = DataObject::get_one($class))) {
+		if(in_array($class, array_map('strtolower', ClassInfo::subclassesFor('DataObject'))) && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', array(
+			'LOWER(IsFor) = ?' => $class
+		))) && ($temporaryClass = DataObject::get_one($class))) {
 			$class = ClassInfo::baseDataClass($temporaryClass->ClassName);
 			$visibility = $configuration->APIwesomeVisibility ? explode(',', $configuration->APIwesomeVisibility) : null;
 
@@ -242,7 +244,7 @@ class APIwesomeService {
 
 				// Grab all data object visible attributes.
 
-				$query = new SQLQuery("{$class}.ClassName,{$select}{$class}.ID", $class, $where, $sorting, array(), array(), is_numeric($limit) ? $limit : array());
+				$query = new SQLSelect("{$class}.ClassName,{$select}{$class}.ID", $class, $where, $sorting, array(), array(), is_numeric($limit) ? $limit : array());
 
 				// Determine the tables with visible attributes to join.
 
@@ -333,7 +335,9 @@ class APIwesomeService {
 
 		$header = false;
 		$class = is_subclass_of($objects[0]['ClassName'], 'SiteTree') ? 'SiteTree' : (is_subclass_of($objects[0]['ClassName'], 'File') ? 'File' : $objects[0]['ClassName']);
-		if($callback && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'"))) {
+		if($callback && ($configuration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', array(
+			'IsFor = ?' => $class
+		)))) {
 			if($configuration->CallbackFunction) {
 				$JSON = str_replace(' ', '_', $configuration->CallbackFunction) . "({$JSON});";
 
@@ -394,7 +398,9 @@ class APIwesomeService {
 							// Grab the attribute visibility.
 
 							$class = is_subclass_of($relationObject->ClassName, 'SiteTree') ? 'SiteTree' : (is_subclass_of($relationObject->ClassName, 'File') ? 'File' : $relationObject->ClassName);
-							$relationConfiguration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', "IsFor = '" . Convert::raw2sql($class) . "'");
+							$relationConfiguration = DataObjectOutputConfiguration::get_one('DataObjectOutputConfiguration', array(
+								'IsFor = ?' => $class
+							));
 							$relationVisibility = ($relationConfiguration && $relationConfiguration->APIwesomeVisibility) ? explode(',', $relationConfiguration->APIwesomeVisibility) : null;
 							$columns = array();
 							foreach(ClassInfo::subclassesFor($class) as $subclass) {
@@ -598,7 +604,7 @@ class APIwesomeService {
 	 */
 
 	public function parseJSON($JSON) {
-		
+
 		// Convert the corresponding JSON to a formatted array of data objects.
 
 		$temporary = Convert::json2array($JSON);

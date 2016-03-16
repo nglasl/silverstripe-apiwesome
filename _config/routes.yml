@@ -1,0 +1,6 @@
+---
+name: apiwesome-routes
+---
+Director:
+  rules:
+    apiwesome: 'APIwesome'
