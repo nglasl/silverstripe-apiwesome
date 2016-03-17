@@ -155,14 +155,6 @@ class APIwesomeService {
 
 			// Grab the appropriate attributes for this data object.
 
-			if(is_subclass_of($class, 'SiteTree')) {
-				$where['ClassName = ?'] = $class;
-				$class = 'SiteTree';
-			}
-			else if(is_subclass_of($class, 'File')) {
-				$where['ClassName = ?'] = $class;
-				$class = 'File';
-			}
 			$columns = array();
 			$from = array();
 			foreach(ClassInfo::subclassesFor($class) as $subclass) {
