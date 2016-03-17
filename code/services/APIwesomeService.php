@@ -156,11 +156,11 @@ class APIwesomeService {
 			// Grab the appropriate attributes for this data object.
 
 			if(is_subclass_of($class, 'SiteTree')) {
-				$where[] = "ClassName = '$class'";
+				$where['ClassName = ?'] = $class;
 				$class = 'SiteTree';
 			}
 			else if(is_subclass_of($class, 'File')) {
-				$where[] = "ClassName = '$class'";
+				$where['ClassName = ?'] = $class;
 				$class = 'File';
 			}
 			$columns = array();
@@ -196,7 +196,7 @@ class APIwesomeService {
 						$sorting[] = "{$subclassColumn} {$order}";
 					}
 					if($filterValid && isset($filters[$column])) {
-						$filtering[$subclassColumn] = is_numeric($filters[$column]) ? "{$subclassColumn} = " . (int)$filters[$column] : "LOWER({$subclassColumn}) = '" . Convert::raw2sql(strtolower($filters[$column])) . "'";
+						$filtering[$subclassColumn] = $filters[$column];
 					}
 				}
 				$columns = array_merge($columns, $subclassColumns);
@@ -215,7 +215,7 @@ class APIwesomeService {
 				$sorting[] = "{$class}.ID {$order}";
 			}
 			if($filterValid && isset($filters['ID'])) {
-				$where[] = "{$class}.ID = " . (int)$filters['ID'];
+				$where["{$class}.ID = ?"] = $filters['ID'];
 			}
 
 			// Make sure this data object type has visibility customisation.
@@ -233,13 +233,14 @@ class APIwesomeService {
 
 							// Apply the filter if the matching attribute is visible.
 
-							$where[] = $filtering[$attribute];
+							$column = is_numeric($filtering[$attribute]) ? $attribute : "LOWER({$attribute})";
+							$where["{$column} = ?"] = strtolower($filtering[$attribute]);
 						}
 					}
 					$iteration++;
 				}
 				if(isset($filtering["{$class}.ClassName"])) {
-					$where[] = $filtering["{$class}.ClassName"];
+					$where["LOWER({$class}.ClassName) = ?"] = strtolower($filtering["{$class}.ClassName"]);
 				}
 
 				// Grab all data object visible attributes.
