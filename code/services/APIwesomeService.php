@@ -237,7 +237,15 @@ class APIwesomeService {
 
 				// Grab all data object visible attributes.
 
-				$query = new SQLSelect("{$class}.ClassName,{$select}{$class}.ID", $class, $where, $sorting, array(), array(), is_numeric($limit) ? $limit : array());
+				$query = new SQLSelect(
+					"{$class}.ClassName,{$select}{$class}.ID",
+					$class,
+					$where,
+					$sorting,
+					array(),
+					array(),
+					is_numeric($limit) ? $limit : array()
+				);
 
 				// Determine the tables with visible attributes to join.
 
