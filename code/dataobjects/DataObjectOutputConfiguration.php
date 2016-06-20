@@ -48,15 +48,13 @@ class DataObjectOutputConfiguration extends DataObject {
 	 *	The custom data objects to exclude, defined under project configuration.
 	 */
 
-	private static $custom_exclusions = array(
-	);
+	private static $custom_exclusions = array();
 
 	/**
 	 *	The custom data objects to include, defined under project configuration.
 	 */
 
-	private static $custom_inclusions = array(
-	);
+	private static $custom_inclusions = array();
 
 	/**
 	 *	Flag used to prevent data object output, defined under project configuration.
