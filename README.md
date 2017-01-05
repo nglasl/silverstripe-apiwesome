@@ -193,7 +193,7 @@ JSON example:
 
 ```javascript
 ;(function($) {
-	$(window).load(function() {
+	$(function() {
 
 		$.getJSON('//ss3.1/apiwesome/retrieve/data-object-name/json?token=' + token(), function(JSON) {
 
