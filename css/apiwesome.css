@@ -112,7 +112,3 @@ div.visibility div.fieldgroup-field input,
 div.visibility div.fieldgroup-field label {
 	vertical-align: middle;
 }
-
-div.visibility div.fieldgroup-field.first input {
-	margin-top: 2px;
-}
