@@ -26,49 +26,25 @@
 		});
 	};
 
-	// Bind the mouse events dynamically.
+	// Trigger a confirmation message for security token regeneration.
 
-	$.entwine('ss', function($) {
+	$(document).on('click', 'div.apiwesome.admin a.regenerate', function() {
 
-		// Trigger a confirmation message for security token regeneration.
+		return confirm('This will INVALIDATE any JSON/XML feeds!');
+	});
 
-		$('div.apiwesome.admin a.regenerate').entwine({
-			onclick: function() {
+	// Trigger an interface update on key press.
 
-				return confirm('This will INVALIDATE any JSON/XML feeds!');
-			}
-		});
+	$(document).on('input', 'div.apiwesome.admin input.preview.token', function() {
 
-		// Trigger an interface update on key press.
+		enable($(this));
+	});
 
-		$('div.apiwesome.admin input.preview.token').entwine({
-			onchange: function() {
+	// Handle any preview request.
 
-				enable($(this));
-			},
-			onkeydown: function(event) {
+	$(document).on('click', 'div.apiwesome.admin a.preview', function() {
 
-				// Trigger only an interface update when pressing enter.
-
-				if(event.keyCode === 13) {
-					$(this).change();
-					return false;
-				}
-			}
-		});
-
-		// Trigger an interface update and handle any preview request.
-
-		$('div.apiwesome.admin a.preview').entwine({
-			onmouseenter: function() {
-
-				enable();
-			},
-			onclick: function() {
-
-				return !$(this).hasClass('disabled');
-			}
-		});
+		return !$(this).hasClass('disabled');
 	});
 
 })(jQuery);
