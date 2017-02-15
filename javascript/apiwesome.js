@@ -33,14 +33,14 @@
 		return confirm('This will INVALIDATE any JSON/XML feeds!');
 	});
 
-	// Trigger an interface update on key press.
+	// Trigger an interface update on input.
 
 	$(document).on('input', 'div.apiwesome.admin input.preview.token', function() {
 
 		enable($(this));
 	});
 
-	// Handle any preview request.
+	// The preview.
 
 	$(document).on('click', 'div.apiwesome.admin a.preview', function() {
 
