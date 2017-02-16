@@ -40,7 +40,7 @@
 		enable($(this));
 	});
 
-	$(document).on('keydown', 'div.apiwesome.admin input.preview.token', function() {
+	$(document).on('keydown', 'div.apiwesome.admin input.preview.token', function(event) {
 
 		// Trigger nothing on pressing enter.
 
