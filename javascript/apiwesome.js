@@ -1,5 +1,7 @@
 ;(function($) {
 
+	var page = $(document);
+
 	// Determine whether the preview JSON/XML button display and functionality should be enabled, based on the given security token.
 
 	function enable(input) {
@@ -27,26 +29,26 @@
 
 	// Trigger a confirmation message for security token regeneration.
 
-	$(document).on('click', 'div.apiwesome.admin a.regenerate', function() {
+	page.on('click', 'div.apiwesome.admin a.regenerate', function() {
 
 		return confirm('This will INVALIDATE any JSON/XML feeds!');
 	});
 
 	// Trigger an interface update on input.
 
-	$(document).on('input', 'div.apiwesome.admin input.preview.token', function() {
+	page.on('input', 'div.apiwesome.admin input.preview.token', function() {
 
 		enable($(this));
 	});
 
-	$(document).on('change', 'div.apiwesome.admin input.preview.token', function() {
+	page.on('change', 'div.apiwesome.admin input.preview.token', function() {
 
 		// Make sure the edit form doesn't detect changes.
 
 		$('#Form_EditForm').removeClass('changed');
 	});
 
-	$(document).on('keydown', 'div.apiwesome.admin input.preview.token', function(event) {
+	page.on('keydown', 'div.apiwesome.admin input.preview.token', function(event) {
 
 		// Trigger nothing on pressing enter, since there are two buttons.
 
@@ -57,7 +59,7 @@
 
 	// The preview.
 
-	$(document).on('click', 'div.apiwesome.admin a.preview', function() {
+	page.on('click', 'div.apiwesome.admin a.preview', function() {
 
 		return !$(this).hasClass('disabled');
 	});
