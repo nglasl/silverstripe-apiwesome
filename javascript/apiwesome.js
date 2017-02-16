@@ -42,7 +42,7 @@
 
 	$(document).on('keydown', 'div.apiwesome.admin input.preview.token', function(event) {
 
-		// Trigger nothing on pressing enter.
+		// Trigger nothing on pressing enter, since there are two buttons.
 
 		if(event.keyCode === 13) {
 			return false;
