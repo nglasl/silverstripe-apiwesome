@@ -40,6 +40,15 @@
 		enable($(this));
 	});
 
+	$(document).on('keydown', 'div.apiwesome.admin input.preview.token', function() {
+
+		// Trigger nothing on pressing enter.
+
+		if(event.keyCode === 13) {
+			return false;
+		}
+	});
+
 	// The preview.
 
 	$(document).on('click', 'div.apiwesome.admin a.preview', function() {
