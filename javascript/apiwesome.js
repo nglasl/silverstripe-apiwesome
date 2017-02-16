@@ -22,7 +22,6 @@
 				});
 				preview.attr('href', preview.data('url'));
 			}
-			$('#Form_EditForm').removeClass('changed');
 		});
 	};
 
@@ -38,6 +37,13 @@
 	$(document).on('input', 'div.apiwesome.admin input.preview.token', function() {
 
 		enable($(this));
+	});
+
+	$(document).on('change', 'div.apiwesome.admin input.preview.token', function() {
+
+		// Make sure the edit form doesn't detect changes.
+
+		$('#Form_EditForm').removeClass('changed');
 	});
 
 	$(document).on('keydown', 'div.apiwesome.admin input.preview.token', function(event) {
