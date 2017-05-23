@@ -1,6 +1,6 @@
 # [apiwesome](https://packagist.org/packages/nglasl/silverstripe-apiwesome)
 
-_The current release is **2.2.12**_
+_The current release is **2.2.13**_
 
 > A module for SilverStripe which will automatically create customisable JSON/XML feeds for your data objects (including pages), and provides a modular security token that can be used for other applications.
 
@@ -10,7 +10,7 @@ _The current release is **2.2.12**_
 
 ## Getting Started
 
-* Place the module under your root project directory.
+* [Place the module under your root project directory.](https://packagist.org/packages/nglasl/silverstripe-apiwesome)
 * Define any custom JSON/XML data object exclusions/inclusions through project configuration.
 * `/dev/build`
 * Select `JSON/XML` through the CMS.
