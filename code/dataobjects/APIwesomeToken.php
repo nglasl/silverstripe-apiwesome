@@ -2,7 +2,7 @@
 
 /**
  *	APIwesome security token used to restrict JSON/XML access.
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 class APIwesomeToken extends DataObject {

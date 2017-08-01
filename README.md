@@ -230,4 +230,4 @@ JSON example:
 
 ## Maintainer Contact
 
-	Nathan Glasl, nathan@silverstripe.com.au
+	Nathan Glasl, nathan@symbiote.com.au

@@ -2,7 +2,7 @@
 
 /**
  *	Handles the current request and outputs the appropriate JSON/XML, while providing any additional functionality.
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 class APIwesomeService {

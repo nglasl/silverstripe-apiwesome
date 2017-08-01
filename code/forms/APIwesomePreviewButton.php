@@ -2,7 +2,7 @@
 
 /**
  *	APIwesome button which will provide JSON/XML preview capability for the ModelAdminPreviewExtension.
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 class APIwesomePreviewButton implements GridField_HTMLProvider {

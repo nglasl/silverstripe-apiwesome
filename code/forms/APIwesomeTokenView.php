@@ -2,7 +2,7 @@
 
 /**
  *	APIwesome functionality to display the current security token (allowing regeneration).
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 class APIwesomeTokenView implements GridField_HTMLProvider {

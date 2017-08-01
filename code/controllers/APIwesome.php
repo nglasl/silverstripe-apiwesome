@@ -2,7 +2,7 @@
 
 /**
  *	Passes the current request over to the APIwesomeService.
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 class APIwesome extends Controller {

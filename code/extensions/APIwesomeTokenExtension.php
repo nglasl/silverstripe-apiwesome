@@ -2,7 +2,7 @@
 
 /**
  *	APIwesome extension which displays the current security token (allowing regeneration for an administrator).
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 class APIwesomeTokenExtension extends Extension {

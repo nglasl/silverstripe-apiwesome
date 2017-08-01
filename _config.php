@@ -2,7 +2,7 @@
 
 /**
  *	The apiwesome specific configuration settings.
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 if(!defined('APIWESOME_PATH')) {

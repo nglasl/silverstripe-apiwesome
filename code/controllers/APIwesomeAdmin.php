@@ -2,7 +2,7 @@
 
 /**
  *	APIwesome CMS interface for managing JSON/XML output configuration of an individual data object type.
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 class APIwesomeAdmin extends ModelAdmin {

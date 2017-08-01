@@ -2,7 +2,7 @@
 
 /**
  *	APIwesome extension which allows JSON/XML preview capability for an individual data object type through the CMS interface.
- *	@author Nathan Glasl <nathan@silverstripe.com.au>
+ *	@author Nathan Glasl <nathan@symbiote.com.au>
  */
 
 class ModelAdminPreviewExtension extends Extension {
